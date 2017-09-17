@@ -1,0 +1,26 @@
+{
+  "name": "table-cartogram",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "test": "babel-node test/test-index.js"
+  },
+  "devDependencies": {
+    "babel-cli": "6.18.0",
+    "babel-preset-es2015": "6.18.0",
+    "babel-preset-stage-0": "^6.16.0",
+    "eslint": "3",
+    "tape": "4"
+  },
+  "author": {
+    "name": "Andrew McNutt",
+    "url": "mcnutt.in"
+  },
+  "babel": {
+    "presets": [
+      "es2015",
+      "stage-0"
+    ]
+  }
+}
