@@ -48,7 +48,8 @@ function getConsts(v0, v1, area) {
   const A = v1.x - v0.x;
   const B = v1.y - v0.y;
   const C = 2 * area + A * v0.y - B * v0.x;
-  return {A, B, C};
+  const Cm = -2 * area + A * v0.y - B * v0.x;
+  return {A, B, C, Cm};
 }
 
 /** Parition a triangle into 3 unequally weight sections
@@ -60,22 +61,49 @@ function getConsts(v0, v1, area) {
  * @param {object} areas - {alpha, beta, gamma}
  * @returns {object} the partitions for each of the areas
  */
-export function partitionTriangle(points, {alpha, gamma}) {
+export function partitionTriangle(points, {alpha, beta, gamma}) {
   const [pointA, pointB, pointC] = points;
   const alphas = getConsts(pointB, pointC, alpha);
   const gammas = getConsts(pointA, pointB, gamma);
+  const totalArea = alpha + beta + gamma;
 
-  const det = 1 / (gammas.A * alphas.B - alphas.A * alphas.A)
-  const partition = {
-    x: det * (alphas.A * gammas.C - gammas.A * alphas.C),
-    y: det * (alphas.B * gammas.C - gammas.B * alphas.C)
-  };
+  // const det = 1 / (gammas.A * alphas.B - alphas.A * alphas.A)
+  const det = 1 / (gammas.A * alphas.B - gammas.B * alphas.A)
 
-  return {
-    alpha: [partition, pointB, pointC],
-    beta: [pointA, pointC, partition],
-    gamma: [pointA, partition, pointB]
-  };
+  return [
+    {gammaC: gammas.C, alphaC: alphas.C},
+    {gammaC: gammas.Cm, alphaC: alphas.C},
+    {gammaC: gammas.C, alphaC: alphas.Cm},
+    {gammaC: gammas.Cm, alphaC: alphas.Cm}
+  ].reduce((solution, combo) => {
+    const {gammaC, alphaC} = combo;
+    if (solution) {
+      return solution;
+    }
+    const partition = {
+      x: det * (alphas.A * gammaC - gammas.A * alphaC),
+      y: det * (alphas.B * gammaC - gammas.B * alphaC)
+    };
+
+    const trialSolution = {
+      alpha: [partition, pointB, pointC],
+      beta: [pointA, pointC, partition],
+      gamma: [pointA, partition, pointB]
+    };
+    // console.log(trialSolution)
+    // console.log('proposed areas', {alpha, beta, gamma})
+    // console.log('found areas', area(trialSolution.alpha), area(trialSolution.beta), area(trialSolution.gamma))
+    const localSum = area(trialSolution.alpha) + area(trialSolution.beta) + area(trialSolution.gamma);
+    // console.log(localSum, totalArea)
+    return (round(localSum) === round(totalArea)) ? trialSolution : solution
+  }, false);
+
+  //
+  // return {
+  //   alpha: [partition, pointB, pointC],
+  //   beta: [pointA, pointC, partition],
+  //   gamma: [pointA, partition, pointB]
+  // };
 }
 
 /** Round a value

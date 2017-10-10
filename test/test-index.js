@@ -25,12 +25,14 @@ var EXAMPLE_TABLE = [
   [3, 9, 3, 7],
   [2, 3, 4, 9],
   [3, 2, 2, 3]
-  //
-  // [2, 3, 2],
-  // [3, 9, 3],
-  // [2, 3, 4],
-  // [3, 2, 2]
 ];
+
+// const BLACK_AND_WHITE_TABLE = [
+//   [4.5, 4.5, 16, 2.5],
+//   [4, 3, 4.5, 3],
+//   [2.5, 6, 4.5, 10.5],
+//   [7, 9, 9, 6]
+// ];
 
 tape("tableCartogram ", function(t) {
   t.equal(typeof tableCartogram, 'function', 'should correctly find a function');
@@ -92,28 +94,49 @@ var EXPECTED_CARTOGRAM_EXAMPLE_TABLE = [
     {value: 2, vertices: [{x: 0, y: 0}]},
     {value: 3, vertices: [{x: 0, y: 0}]},
     {value: 2, vertices: [{x: 0, y: 0}]},
-    {value: 4, vertices: [{x: 0, y: 0}]}],
-  [
+    {value: 4, vertices: [{x: 0, y: 0}]}
+  ], [
     {value: 3, vertices: [{x: 0, y: 0}]},
     {value: 9, vertices: [{x: 0, y: 0}]},
     {value: 3, vertices: [{x: 0, y: 0}]},
-    {value: 7, vertices: [{x: 0, y: 0}]}],
-  [
+    {value: 7, vertices: [{x: 0, y: 0}]}
+  ], [
     {value: 2, vertices: [{x: 0, y: 0}]},
     {value: 3, vertices: [{x: 0, y: 0}]},
     {value: 4, vertices: [{x: 0, y: 0}]},
-    {value: 9, vertices: [{x: 0, y: 0}]}],
-  [
+    {value: 9, vertices: [{x: 0, y: 0}]}
+  ], [
     {value: 3, vertices: [{x: 0, y: 0}]},
     {value: 2, vertices: [{x: 0, y: 0}]},
     {value: 2, vertices: [{x: 0, y: 0}]},
     {value: 3, vertices: [{x: 0, y: 0}]}]
 ];
 
+function countCells(table) {
+  return table.reduce((sum, row) => sum + row.length, 0);
+}
+
+function sumCells(table) {
+  return table.reduce((sum, row) => sum + row.reduce((rowSum, cell) => rowSum + cell, 0), 0);
+}
+
+function sumArea(cartogram) {
+  return cartogram.reduce((sum, cell) => sum + area(cell.vertices), 0);
+}
+
 tape("tableCartogram - size", function(t) {
   var cartogram = tableCartogram();
   var mappedTable = cartogram(EXAMPLE_TABLE);
   t.deepEqual(mappedTable, EXPECTED_CARTOGRAM_EXAMPLE_TABLE, 'should find modified and updated table')
+
+  const numberOfCells = countCells(EXAMPLE_TABLE);
+  const foundNumberOfCells = mappedTable.length;
+  t.equal(numberOfCells, foundNumberOfCells, 'should find the correct number of cells');
+
+  // TODO GOTTA FIX UP THE WIDTH CONTROL
+  const HEIGHT = 1;
+  t.equal(sumArea(mappedTable), sumCells(EXAMPLE_TABLE) / 2 * HEIGHT, 'should find the summed area to be correct');
+
   t.end();
 });
 
@@ -205,6 +228,30 @@ tape("partitionTriangle - Unequal Partition", function(t) {
     const predictedarea = round(areas[areaSector]);
     t.equal(foundArea, predictedarea, `should find the correct ${areaSector} partition for an unequal partition`);
   });
+
+  t.end();
+});
+
+tape("partitionTriangle - Real triangle example", function(t) {
+  const triangle = [
+    {x: 4.659090909090909, y: 1},
+    {x: 0, y: 0},
+    {x: 11.363636363636363, y: 0}
+  ].map(({x, y}) => ({x: x + 10, y: y + 10}));
+  const totalArea = area(triangle);
+  const areas = {
+    alpha: 4.305166199439327,
+    beta: 0.8259911894273129,
+    gamma: 0.5506607929515418
+  }
+  const partitions = partitionTriangle(triangle, areas);
+  ['alpha', 'beta', 'gamma'].forEach(areaSector => {
+    const foundArea = round(area(partitions[areaSector]));
+    const predictedarea = round(areas[areaSector]);
+    t.equal(foundArea, predictedarea, `should find the correct ${areaSector} partition for a real partition`);
+  });
+  const sumFoundArea = ['alpha', 'beta', 'gamma'].reduce((sum, key) => sum + area(partitions[key]), 0);
+  t.equal(round(sumFoundArea), round(totalArea), 'should find the correct total area');
 
   t.end();
 });

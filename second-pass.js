@@ -1,5 +1,6 @@
 import {
-  partitionTriangle
+  partitionTriangle,
+  area
 } from './utils';
 
 function columnSum(table) {
@@ -59,40 +60,73 @@ export function getSplitTable(table) {
   return {tableTop, tableBottom}
 }
 
-// function padLeft(table) {
-//   return table.map((row) => [0].concat(row));
-// }
+function getAreas(left, right, containingTriangle, table) {
+  // using zeros here is wrong?
+  const beta = table[0][left] || 0;
+  const gamma = table[0][right] || 0;
+  const alpha = table.reduce((sum, row) => {
+    return sum + (row[left] || 0) + (row[right] || 0)
+  }, 0);
+  // gotsta scale
+  const containingArea = area(containingTriangle);
+  const triangleSum = alpha + beta + gamma;
+
+  // console.log({
+  //   alpha: alpha * containingArea / triangleSum,
+  //   beta: beta * containingArea / triangleSum,
+  //   gamma: gamma * containingArea / triangleSum
+  // })
+  return {
+    alpha: alpha * containingArea / triangleSum,
+    beta: beta * containingArea / triangleSum,
+    gamma: gamma * containingArea / triangleSum
+  };
+}
 
 // do we need to pad left?
-function generateBaseParition(subTable, zigZag, height) {
-  const m = subTable[0].length;
+function generateBaseParition(tableTop, tableBottom, zigZag) {
+  const m = tableTop[0].length;
+  const zigZagUpperLeft = {x: 0, y: zigZag[1].y};
+  const zigZagUpperRight = {x: zigZag[zigZag.length - 1].x, y: zigZag[1].y};
   // 0 and 1 are used in the proof bc the table is only mx2 we need to use 2j - 1 & 2j + 2
   // paper says to do this at m but i am confused
-  const paddedTable = subTable;//padLeft(subTable);
   const partitions = [];
-  for (let j = 1; j < Math.floor(m / 2 + 1); j++) {
-    const leftIndex = (2 * j - 1) - 1;
-    const rightIndex = (2 * j - 2) - 1;
-    const beta = paddedTable[0][leftIndex] || 0;
-    const gamma = paddedTable[0][rightIndex] || 0;
-    // console.log('top row', paddedTable[0], leftIndex, rightIndex)
-    const alpha = paddedTable.slice(1).reduce((sum, row) => {
-      return sum + (row[leftIndex] || 0) + (row[rightIndex] || 0)
-    }, 0);
-    const points = [
-      zigZag[(2 * j - 2)],
-      zigZag[(2 * j - 3)] || {x: 0, y: height},
-      zigZag[(2 * j - 1)]
-    ];
+  // top
+  for (let j = 1; j <= Math.floor(m / 2 + 1); j++) {
+    const left = (2 * j - 1) - 1;
+    const right = (2 * j - 2) - 1;
 
-    // console.log('points', points, {alpha, beta, gamma})
-    const partionedArea = partitionTriangle(points, {alpha, beta, gamma})
-    // console.log(points, partionedArea.alpha)
-    // console.log('partition', partionedArea)
-    partitions.push(partionedArea.alpha);
-    partitions.push(partionedArea.beta);
-    partitions.push(partionedArea.gamma);
+    const points = [
+      zigZag[2 * j - 2],
+      zigZag[2 * j - 3] || zigZagUpperLeft,
+      zigZag[2 * j - 1] || zigZagUpperRight
+    ];
+    const partionedArea = partitionTriangle(points, getAreas(left, right, points, tableTop));
+    // console.log(partionedArea)
+    // maybe use a concat instead?
+    partitions.push({vertices: partionedArea.alpha});
+    // zeros are wrong here
+    partitions.push({vertices: partionedArea.beta, value: tableTop[0][left]});
+    partitions.push({vertices: partionedArea.gamma, value: tableTop[0][right]});
   }
+  // bottom
+  for (let l = 1; l <= Math.ceil(m / 2); l++) {
+    const left = (2 * l) - 1;
+    const right = (2 * l - 1) - 1;
+    const points = [
+      zigZag[2 * l - 1],
+      zigZag[2 * l - 2] || zigZagUpperLeft,
+      zigZag[2 * l] || zigZagUpperRight
+    ];
+    const partionedArea = partitionTriangle(points, getAreas(left, right, points, tableTop));
+    // console.log(partionedArea)
+    // maybe use a concat instead?
+    // now is the time to associate the value of the cells with the partitions
+    partitions.push({vertices: partionedArea.alpha});
+    partitions.push({vertices: partionedArea.beta, value: tableBottom[0][left]});
+    partitions.push({vertices: partionedArea.gamma, value: tableBottom[0][right]});
+  }
+
   return partitions;
 
 }
@@ -149,11 +183,8 @@ export default function() {
     // TODO: paper notes this must be at least 4 check in later
     const {tableTop, tableBottom} = getSplitTable(table);
     const zigZag = generateZigZag(table, tableTop, tableBottom, height);
-    generateBaseParition(tableTop, zigZag, height);
-    generateBaseParition(tableBottom, zigZag, height);
-    // console.log(zigZag)
-
-    return [];
+    const partitions = generateBaseParition(tableTop, tableBottom, zigZag);
+    return partitions;
   }
 
   tableCartogram.size = function(x) {
@@ -161,7 +192,8 @@ export default function() {
     return arguments.length ? (width = +x[0], height = +x[1], tableCartogram) : [width, height];
   };
 
-  // padding?
+  // TODO padding?
+  // TODO steal other d3 args
 
   return tableCartogram;
 }
