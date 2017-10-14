@@ -60,7 +60,7 @@ export function getSplitTable(table) {
   return {tableTop, tableBottom}
 }
 
-function getAreas(left, right, containingTriangle, table, row) {
+function getAreas(left, right, containingPolygon, table, row) {
   // would it be more elegant to destroy the table as we walk down it?
   const beta = table[row][left] || 0;
   const gamma = table[row][right] || 0;
@@ -68,13 +68,13 @@ function getAreas(left, right, containingTriangle, table, row) {
     return sum + (row[left] || 0) + (row[right] || 0)
   }, 0);
 
-  const containingArea = area(containingTriangle);
-  const triangleSum = alpha + beta + gamma;
+  const containingArea = area(containingPolygon);
+  const polygonSum = alpha + beta + gamma;
 
   return {
-    alpha: alpha * containingArea / triangleSum,
-    beta: beta * containingArea / triangleSum,
-    gamma: gamma * containingArea / triangleSum
+    alpha: alpha * containingArea / polygonSum,
+    beta: beta * containingArea / polygonSum,
+    gamma: gamma * containingArea / polygonSum
   };
 }
 
@@ -83,37 +83,43 @@ function deepCopyTable(table) {
 }
 
 function iterativelyGeneratePartitions(args) {
-  const {left, right, points: initialPoints, subTable, isTop} = args;
+  const {left, right, points, subTable, isTop, table} = args;
 
-  let currentPoints = initialPoints;
-  let row = isTop ? 0 : 1;
+  // this function accesses the values in the main table
+  const tableAccessor = (row, column) => {
+    return isTop ?
+      table[(subTable.length - 1) - row][column] :
+      table[((table.length - 1) - (subTable.length - 1)) + row][column]
+  }
   const partitions = []
+  let currentPoints = points;
   const tableCopy =  deepCopyTable(subTable);
+  // if we are above the zig zag, we need to build in the opposite order
   if (isTop) {
     tableCopy.reverse();
   }
 
-  while (row < tableCopy.length) {
-    console.log(row, isTop, tableCopy.length, currentPoints)
+  for (let row = isTop ? 0 : 1; row < tableCopy.length; row++) {
     const areas = getAreas(left, right, currentPoints, tableCopy, row);
     const partionedArea = partitionTriangle(currentPoints, areas);
-    // console.log(partionedArea)
     // maybe use a concat instead?
     // now is the time to associate the value of the cells with the partitions
     // not accurately mapping value to table value?
+
+    // if we find a size zero polygon, ignore it
     if (areas.beta) {
-      partitions.push({vertices: partionedArea.beta, value: subTable[row][left]});
+      partitions.push({vertices: partionedArea.beta, value: tableAccessor(row, left)});
     }
     if (areas.gamma) {
-      partitions.push({vertices: partionedArea.gamma, value: subTable[row][right]});
+      partitions.push({vertices: partionedArea.gamma, value: tableAccessor(row, right)});
     }
+    // use the alpha as the next area to sub-divide against
     currentPoints = partionedArea.alpha;
-    row = row + 1;
   }
   return partitions;
 }
 
-function generateBaseParition(tableTop, tableBottom, zigZag) {
+function generateBaseParition(table, tableTop, tableBottom, zigZag) {
   const m = tableTop[0].length;
   const zigZagUpperLeft = {x: 0, y: zigZag[1].y};
   const zigZagUpperRight = {x: zigZag[zigZag.length - 1].x, y: zigZag[1].y};
@@ -136,7 +142,8 @@ function generateBaseParition(tableTop, tableBottom, zigZag) {
         right,
         points,
         subTable: tableTop,
-        isTop: true
+        isTop: true,
+        table
       })
     );
   }
@@ -155,7 +162,8 @@ function generateBaseParition(tableTop, tableBottom, zigZag) {
         right,
         points,
         subTable: tableBottom,
-        isTop: false
+        isTop: false,
+        table
       })
     );
   }
@@ -216,7 +224,7 @@ export default function() {
     // TODO: paper notes this must be at least 4 check in later
     const {tableTop, tableBottom} = getSplitTable(table);
     const zigZag = generateZigZag(table, tableTop, tableBottom, height);
-    const partitions = generateBaseParition(tableTop, tableBottom, zigZag);
+    const partitions = generateBaseParition(table, tableTop, tableBottom, zigZag);
     return partitions;
   }
 

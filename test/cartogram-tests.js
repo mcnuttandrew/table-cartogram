@@ -87,31 +87,6 @@ tape("tableCartogram helper functions", function(t) {
   t.end();
 });
 
-
-
-var EXPECTED_CARTOGRAM_EXAMPLE_TABLE = [
-  [
-    {value: 2, vertices: [{x: 0, y: 0}]},
-    {value: 3, vertices: [{x: 0, y: 0}]},
-    {value: 2, vertices: [{x: 0, y: 0}]},
-    {value: 4, vertices: [{x: 0, y: 0}]}
-  ], [
-    {value: 3, vertices: [{x: 0, y: 0}]},
-    {value: 9, vertices: [{x: 0, y: 0}]},
-    {value: 3, vertices: [{x: 0, y: 0}]},
-    {value: 7, vertices: [{x: 0, y: 0}]}
-  ], [
-    {value: 2, vertices: [{x: 0, y: 0}]},
-    {value: 3, vertices: [{x: 0, y: 0}]},
-    {value: 4, vertices: [{x: 0, y: 0}]},
-    {value: 9, vertices: [{x: 0, y: 0}]}
-  ], [
-    {value: 3, vertices: [{x: 0, y: 0}]},
-    {value: 2, vertices: [{x: 0, y: 0}]},
-    {value: 2, vertices: [{x: 0, y: 0}]},
-    {value: 3, vertices: [{x: 0, y: 0}]}]
-];
-
 function countCells(table) {
   return table.reduce((sum, row) => sum + row.length, 0);
 }
@@ -127,7 +102,7 @@ function sumArea(cartogram) {
 const fs = require('fs');
 
 tape("tableCartogram - size", function(t) {
-  [EXAMPLE_TABLE].forEach(testTable(t));
+  [EXAMPLE_TABLE, ZION_VISITORS].forEach(testTable(t, 0));
   t.end();
 });
 
@@ -143,24 +118,61 @@ function writeToFile(name, contents) {
   });
 }
 
-function testTable(t) {
-  return (table) => {
+function countInstancesOfValuesInTable(table) {
+  return table.reduce((acc, row) => {
+    row.forEach(cell => {
+      if (!acc[cell]) {
+        acc[cell] = 0;
+      }
+      acc[cell] += 1;
+    });
+    return acc;
+  }, {});
+}
+
+function countInstancesOfValuesInOutput(table) {
+  return table.reduce((acc, polygon) => {
+    if (!acc[polygon.value]) {
+      acc[polygon.value] = 0;
+    }
+    acc[polygon.value] += 1;
+    return acc;
+  }, {});
+}
+
+function testTable(t, saveIndex) {
+  return (table, index) => {
     var cartogram = tableCartogram();
     var mappedTable = cartogram(table);
-    writeToFile('../react-vis/showcase/misc/triangles.json', mappedTable);
-    t.deepEqual(mappedTable, EXPECTED_CARTOGRAM_EXAMPLE_TABLE, 'should find modified and updated table')
-
-    const numberOfCells = countCells(EXAMPLE_TABLE);
+    if (saveIndex === index) {
+      writeToFile('../react-vis/showcase/misc/triangles.json', mappedTable);
+    }
+    const numberOfCells = countCells(table);
     const foundNumberOfCells = mappedTable.length;
     t.equal(numberOfCells, foundNumberOfCells, 'should find the correct number of cells');
 
     t.ok(mappedTable.every(cell => area(cell.vertices) > 0), 'all cells should have a non trivial area');
-    // TODO ADD STRONGER TEST THAT CHECKS THE AREA OF EVERY CELL RELATIVE TO THE WHOLE
+
     // TODO GOTTA FIX UP THE WIDTH CONTROL
     const HEIGHT = 1;
+    const sumOfOriginalTable = sumCells(table);
+    const sumOfAreaInNewTable = sumArea(mappedTable);
     t.equal(
-      round(sumArea(mappedTable)),
-      round(sumCells(EXAMPLE_TABLE)) / 2 * HEIGHT,
+      round(sumOfAreaInNewTable),
+      round(sumOfOriginalTable) / 2 * HEIGHT,
     'should find the summed area to be correct');
+
+    // value correctness
+    const valuesInOriginalTable = countInstancesOfValuesInTable(table);
+    const valuesInNewTable = countInstancesOfValuesInOutput(mappedTable);
+    t.deepEqual(valuesInOriginalTable, valuesInNewTable, 'should find the correct values in the new table');
+
+    // area correctness
+    const allCellsHaveCorrectProportions = mappedTable.every(polygon => {
+      const proportionOfArea = area(polygon.vertices) / sumOfAreaInNewTable;
+      const proportionOfValue = polygon.value / sumOfOriginalTable;
+      return Math.abs(proportionOfArea - proportionOfValue) < Math.pow(10, -8);
+    });
+    t.ok(allCellsHaveCorrectProportions, 'should find that all cells have the correct relationship between value and area');
   }
 }
