@@ -124,15 +124,28 @@ function sumArea(cartogram) {
   return cartogram.reduce((sum, cell) => sum + area(cell.vertices), 0);
 }
 
+const fs = require('fs');
+
 tape("tableCartogram - size", function(t) {
   var cartogram = tableCartogram();
   var mappedTable = cartogram(EXAMPLE_TABLE);
+  fs.writeFile('../react-vis/showcase/misc/triangles.json', JSON.stringify(mappedTable), 'utf8', (err) => {
+    /* eslint-disable no-console */
+    if (err) {
+      console.log(err);
+    } else {
+      console.log('complete');
+    }
+    /* eslint-enable no-console */
+  });
   t.deepEqual(mappedTable, EXPECTED_CARTOGRAM_EXAMPLE_TABLE, 'should find modified and updated table')
 
   const numberOfCells = countCells(EXAMPLE_TABLE);
   const foundNumberOfCells = mappedTable.length;
   t.equal(numberOfCells, foundNumberOfCells, 'should find the correct number of cells');
 
+  t.ok(mappedTable.every(cell => area(cell.vertices) > 0), 'all cells should have a non trivial area');
+  // TODO ADD STRONGER TEST THAT CHECKS THE AREA OF EVERY CELL RELATIVE TO THE WHOLE
   // TODO GOTTA FIX UP THE WIDTH CONTROL
   const HEIGHT = 1;
   t.equal(sumArea(mappedTable), sumCells(EXAMPLE_TABLE) / 2 * HEIGHT, 'should find the summed area to be correct');

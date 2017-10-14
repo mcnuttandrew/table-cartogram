@@ -60,22 +60,17 @@ export function getSplitTable(table) {
   return {tableTop, tableBottom}
 }
 
-function getAreas(left, right, containingTriangle, table) {
+function getAreas(left, right, containingTriangle, table, row) {
   // using zeros here is wrong?
-  const beta = table[0][left] || 0;
-  const gamma = table[0][right] || 0;
-  const alpha = table.reduce((sum, row) => {
+  const beta = table[row][left] || 0;
+  const gamma = table[row][right] || 0;
+  const alpha = table.slice(row + 1).reduce((sum, row) => {
     return sum + (row[left] || 0) + (row[right] || 0)
   }, 0);
-  // gotsta scale
+
   const containingArea = area(containingTriangle);
   const triangleSum = alpha + beta + gamma;
 
-  // console.log({
-  //   alpha: alpha * containingArea / triangleSum,
-  //   beta: beta * containingArea / triangleSum,
-  //   gamma: gamma * containingArea / triangleSum
-  // })
   return {
     alpha: alpha * containingArea / triangleSum,
     beta: beta * containingArea / triangleSum,
@@ -83,48 +78,74 @@ function getAreas(left, right, containingTriangle, table) {
   };
 }
 
-// do we need to pad left?
+function deepCopyTable(table) {
+  return table;
+  // return table.reduce((acc, row) => {
+  //   return acc.concat(row.reduce((mem, cell) => {
+  //     return mem.concat(cell);
+  //   }, []));
+  // }, []);
+}
+
+function iterativelyGeneratePartitions(left, right, initialPoints, table, isTop) {
+  let points = initialPoints;
+  let row = isTop ? 0 : 1;
+  const partitions = []
+  const tableCopy = isTop ? deepCopyTable(table) : deepCopyTable(table);
+  while (row < table.length) {
+    // TODO I THINK THE REPEAT REVERSE THING IS SUSSSSSS
+    // TODO NEED TO TRY TO CARTOGRAM SOMETHING LARGER
+    const areas =  getAreas(left, right, points, tableCopy.reverse(), row);
+    const partionedArea = partitionTriangle(points, areas);
+    // console.log(partionedArea)
+    // maybe use a concat instead?
+    // now is the time to associate the value of the cells with the partitions
+    // not accurately mapping value to table value?
+    if (areas.beta) {
+      partitions.push({vertices: partionedArea.beta, value: table[row][left]});
+    }
+    if (areas.gamma) {
+      partitions.push({vertices: partionedArea.gamma, value: table[row][right]});
+    }
+    points = partionedArea.alpha;
+    row = row + 1;
+  }
+  return partitions;
+}
+
 function generateBaseParition(tableTop, tableBottom, zigZag) {
   const m = tableTop[0].length;
   const zigZagUpperLeft = {x: 0, y: zigZag[1].y};
   const zigZagUpperRight = {x: zigZag[zigZag.length - 1].x, y: zigZag[1].y};
-  // 0 and 1 are used in the proof bc the table is only mx2 we need to use 2j - 1 & 2j + 2
-  // paper says to do this at m but i am confused
-  const partitions = [];
+  // 0 and 1 are used in the proof bc the table is only mx2
+  let partitions = [];
   // top
   for (let j = 1; j <= Math.floor(m / 2 + 1); j++) {
+  // for (let j = Math.floor(m / 2 + 1); j >= 1; j--) {
     const left = (2 * j - 1) - 1;
     const right = (2 * j - 2) - 1;
 
-    const points = [
+    let points = [
       zigZag[2 * j - 2],
       zigZag[2 * j - 3] || zigZagUpperLeft,
       zigZag[2 * j - 1] || zigZagUpperRight
     ];
-    const partionedArea = partitionTriangle(points, getAreas(left, right, points, tableTop));
-    // console.log(partionedArea)
-    // maybe use a concat instead?
-    partitions.push({vertices: partionedArea.alpha});
-    // zeros are wrong here
-    partitions.push({vertices: partionedArea.beta, value: tableTop[0][left]});
-    partitions.push({vertices: partionedArea.gamma, value: tableTop[0][right]});
+    partitions = partitions.concat(
+      iterativelyGeneratePartitions(left, right, points, tableTop, true)
+    );
   }
   // bottom
   for (let l = 1; l <= Math.ceil(m / 2); l++) {
     const left = (2 * l) - 1;
     const right = (2 * l - 1) - 1;
-    const points = [
+    let points = [
       zigZag[2 * l - 1],
       zigZag[2 * l - 2] || zigZagUpperLeft,
       zigZag[2 * l] || zigZagUpperRight
     ];
-    const partionedArea = partitionTriangle(points, getAreas(left, right, points, tableTop));
-    // console.log(partionedArea)
-    // maybe use a concat instead?
-    // now is the time to associate the value of the cells with the partitions
-    partitions.push({vertices: partionedArea.alpha});
-    partitions.push({vertices: partionedArea.beta, value: tableBottom[0][left]});
-    partitions.push({vertices: partionedArea.gamma, value: tableBottom[0][right]});
+    partitions = partitions.concat(
+      iterativelyGeneratePartitions(left, right, points, tableBottom, false)
+    );
   }
 
   return partitions;
@@ -133,7 +154,7 @@ function generateBaseParition(tableTop, tableBottom, zigZag) {
 
 export function generateZigZag(table, tableTop, tableBottom, height) {
   const m = tableTop[0].length;
-  // if this is right it can probably be broken out into it's own thing
+  // build column sums
   const Dt = [];
   const columnSumTop = columnSum(tableTop);
   for (let j = 1; j < Math.floor(m / 2 + 1); j++) {
