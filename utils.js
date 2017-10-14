@@ -65,21 +65,18 @@ export function partitionTriangle(points, {alpha, beta, gamma}) {
   const [pointA, pointB, pointC] = points;
   const alphas = getConsts(pointB, pointC, alpha);
   const gammas = getConsts(pointA, pointB, gamma);
-  const totalArea = alpha + beta + gamma;
+  const knowArea = alpha + beta + gamma;
 
   // const det = 1 / (gammas.A * alphas.B - alphas.A * alphas.A)
   const det = 1 / (gammas.A * alphas.B - gammas.B * alphas.A)
-
-  return [
+  // need to check all of the Plus Minus combos, bc of abs value
+  const result = [
     {gammaC: gammas.C, alphaC: alphas.C},
     {gammaC: gammas.Cm, alphaC: alphas.C},
     {gammaC: gammas.C, alphaC: alphas.Cm},
     {gammaC: gammas.Cm, alphaC: alphas.Cm}
   ].reduce((solution, combo) => {
     const {gammaC, alphaC} = combo;
-    if (solution) {
-      return solution;
-    }
     const partition = {
       x: det * (alphas.A * gammaC - gammas.A * alphaC),
       y: det * (alphas.B * gammaC - gammas.B * alphaC)
@@ -90,20 +87,19 @@ export function partitionTriangle(points, {alpha, beta, gamma}) {
       beta: [pointA, pointC, partition],
       gamma: [pointA, partition, pointB]
     };
-    // console.log(trialSolution)
-    // console.log('proposed areas', {alpha, beta, gamma})
-    // console.log('found areas', area(trialSolution.alpha), area(trialSolution.beta), area(trialSolution.gamma))
-    const localSum = area(trialSolution.alpha) + area(trialSolution.beta) + area(trialSolution.gamma);
-    // console.log(localSum, totalArea)
-    return (round(localSum) === round(totalArea)) ? trialSolution : solution
-  }, false);
 
-  //
-  // return {
-  //   alpha: [partition, pointB, pointC],
-  //   beta: [pointA, pointC, partition],
-  //   gamma: [pointA, partition, pointB]
-  // };
+    const solutionArea = area(trialSolution.alpha) + area(trialSolution.beta) + area(trialSolution.gamma);
+    // // console.log(solutionArea, totalArea)
+    // const roundedLocal = round(solutionArea, Math.pow(10, 9));
+    // const roundedtotalArea = round(solutionArea, Math.pow(10, 9));
+    const solutionScore = Math.abs(solutionArea - knowArea);
+    return {
+      score: solutionScore < solution.score ? solutionScore : solution.score,
+      solution: solutionScore < solution.score ? trialSolution : solution.solution
+    }
+  }, {score: Infinity, solution: false});
+
+  return result.solution;
 }
 
 /** Round a value
@@ -126,4 +122,15 @@ export function generatePolygon(numberOfSides, radius, offset) {
     const angle = Math.PI * 2 * index / numberOfSides;
     return {x: radius * Math.cos(angle) + offset.x, y: radius * Math.sin(angle) + offset.y};
   });
+}
+
+/** Compute geometric center of a polygon
+ * @param {array} points - list of points in polygon, present as {x, y}
+ * @returns {object} center point of polygon
+ */
+export function geoCenter(points) {
+  const sum = points.reduce((center, row) => {
+    return {x: center.x + row.x, y: center.y + row.y};
+  }, {x: 0, y: 0});
+  return {x: sum.x / points.length, y: sum.y / points.length};
 }

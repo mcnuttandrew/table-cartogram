@@ -53,7 +53,7 @@ export function getSplitTable(table) {
   const tableBottom = [];
   const topRow = table[splitPoint].map(val => (1 - lambda) * val);
   tableBottom.push(topRow);
-  // this seems wrong
+  // these loop bounds seems wrong
   for (let i = (splitPoint + 1); i < table.length; i++) {
     tableBottom.push(table[i]);
   }
@@ -61,7 +61,7 @@ export function getSplitTable(table) {
 }
 
 function getAreas(left, right, containingTriangle, table, row) {
-  // using zeros here is wrong?
+  // would it be more elegant to destroy the table as we walk down it?
   const beta = table[row][left] || 0;
   const gamma = table[row][right] || 0;
   const alpha = table.slice(row + 1).reduce((sum, row) => {
@@ -79,35 +79,35 @@ function getAreas(left, right, containingTriangle, table, row) {
 }
 
 function deepCopyTable(table) {
-  return table;
-  // return table.reduce((acc, row) => {
-  //   return acc.concat(row.reduce((mem, cell) => {
-  //     return mem.concat(cell);
-  //   }, []));
-  // }, []);
+  return table.reduce((acc, row) => acc.concat([row.slice(0)]), []);
 }
 
-function iterativelyGeneratePartitions(left, right, initialPoints, table, isTop) {
-  let points = initialPoints;
+function iterativelyGeneratePartitions(args) {
+  const {left, right, points: initialPoints, subTable, isTop} = args;
+
+  let currentPoints = initialPoints;
   let row = isTop ? 0 : 1;
   const partitions = []
-  const tableCopy = isTop ? deepCopyTable(table) : deepCopyTable(table);
-  while (row < table.length) {
-    // TODO I THINK THE REPEAT REVERSE THING IS SUSSSSSS
-    // TODO NEED TO TRY TO CARTOGRAM SOMETHING LARGER
-    const areas =  getAreas(left, right, points, tableCopy.reverse(), row);
-    const partionedArea = partitionTriangle(points, areas);
+  const tableCopy =  deepCopyTable(subTable);
+  if (isTop) {
+    tableCopy.reverse();
+  }
+
+  while (row < tableCopy.length) {
+    console.log(row, isTop, tableCopy.length, currentPoints)
+    const areas = getAreas(left, right, currentPoints, tableCopy, row);
+    const partionedArea = partitionTriangle(currentPoints, areas);
     // console.log(partionedArea)
     // maybe use a concat instead?
     // now is the time to associate the value of the cells with the partitions
     // not accurately mapping value to table value?
     if (areas.beta) {
-      partitions.push({vertices: partionedArea.beta, value: table[row][left]});
+      partitions.push({vertices: partionedArea.beta, value: subTable[row][left]});
     }
     if (areas.gamma) {
-      partitions.push({vertices: partionedArea.gamma, value: table[row][right]});
+      partitions.push({vertices: partionedArea.gamma, value: subTable[row][right]});
     }
-    points = partionedArea.alpha;
+    currentPoints = partionedArea.alpha;
     row = row + 1;
   }
   return partitions;
@@ -131,7 +131,13 @@ function generateBaseParition(tableTop, tableBottom, zigZag) {
       zigZag[2 * j - 1] || zigZagUpperRight
     ];
     partitions = partitions.concat(
-      iterativelyGeneratePartitions(left, right, points, tableTop, true)
+      iterativelyGeneratePartitions({
+        left,
+        right,
+        points,
+        subTable: tableTop,
+        isTop: true
+      })
     );
   }
   // bottom
@@ -144,7 +150,13 @@ function generateBaseParition(tableTop, tableBottom, zigZag) {
       zigZag[2 * l] || zigZagUpperRight
     ];
     partitions = partitions.concat(
-      iterativelyGeneratePartitions(left, right, points, tableBottom, false)
+      iterativelyGeneratePartitions({
+        left,
+        right,
+        points,
+        subTable: tableBottom,
+        isTop: false
+      })
     );
   }
 
@@ -169,7 +181,7 @@ export function generateZigZag(table, tableTop, tableBottom, height) {
   const zigZag = [{x: 0, y: 0}];
   const summedDt = Dt.reduce((row, val) => row.concat((row[row.length - 1] || 0) + val), []);
   const summedDb = Db.reduce((row, val) => row.concat((row[row.length - 1] || 0) + val), []);
-
+  // remember, reverse is mutatation
   summedDt.reverse();
   summedDb.reverse();
   while (summedDt.length || summedDb.length) {
