@@ -7,18 +7,18 @@ import {
 
 function columnSum(table) {
   const numberOfColumns = table[0].length;
-  return table.reduce((sumRow, row) =>{
+  return table.reduce((sumRow, row) => {
     return row.map((cell, index) => sumRow[index] + cell);
   }, new Array(numberOfColumns).fill(0));
 }
 
 function getSumOfAllValues(table) {
-  const summedRows = table.map(row => row.reduce((sum, cell) => sum + cell, 0))
+  const summedRows = table.map(row => row.reduce((sum, cell) => sum + cell, 0));
   return summedRows.reduce((acc, rowVal) => acc + rowVal, 0);
 }
 
 export function getSplitPoint(table) {
-  const summedRows = table.map(row => row.reduce((sum, cell) => sum + cell, 0))
+  const summedRows = table.map(row => row.reduce((sum, cell) => sum + cell, 0));
   const sumOfAllValues = getSumOfAllValues(table);
 
   let k = 0;
@@ -59,15 +59,15 @@ export function getSplitTable(table) {
   for (let i = (splitPoint + 1); i < table.length; i++) {
     tableBottom.push(table[i]);
   }
-  return {tableTop, tableBottom}
+  return {tableTop, tableBottom};
 }
 
 function getAreas(left, right, containingPolygon, table, row) {
   // would it be more elegant to destroy the table as we walk down it?
   const beta = table[row][left] || 0;
   const gamma = table[row][right] || 0;
-  const alpha = table.slice(row + 1).reduce((sum, row) => {
-    return sum + (row[left] || 0) + (row[right] || 0)
+  const alpha = table.slice(row + 1).reduce((sum, trow) => {
+    return sum + (trow[left] || 0) + (trow[right] || 0);
   }, 0);
 
   const containingArea = area(containingPolygon);
@@ -91,11 +91,11 @@ function iterativelyGeneratePartitions(args) {
   const tableAccessor = (row, column) => {
     return isTop ?
       table[(subTable.length - 1) - row][column] :
-      table[((table.length - 1) - (subTable.length - 1)) + row][column]
-  }
-  const partitions = []
+      table[((table.length - 1) - (subTable.length - 1)) + row][column];
+  };
+  const partitions = [];
   let currentPoints = points;
-  const tableCopy =  deepCopyTable(subTable);
+  const tableCopy = deepCopyTable(subTable);
   // if we are above the zig zag, we need to build in the opposite order
   if (isTop) {
     tableCopy.reverse();
@@ -133,7 +133,7 @@ function generateBaseParition(table, tableTop, tableBottom, zigZag) {
     const left = (2 * j - 1) - 1;
     const right = (2 * j - 2) - 1;
 
-    let points = [
+    const points = [
       zigZag[2 * j - 2],
       zigZag[2 * j - 3] || zigZagUpperLeft,
       zigZag[2 * j - 1] || zigZagUpperRight
@@ -153,7 +153,7 @@ function generateBaseParition(table, tableTop, tableBottom, zigZag) {
   for (let l = 1; l <= Math.ceil(m / 2); l++) {
     const left = (2 * l) - 1;
     const right = (2 * l - 1) - 1;
-    let points = [
+    const points = [
       zigZag[2 * l - 1],
       zigZag[2 * l - 2] || zigZagUpperLeft,
       zigZag[2 * l] || zigZagUpperRight
@@ -222,7 +222,7 @@ function generateFPolygons(table, zigZag, zigZagPrime) {
     {x: 0, y: height},
     zigZag[1],
     zigZagPrime[1],
-    zigZagPrime[0],
+    zigZagPrime[0]
   ]}];
   // the loop bounds account for degenerate polygons on the left and right
   for (let i = 1; i < (zigZag.length - 1); i++) {
@@ -239,14 +239,14 @@ function generateFPolygons(table, zigZag, zigZagPrime) {
         zigZagPrime[i - 1],
         zigZag[i - 1]
       ]
-    })
+    });
   }
   // add in right-most "degenerate 5-gon", a 4-gon
   fPolygons.push({vertices: [
     {x: sumOfAllValues / 2, y: (zigZag.length % 2) ? height : 0},
     zigZag[zigZag.length - 2],
     zigZagPrime[zigZagPrime.length - 2],
-    zigZagPrime[zigZagPrime.length - 1],
+    zigZagPrime[zigZagPrime.length - 1]
   ]});
 
   // i think i also need to convexify this? whatever that means
@@ -261,21 +261,14 @@ function getPolygonOutline(vertices, index, maxLen) {
       focalPoint: vertices[2],
       rightA: vertices[0],
       rightB: vertices[1]
-    }
+    };
   }
   const isLeftEdge = !index;
-  // const leftA = !isEdgePiece ? currentPoints[4] : {y: currentPoints[1].y, x: -currentPoints[1].x};
-  // const leftB = !isEdgePiece ? currentPoints[3] : {y: currentPoints[2].y, x: -currentPoints[2].x};
-  // const rightA = !isEdgePiece ? currentPoints[0] : currentPoints[1];
-  // const rightB = !isEdgePiece ? currentPoints[1] : currentPoints[2];
-  // const focalPoint = !isEdgePiece ? currentPoints[2] : currentPoints[3]
 
-  const virtualLeftA = {x: -vertices[1].x, y: vertices[1].y,};
-  const virtualLeftB = {x: -vertices[2].x, y: vertices[2].y,};
+  const virtualLeftA = {x: -vertices[1].x, y: vertices[1].y};
+  const virtualLeftB = {x: -vertices[2].x, y: vertices[2].y};
 
   const farthestX = vertices[0].x;
-  // const virtualRightA = {x: 2 * farthestX - vertices[1].x, y: vertices[1].y};
-  // const virtualRightB = {x: 2 * farthestX - vertices[2].x, y: vertices[2].y};
   const virtualRightA = {x: 2 * farthestX - vertices[1].x, y: vertices[1].y};
   const virtualRightB = {x: 2 * farthestX - vertices[2].x, y: vertices[2].y};
 
@@ -285,27 +278,17 @@ function getPolygonOutline(vertices, index, maxLen) {
     focalPoint: vertices[3],
     rightA: isLeftEdge ? vertices[1] : virtualRightA,
     rightB: isLeftEdge ? vertices[2] : virtualRightB
-  }
+  };
 }
 
 function computeSubDivisionsOfPolygons(table, tableTop, tableBottom, fPolygons) {
   return fPolygons.reduce((acc, polygon, index) => {
-    // if (!index || index === fPolygons.length - 1) {
-    // if (index === fPolygons.length - 1) {
-    //   return acc;//.concat(polygon);
-    // }
     const isTop = index % 2;
-    // const isEdgePiece = !index || index === fPolygons.length - 1;
     const subTable = isTop ? tableTop : tableBottom;
-    const tableCopy =  deepCopyTable(subTable);
+    const tableCopy = deepCopyTable(subTable);
     const numberOfPoints = subTable.length;
     let currentPoints = polygon.vertices;
-    // zigZag[i + 1],
-    // zigZagPrime[i + 1],
-    // zigZagPrime[i],
-    // zigZagPrime[i - 1],
-    // zigZag[i - 1]
-    // this edge stuff is wrong
+
     const {
       leftA,
       leftB,
@@ -313,28 +296,27 @@ function computeSubDivisionsOfPolygons(table, tableTop, tableBottom, fPolygons) 
       rightB,
       rightA
     } = getPolygonOutline(polygon.vertices, index, fPolygons.length - 1);
-    // const leftA = !isEdgePiece ? currentPoints[4] : {y: currentPoints[1].y, x: -currentPoints[1].x};
-    // const leftB = !isEdgePiece ? currentPoints[3] : {y: currentPoints[2].y, x: -currentPoints[2].x};
-    // const rightA = !isEdgePiece ? currentPoints[0] : currentPoints[1];
-    // const rightB = !isEdgePiece ? currentPoints[1] : currentPoints[2];
-    // const focalPoint = !isEdgePiece ? currentPoints[2] : currentPoints[3]
-    const leftPoints = findEquidistantPoints(leftB, leftA, numberOfPoints);
-    const rightPoints = findEquidistantPoints(rightB, rightA, numberOfPoints);
-    currentPoints = [leftA, leftB, focalPoint, rightB, rightA];
 
+    const leftPoints = findEquidistantPoints(leftB, leftA, Math.max(numberOfPoints, 2));
+    const rightPoints = findEquidistantPoints(rightB, rightA, Math.max(numberOfPoints, 2));
+    currentPoints = [leftA, leftB, focalPoint, rightB, rightA];
 
     const newPolygons = [];
 
-    // might need ot adjust
-    // const lrIndex = isTop ? Math.floor(index / 2) + 1 : Math.ceil(index / 2);
-    // const left = isTop ? (2 * lrIndex - 1) - 1 : (2 * lrIndex) - 1;
-    // const right = isTop ? (2 * lrIndex - 2) - 1 : (2 * lrIndex - 1) - 1;
     // ternarys denote edge casing
     const isLeftEdge = !index;
     const isRightEdge = index >= (fPolygons.length - 1);
     const left = isLeftEdge ? (index + 1) : isRightEdge ? index - 1 : index;
-    const right = isRightEdge ? index - 1: index + 1;
+    const right = isRightEdge ? index - 1 : index + 1;
+    console.log(index)
+    // edge case
+    if ((isTop ? 0 : 1) > tableCopy.length) {
+      return acc;
+    }
+    console.log((isTop ? 0 : 1), tableCopy.length)
+
     for (let j = (isTop ? 0 : 1); j < numberOfPoints; j++) {
+      // console.log(j, numberOfPoints, tableCopy)
       const areas = getAreas(left, right, currentPoints, tableCopy, j);
       const interpoints = [leftPoints[j], rightPoints[j]];
       const subPolygons = partitionQuadrangle(currentPoints, interpoints, areas);
@@ -351,10 +333,9 @@ function computeSubDivisionsOfPolygons(table, tableTop, tableBottom, fPolygons) 
 }
 
 export default function() {
-  var height = 1;
-  var width = 1;
-  var mode = 'triangle';
-
+  let height = 1;
+  let width = 1;
+  let mode = 'quad';
 
   function tableCartogram(table) {
     // begin by determining the split point for the table
@@ -365,8 +346,7 @@ export default function() {
     const {tableTop, tableBottom} = getSplitTable(table);
     const zigZag = generateZigZag(table, tableTop, tableBottom, height);
     if (mode === 'triangle') {
-      const partitions = generateBaseParition(table, tableTop, tableBottom, zigZag);
-      return partitions;
+      return generateBaseParition(table, tableTop, tableBottom, zigZag);
     }
     // quad mode
     const zigZagPrime = generateZigZagPrime(table, zigZag);
@@ -374,12 +354,13 @@ export default function() {
     return computeSubDivisionsOfPolygons(table, tableTop, tableBottom, fPolygons);
   }
 
-  tableCartogram.size = function(x) {
+  tableCartogram.size = function sizeFunction(x) {
     // stolen from d3, so check in on that
     return arguments.length ? (width = +x[0], height = +x[1], tableCartogram) : [width, height];
   };
 
-  tableCartogram.mode = function(x) {
+  // TODO ADD TESTS ABOUT MODE
+  tableCartogram.mode = function modeFunction(x) {
     return arguments.length ? (mode = x, tableCartogram) : mode;
   };
 

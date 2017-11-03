@@ -71,7 +71,8 @@ export function partitionTriangle(points, {alpha, beta, gamma}) {
   const gammas = getConsts(pointA, pointB, gamma);
   const knownArea = alpha + beta + gamma;
 
-  const det = 1 / (gammas.A * alphas.B - gammas.B * alphas.A)
+  let det = 1 / (gammas.A * alphas.B - gammas.B * alphas.A);
+  det = !isFinite(det) ? 0 : det;
   // need to check all of the Plus Minus combos, bc of abs value
   const result = [
     {gammaC: gammas.C, alphaC: alphas.C},
@@ -96,7 +97,7 @@ export function partitionTriangle(points, {alpha, beta, gamma}) {
     return {
       score: solutionScore < solution.score ? solutionScore : solution.score,
       solution: solutionScore < solution.score ? trialSolution : solution.solution
-    }
+    };
   }, {score: Infinity, solution: false});
 
   return result.solution;
@@ -158,7 +159,7 @@ export function partitionQuadrangle(points, intersectionPoints, {alpha, beta, ga
     // [pointC, gammaRight, betaLeft],
     {alpha: innerAlpha, beta: innerBeta, gamma: innerGamma}
   );
-  // console.log({alpha: innerAlpha, beta: innerBeta, gamma: innerGamma})
+  console.log(triangleSoln)
   const partition = triangleSoln.alpha[0];
   return {
     alpha: [pointA, betaLeft, partition, gammaRight, pointE],
