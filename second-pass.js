@@ -353,6 +353,8 @@ function computeSubDivisionsOfPolygons(table, tableTop, tableBottom, fPolygons) 
 export default function() {
   var height = 1;
   var width = 1;
+  var mode = 'triangle';
+
 
   function tableCartogram(table) {
     // begin by determining the split point for the table
@@ -362,9 +364,12 @@ export default function() {
     // TODO: paper notes this must be at least 4 check in later
     const {tableTop, tableBottom} = getSplitTable(table);
     const zigZag = generateZigZag(table, tableTop, tableBottom, height);
+    if (mode === 'triangle') {
+      const partitions = generateBaseParition(table, tableTop, tableBottom, zigZag);
+      return partitions;
+    }
+    // quad mode
     const zigZagPrime = generateZigZagPrime(table, zigZag);
-    // const partitions = generateBaseParition(table, tableTop, tableBottom, zigZag);
-    // return partitions
     const fPolygons = generateFPolygons(table, zigZag, zigZagPrime);
     return computeSubDivisionsOfPolygons(table, tableTop, tableBottom, fPolygons);
   }
@@ -372,6 +377,10 @@ export default function() {
   tableCartogram.size = function(x) {
     // stolen from d3, so check in on that
     return arguments.length ? (width = +x[0], height = +x[1], tableCartogram) : [width, height];
+  };
+
+  tableCartogram.mode = function(x) {
+    return arguments.length ? (mode = x, tableCartogram) : mode;
   };
 
   // TODO padding?

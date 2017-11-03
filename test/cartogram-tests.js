@@ -28,16 +28,17 @@ var EXAMPLE_TABLE = [
 ];
 
 var EXAMPLE_TABLE_2 = [
-  [1, 1],
-  [1, 1]
+  [1, 1, 1],
+  [1, 1, 1],
+  [1, 1, 1]
 ];
 
-// const BLACK_AND_WHITE_TABLE = [
-//   [4.5, 4.5, 16, 2.5],
-//   [4, 3, 4.5, 3],
-//   [2.5, 6, 4.5, 10.5],
-//   [7, 9, 9, 6]
-// ];
+const BLACK_AND_WHITE_TABLE = [
+  [4.5, 4.5, 16, 2.5],
+  [4, 3, 4.5, 3],
+  [2.5, 6, 4.5, 10.5],
+  [7, 9, 9, 6]
+];
 
 tape("tableCartogram ", function(t) {
   t.equal(typeof tableCartogram, 'function', 'should correctly find a function');
@@ -107,9 +108,10 @@ function sumArea(cartogram) {
 
 tape.only("tableCartogram - size", function(t) {
   [
-    EXAMPLE_TABLE,
+    // BLACK_AND_WHITE_TABLE
+    // EXAMPLE_TABLE,
     // ZION_VISITORS,
-    // EXAMPLE_TABLE_2
+    EXAMPLE_TABLE_2
   ].forEach(testTable(t, 0));
   t.end();
 });
