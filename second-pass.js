@@ -253,15 +253,49 @@ function generateFPolygons(table, zigZag, zigZagPrime) {
   return fPolygons;
 }
 
+function getPolygonOutline(vertices, index, maxLen) {
+  if (index && (index < maxLen)) {
+    return {
+      leftA: vertices[4],
+      leftB: vertices[3],
+      focalPoint: vertices[2],
+      rightA: vertices[0],
+      rightB: vertices[1]
+    }
+  }
+  const isLeftEdge = !index;
+  // const leftA = !isEdgePiece ? currentPoints[4] : {y: currentPoints[1].y, x: -currentPoints[1].x};
+  // const leftB = !isEdgePiece ? currentPoints[3] : {y: currentPoints[2].y, x: -currentPoints[2].x};
+  // const rightA = !isEdgePiece ? currentPoints[0] : currentPoints[1];
+  // const rightB = !isEdgePiece ? currentPoints[1] : currentPoints[2];
+  // const focalPoint = !isEdgePiece ? currentPoints[2] : currentPoints[3]
+
+  const virtualLeftA = {x: -vertices[1].x, y: vertices[1].y,};
+  const virtualLeftB = {x: -vertices[2].x, y: vertices[2].y,};
+
+  const farthestX = vertices[0].x;
+  // const virtualRightA = {x: 2 * farthestX - vertices[1].x, y: vertices[1].y};
+  // const virtualRightB = {x: 2 * farthestX - vertices[2].x, y: vertices[2].y};
+  const virtualRightA = {x: 2 * farthestX - vertices[1].x, y: vertices[1].y};
+  const virtualRightB = {x: 2 * farthestX - vertices[2].x, y: vertices[2].y};
+
+  return {
+    leftA: isLeftEdge ? virtualLeftA : vertices[1],
+    leftB: isLeftEdge ? virtualLeftB : vertices[2],
+    focalPoint: vertices[3],
+    rightA: isLeftEdge ? vertices[1] : virtualRightA,
+    rightB: isLeftEdge ? vertices[2] : virtualRightB
+  }
+}
+
 function computeSubDivisionsOfPolygons(table, tableTop, tableBottom, fPolygons) {
   return fPolygons.reduce((acc, polygon, index) => {
-    // TODO handle edges
     // if (!index || index === fPolygons.length - 1) {
-    if (index === fPolygons.length - 1) {
-      return acc;//.concat(polygon);
-    }
+    // if (index === fPolygons.length - 1) {
+    //   return acc;//.concat(polygon);
+    // }
     const isTop = index % 2;
-    const isEdgePiece = !index || index === fPolygons.length - 1;
+    // const isEdgePiece = !index || index === fPolygons.length - 1;
     const subTable = isTop ? tableTop : tableBottom;
     const tableCopy =  deepCopyTable(subTable);
     const numberOfPoints = subTable.length;
@@ -272,11 +306,18 @@ function computeSubDivisionsOfPolygons(table, tableTop, tableBottom, fPolygons) 
     // zigZagPrime[i - 1],
     // zigZag[i - 1]
     // this edge stuff is wrong
-    const leftA = !isEdgePiece ? currentPoints[4] : currentPoints[0];
-    const leftB = !isEdgePiece ? currentPoints[3] : currentPoints[3];
-    const rightA = !isEdgePiece ? currentPoints[0] : currentPoints[1];
-    const rightB = !isEdgePiece ? currentPoints[1] : currentPoints[2];
-    const focalPoint = !isEdgePiece ? currentPoints[2] : currentPoints[3]
+    const {
+      leftA,
+      leftB,
+      focalPoint,
+      rightB,
+      rightA
+    } = getPolygonOutline(polygon.vertices, index, fPolygons.length - 1);
+    // const leftA = !isEdgePiece ? currentPoints[4] : {y: currentPoints[1].y, x: -currentPoints[1].x};
+    // const leftB = !isEdgePiece ? currentPoints[3] : {y: currentPoints[2].y, x: -currentPoints[2].x};
+    // const rightA = !isEdgePiece ? currentPoints[0] : currentPoints[1];
+    // const rightB = !isEdgePiece ? currentPoints[1] : currentPoints[2];
+    // const focalPoint = !isEdgePiece ? currentPoints[2] : currentPoints[3]
     const leftPoints = findEquidistantPoints(leftB, leftA, numberOfPoints);
     const rightPoints = findEquidistantPoints(rightB, rightA, numberOfPoints);
     currentPoints = [leftA, leftB, focalPoint, rightB, rightA];
@@ -288,21 +329,21 @@ function computeSubDivisionsOfPolygons(table, tableTop, tableBottom, fPolygons) 
     // const lrIndex = isTop ? Math.floor(index / 2) + 1 : Math.ceil(index / 2);
     // const left = isTop ? (2 * lrIndex - 1) - 1 : (2 * lrIndex) - 1;
     // const right = isTop ? (2 * lrIndex - 2) - 1 : (2 * lrIndex - 1) - 1;
-    const left = index;
-    const right = index + 1;
-
-    for (let j = 0; j < numberOfPoints; j++) {
-      // add handling for edges
+    // ternarys denote edge casing
+    const isLeftEdge = !index;
+    const isRightEdge = index >= (fPolygons.length - 1);
+    const left = isLeftEdge ? (index + 1) : isRightEdge ? index - 1 : index;
+    const right = isRightEdge ? index - 1: index + 1;
+    for (let j = (isTop ? 0 : 1); j < numberOfPoints; j++) {
       const areas = getAreas(left, right, currentPoints, tableCopy, j);
       const interpoints = [leftPoints[j], rightPoints[j]];
       const subPolygons = partitionQuadrangle(currentPoints, interpoints, areas);
-      if (subPolygons.beta) {
+      if (!isLeftEdge && subPolygons.beta) {
         newPolygons.push({value: 0, vertices: subPolygons.beta});
       }
-      if (subPolygons.gamma) {
+      if (!isRightEdge && subPolygons.gamma) {
         newPolygons.push({value: 0, vertices: subPolygons.gamma});
       }
-      // console.log(subPolygons.beta.length, subPolygons.gamma.length)
       currentPoints = subPolygons.alpha;
     }
     return acc.concat(newPolygons);

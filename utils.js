@@ -133,12 +133,6 @@ function getConst(pp, area, print) {
     C: right.y - left.y
   };
 }
-// bad practice
-var inside = require('point-in-polygon')
-function checkIfInside(polygon, point) {
-  const cleanPolygon = polygon.map(polyPoin => [polyPoin.x, polyPoin.y]);
-  return inside([point.x, point.y], cleanPolygon);
-}
 
 /** Parition a quadrangle into 3 unequally weight sections
  * @param {array} points - points {x, y} defining edge of quadrangle
@@ -164,7 +158,7 @@ export function partitionQuadrangle(points, intersectionPoints, {alpha, beta, ga
     // [pointC, gammaRight, betaLeft],
     {alpha: innerAlpha, beta: innerBeta, gamma: innerGamma}
   );
-  console.log({alpha: innerAlpha, beta: innerBeta, gamma: innerGamma})
+  // console.log({alpha: innerAlpha, beta: innerBeta, gamma: innerGamma})
   const partition = triangleSoln.alpha[0];
   return {
     alpha: [pointA, betaLeft, partition, gammaRight, pointE],
