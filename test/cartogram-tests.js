@@ -27,6 +27,11 @@ var EXAMPLE_TABLE = [
   [3, 2, 2, 3]
 ];
 
+var EXAMPLE_TABLE_2 = [
+  [1, 1],
+  [1, 1]
+];
+
 // const BLACK_AND_WHITE_TABLE = [
 //   [4.5, 4.5, 16, 2.5],
 //   [4, 3, 4.5, 3],
@@ -99,13 +104,17 @@ function sumArea(cartogram) {
   return cartogram.reduce((sum, cell) => sum + area(cell.vertices), 0);
 }
 
-const fs = require('fs');
 
-tape("tableCartogram - size", function(t) {
-  [EXAMPLE_TABLE, ZION_VISITORS].forEach(testTable(t, 0));
+tape.only("tableCartogram - size", function(t) {
+  [
+    EXAMPLE_TABLE,
+    // ZION_VISITORS,
+    // EXAMPLE_TABLE_2
+  ].forEach(testTable(t, 0));
   t.end();
 });
 
+const fs = require('fs');
 function writeToFile(name, contents) {
   fs.writeFile(name, JSON.stringify(contents), 'utf8', (err) => {
     /* eslint-disable no-console */

@@ -129,9 +129,7 @@ export default function() {
     const lowerSplit = [table[splitPoint].map(cell => cell * (1 - lambda))]
       .concat([...new Array(table.length - (splitPoint + 1))].map((e, i) => table[i + splitPoint + 1]));
     const columnSums = generateDtDb(table, splitPoint, lambda, height);
-    console.log('columnSums', columnSums)
     const zigZag = generateZigZag(columnSums.Db, columnSums.Dt, table, sumOfAllValues, height);
-    console.log(zigZag)
     // we now modify the zigzag to create an inner line, zprime in paper, zigZagPrime here
     // this process involves selecting a "convexifyValue", known as v, in the paper
     // that is subserviant to conditions B1 and B2, here we just use B2 bc its stronger
@@ -140,8 +138,7 @@ export default function() {
     // we use this union to form the consitutant polygons
 
     // regenerate
-    const {Db, Dt} = generateDtDb(table, splitPoint, lambda, height);
-    // console.log(Db, Dt)
+    // const {Db, Dt} = generateDtDb(table, splitPoint, lambda, height);
     // add in left-most "degenerate 5-gon", a 4-gon
     const fPolygons = [{vertices: [
       {x: 0, y: height},

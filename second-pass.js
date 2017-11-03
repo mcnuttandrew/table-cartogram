@@ -1,6 +1,8 @@
 import {
   partitionTriangle,
-  area
+  partitionQuadrangle,
+  area,
+  findEquidistantPoints
 } from './utils';
 
 function columnSum(table) {
@@ -169,7 +171,6 @@ function generateBaseParition(table, tableTop, tableBottom, zigZag) {
   }
 
   return partitions;
-
 }
 
 export function generateZigZag(table, tableTop, tableBottom, height) {
@@ -212,6 +213,102 @@ export function generateZigZagPrime(table, zigZag) {
   return zigZag.map(({x, y}, index) => ({x, y: y + (index % 2 ? -1 : 1) * convexifyValue}));
 }
 
+function generateFPolygons(table, zigZag, zigZagPrime) {
+  const sumOfAllValues = getSumOfAllValues(table);
+  // TODO FIX
+  const height = 1;
+
+  const fPolygons = [{vertices: [
+    {x: 0, y: height},
+    zigZag[1],
+    zigZagPrime[1],
+    zigZagPrime[0],
+  ]}];
+  // the loop bounds account for degenerate polygons on the left and right
+  for (let i = 1; i < (zigZag.length - 1); i++) {
+    fPolygons.push({
+      vertices: [
+        // zigZag[i - 1],
+        // zigZag[i + 1],
+        // zigZagPrime[i + 1],
+        // zigZagPrime[i],
+        // zigZagPrime[i - 1]
+        zigZag[i + 1],
+        zigZagPrime[i + 1],
+        zigZagPrime[i],
+        zigZagPrime[i - 1],
+        zigZag[i - 1]
+      ]
+    })
+  }
+  // add in right-most "degenerate 5-gon", a 4-gon
+  fPolygons.push({vertices: [
+    {x: sumOfAllValues / 2, y: (zigZag.length % 2) ? height : 0},
+    zigZag[zigZag.length - 2],
+    zigZagPrime[zigZagPrime.length - 2],
+    zigZagPrime[zigZagPrime.length - 1],
+  ]});
+
+  // i think i also need to convexify this? whatever that means
+  return fPolygons;
+}
+
+function computeSubDivisionsOfPolygons(table, tableTop, tableBottom, fPolygons) {
+  return fPolygons.reduce((acc, polygon, index) => {
+    // TODO handle edges
+    // if (!index || index === fPolygons.length - 1) {
+    if (index === fPolygons.length - 1) {
+      return acc;//.concat(polygon);
+    }
+    const isTop = index % 2;
+    const isEdgePiece = !index || index === fPolygons.length - 1;
+    const subTable = isTop ? tableTop : tableBottom;
+    const tableCopy =  deepCopyTable(subTable);
+    const numberOfPoints = subTable.length;
+    let currentPoints = polygon.vertices;
+    // zigZag[i + 1],
+    // zigZagPrime[i + 1],
+    // zigZagPrime[i],
+    // zigZagPrime[i - 1],
+    // zigZag[i - 1]
+    // this edge stuff is wrong
+    const leftA = !isEdgePiece ? currentPoints[4] : currentPoints[0];
+    const leftB = !isEdgePiece ? currentPoints[3] : currentPoints[3];
+    const rightA = !isEdgePiece ? currentPoints[0] : currentPoints[1];
+    const rightB = !isEdgePiece ? currentPoints[1] : currentPoints[2];
+    const focalPoint = !isEdgePiece ? currentPoints[2] : currentPoints[3]
+    const leftPoints = findEquidistantPoints(leftB, leftA, numberOfPoints);
+    const rightPoints = findEquidistantPoints(rightB, rightA, numberOfPoints);
+    currentPoints = [leftA, leftB, focalPoint, rightB, rightA];
+
+
+    const newPolygons = [];
+
+    // might need ot adjust
+    // const lrIndex = isTop ? Math.floor(index / 2) + 1 : Math.ceil(index / 2);
+    // const left = isTop ? (2 * lrIndex - 1) - 1 : (2 * lrIndex) - 1;
+    // const right = isTop ? (2 * lrIndex - 2) - 1 : (2 * lrIndex - 1) - 1;
+    const left = index;
+    const right = index + 1;
+
+    for (let j = 0; j < numberOfPoints; j++) {
+      // add handling for edges
+      const areas = getAreas(left, right, currentPoints, tableCopy, j);
+      const interpoints = [leftPoints[j], rightPoints[j]];
+      const subPolygons = partitionQuadrangle(currentPoints, interpoints, areas);
+      if (subPolygons.beta) {
+        newPolygons.push({value: 0, vertices: subPolygons.beta});
+      }
+      if (subPolygons.gamma) {
+        newPolygons.push({value: 0, vertices: subPolygons.gamma});
+      }
+      // console.log(subPolygons.beta.length, subPolygons.gamma.length)
+      currentPoints = subPolygons.alpha;
+    }
+    return acc.concat(newPolygons);
+  }, []);
+}
+
 export default function() {
   var height = 1;
   var width = 1;
@@ -224,8 +321,11 @@ export default function() {
     // TODO: paper notes this must be at least 4 check in later
     const {tableTop, tableBottom} = getSplitTable(table);
     const zigZag = generateZigZag(table, tableTop, tableBottom, height);
-    const partitions = generateBaseParition(table, tableTop, tableBottom, zigZag);
-    return partitions;
+    const zigZagPrime = generateZigZagPrime(table, zigZag);
+    // const partitions = generateBaseParition(table, tableTop, tableBottom, zigZag);
+    // return partitions
+    const fPolygons = generateFPolygons(table, zigZag, zigZagPrime);
+    return computeSubDivisionsOfPolygons(table, tableTop, tableBottom, fPolygons);
   }
 
   tableCartogram.size = function(x) {
