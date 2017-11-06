@@ -72,9 +72,10 @@ function getAreas(left, right, containingPolygon, table, row) {
   const alpha = table.slice(row + 1).reduce((sum, trow) => {
     return sum + (trow[left] || 0) + (trow[right] || 0);
   }, 0);
-
+  // console.log(`alpha: ${alpha}, beta: ${beta}, gamma: ${gamma}`, table)
   const containingArea = area(containingPolygon);
-  const polygonSum = alpha + beta + gamma;
+  // handle case when sum is zero
+  const polygonSum = (alpha + beta + gamma) || 1;
 
   return {
     alpha: alpha * containingArea / polygonSum,
@@ -176,6 +177,7 @@ export function generateZigZag(table, tableTop, tableBottom, height) {
   const m = tableTop[0].length;
   // build column sums
   const Dt = [];
+  console.log(tableTop, tableBottom)
   const columnSumTop = columnSum(tableTop);
   for (let j = 1; j < Math.floor(m / 2 + 1); j++) {
     Dt.push((columnSumTop[(2 * j - 2) - 1] || 0) + (columnSumTop[(2 * j - 1) - 1] || 0));
@@ -207,7 +209,9 @@ export function generateZigZag(table, tableTop, tableBottom, height) {
 // use for convexification
 export function generateZigZagPrime(table, zigZag) {
   const sumOfAllValues = getSumOfAllValues(table);
-  const tableMin = table.reduce((acc, row) => row.reduce((mem, cell) => Math.min(mem, cell), acc), Infinity);
+  const tableMin = table.reduce((acc, row) =>
+    row.reduce((mem, cell) => Math.min(mem, cell), acc), Infinity
+  );
   const convexifyValue = 2 * tableMin / sumOfAllValues;
   return zigZag.map(({x, y}, index) => ({x, y: y + (index % 2 ? -1 : 1) * convexifyValue}));
 }
@@ -281,6 +285,9 @@ function computeSubDivisionsOfPolygons(table, tableTop, tableBottom, fPolygons) 
     const isTop = !(index % 2);
     const subTable = isTop ? tableTop : tableBottom;
     const tableCopy = deepCopyTable(subTable);
+    if (isTop) {
+      tableCopy.reverse();
+    }
     const tableAccessor = (rowIndex, column) => {
       return isTop ?
         table[(subTable.length - 1) - rowIndex][column] :
@@ -315,28 +322,22 @@ function computeSubDivisionsOfPolygons(table, tableTop, tableBottom, fPolygons) 
 
     // im suspeicous of this
     // dont forget the non edge have been shifted to the left
-    const left = isLeftEdge ? (index + 1) : isRightEdge ? index - 1 : index - 1;
+    const left = isLeftEdge ? (index) : isRightEdge ? index - 1 : index - 1;
     const right = isRightEdge ? index - 1 : index;
-    // handle the 2x2 case
-    // if ((isTop ? 0 : 1) > tableCopy.length) {
-    //   return acc;
-    // }
-    console.log(leftPoints, rightPoints)
-    for (let j = (isTop ? 0 : 1); j < numberOfPoints; j++) {
 
-      const areas = getAreas(left, right, currentPoints, tableCopy, j);
+    for (let j = (isTop ? 0 : 1); j < numberOfPoints; j++) {
+      const areas = getAreas(right, left, currentPoints, tableCopy, j);
       const interpoints = [leftPoints[j], rightPoints[j]];
+
       const subPolygons = partitionQuadrangle(currentPoints, interpoints, areas);
-      // console.log(index, areas, subTable)
-      if (!isLeftEdge && subPolygons.beta) {
+      if (!isLeftEdge && areas.beta) {
         newPolygons.push({value: tableAccessor(j, left), vertices: subPolygons.beta});
       }
-      if (!isRightEdge && subPolygons.gamma) {
+      if (!isRightEdge && areas.gamma) {
         newPolygons.push({value: tableAccessor(j, right), vertices: subPolygons.gamma});
       }
       currentPoints = subPolygons.alpha;
     }
-    // console.log(newPolygons, newPolygons.length)
     return acc.concat(newPolygons);
   }, []);
 }

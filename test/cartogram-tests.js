@@ -42,16 +42,15 @@ const BLACK_AND_WHITE_TABLE = [
   [7, 9, 9, 6]
 ];
 
+const BIG_TOP = [
+  [20, 20, 21, 20],
+  [1, 1, 1, 1],
+  [1, 1, 1, 1],
+  [1, 1, 1, 1]
+];
+
 tape('tableCartogram ', t => {
   t.equal(typeof tableCartogram, 'function', 'should correctly find a function');
-  t.end();
-});
-
-tape('getSplitTable', t => {
-  const ONEBY = [[1, 1], [1, 1]];
-  const {tableTop, tableBottom} = getSplitTable(ONEBY);
-  t.deepEqual(tableTop, [[1, 1], [0.5, 0.5]], 'shoudl find the correct top');
-  t.deepEqual(tableBottom, [[0.5, 0.5], [1, 1]], 'shoudl find the correct bottom');
   t.end();
 });
 
@@ -115,27 +114,17 @@ function sumArea(cartogram) {
 }
 
 tape('tableCartogram - size', t => {
-  [
-    EXAMPLE_TABLE,
-    ZION_VISITORS,
-    BLACK_AND_WHITE_TABLE,
-    EXAMPLE_TABLE_2
-  ].forEach(testTable(t, 0));
+  ['triangle', 'quad'].forEach(mode => {
+    [
+      EXAMPLE_TABLE,
+      ZION_VISITORS,
+      BLACK_AND_WHITE_TABLE,
+      EXAMPLE_TABLE_2,
+      BIG_TOP
+    ].forEach(testTable(t, mode));
+  });
   t.end();
 });
-
-const fs = require('fs');
-function writeToFile(name, contents) {
-  fs.writeFile(name, JSON.stringify(contents), 'utf8', (err) => {
-    /* eslint-disable no-console */
-    if (err) {
-      console.log(err);
-    } else {
-      console.log('complete');
-    }
-    /* eslint-enable no-console */
-  });
-}
 
 function countInstancesOfValuesInTable(table) {
   return table.reduce((acc, row) => {
@@ -159,39 +148,37 @@ function countInstancesOfValuesInOutput(table) {
   }, {});
 }
 
-function testTable(t, saveIndex) {
+function testTable(t, mode) {
+  const modeName = mode.toUpperCase();
   return (table, index) => {
-    const cartogram = tableCartogram();
-    const mappedTable = cartogram(table);
-    if (saveIndex === index) {
-      writeToFile('../react-vis/showcase/misc/triangles.json', mappedTable);
-    }
+    const mappedTable = tableCartogram().mode(mode)(table);
+
     const numberOfCells = countCells(table);
     const foundNumberOfCells = mappedTable.length;
-    t.equal(numberOfCells, foundNumberOfCells, 'should find the correct number of cells');
+    t.equal(numberOfCells, foundNumberOfCells, `${modeName}: mode: should find the correct number of cells`);
 
-    t.ok(mappedTable.every(cell => area(cell.vertices) > 0), 'all cells should have a non trivial area');
+    t.ok(mappedTable.every(cell => area(cell.vertices) > 0), `${modeName}: all cells should have a non trivial area`);
 
     // TODO GOTTA FIX UP THE WIDTH CONTROL
     const HEIGHT = 1;
     const sumOfOriginalTable = sumCells(table);
     const sumOfAreaInNewTable = sumArea(mappedTable);
     t.equal(
-      round(sumOfAreaInNewTable),
-      round(sumOfOriginalTable) / 2 * HEIGHT,
-    'should find the summed area to be correct');
+      round(sumOfAreaInNewTable, Math.pow(10, 6)),
+      round(sumOfOriginalTable / 2 * HEIGHT, Math.pow(10, 6)),
+    `${modeName}: should find the summed area to be correct`);
 
     // value correctness
     const valuesInOriginalTable = countInstancesOfValuesInTable(table);
     const valuesInNewTable = countInstancesOfValuesInOutput(mappedTable);
-    t.deepEqual(valuesInOriginalTable, valuesInNewTable, 'should find the correct values in the new table');
+    t.deepEqual(valuesInOriginalTable, valuesInNewTable, `${modeName}: should find the correct values in the new table`);
 
     // area correctness
-    const allCellsHaveCorrectProportions = mappedTable.every(polygon => {
+    const areaResidues = mappedTable.reduce((sum, polygon) => {
       const proportionOfArea = area(polygon.vertices) / sumOfAreaInNewTable;
       const proportionOfValue = polygon.value / sumOfOriginalTable;
-      return Math.abs(proportionOfArea - proportionOfValue) < Math.pow(10, -8);
-    });
-    t.ok(allCellsHaveCorrectProportions, 'should find that all cells have the correct relationship between value and area');
+      return sum + Math.abs(proportionOfArea - proportionOfValue);
+    }, 0);
+    t.equal(areaResidues, 1, `${modeName}: should find that all cells have the correct relationship between value and area`);
   };
 }

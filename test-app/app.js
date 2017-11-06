@@ -29,14 +29,25 @@ const EXAMPLE_TABLE = [
   [3, 2, 2, 3]
 ];
 
-const ONE_BYS = [
-  [1, 1],
-  [1, 1]
+const BIG_TOP = [
+  [20, 20, 21, 20],
+  [1, 1, 1, 1],
+  [1, 1, 1, 1],
+  [1, 1, 1, 1]
+];
 
-  // [1, 1, 1, 1],
-  // [1, 1, 1, 1],
-  // [1, 1, 1, 1],
-  // [1, 1, 1, 1]
+const ONE_BYS = [
+  // [1, 1],
+  // [1, 1]
+
+  // [1, 1, 1],
+  // [1, 1, 1],
+  // [1, 1, 1],
+
+  [1, 1, 1, 1],
+  [1, 1, 1, 1],
+  [1, 1, 1, 1],
+  [1, 1, 1, 1]
 ];
 
 const BLACK_AND_WHITE_TABLE = [
@@ -48,20 +59,25 @@ const BLACK_AND_WHITE_TABLE = [
 
 const TEST_DATA = [
   {
-    name: 'EXAMPLE_TABLE - QUADS',
-    data: EXAMPLE_TABLE,
+    name: 'BIG TOP',
+    data: BIG_TOP,
     mode: 'quad'
   },
-  {
-    name: 'EXAMPLE_TABLE - TRIANGLE',
-    data: EXAMPLE_TABLE,
-    mode: 'triangle'
-  },
-  {
-    name: '1x1s - QUADS',
-    data: ONE_BYS,
-    mode: 'quad'
-  },
+  // {
+  //   name: 'EXAMPLE_TABLE - QUADS',
+  //   data: EXAMPLE_TABLE,
+  //   mode: 'quad'
+  // },
+  // {
+  //   name: 'EXAMPLE_TABLE - TRIANGLE',
+  //   data: EXAMPLE_TABLE,
+  //   mode: 'triangle'
+  // },
+  // {
+  //   name: '1x1s - QUADS',
+  //   data: ONE_BYS,
+  //   mode: 'quad'
+  // },
   // {
   //   name: '1x1 - TRIANGLE',
   //   data: ONE_BYS,
