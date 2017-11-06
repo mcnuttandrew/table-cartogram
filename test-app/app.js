@@ -52,21 +52,21 @@ const TEST_DATA = [
     data: EXAMPLE_TABLE,
     mode: 'quad'
   },
-  // {
-  //   name: 'EXAMPLE_TABLE - TRIANGLE',
-  //   data: EXAMPLE_TABLE,
-  //   mode: 'triangle'
-  // },
+  {
+    name: 'EXAMPLE_TABLE - TRIANGLE',
+    data: EXAMPLE_TABLE,
+    mode: 'triangle'
+  },
   {
     name: '1x1s - QUADS',
     data: ONE_BYS,
     mode: 'quad'
   },
-  {
-    name: '1x1 - TRIANGLE',
-    data: ONE_BYS,
-    mode: 'triangle'
-  },
+  // {
+  //   name: '1x1 - TRIANGLE',
+  //   data: ONE_BYS,
+  //   mode: 'triangle'
+  // },
   // {
   //   name: 'B + W - QUADS',
   //   data: BLACK_AND_WHITE_TABLE,

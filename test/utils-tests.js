@@ -10,7 +10,7 @@ import tape from 'tape';
 
 /* eslint-disable max-len*/
 
-tape.only('findEquidistantPoints', t => {
+tape('findEquidistantPoints', t => {
   const xIntleft = {x: 0, y: 0};
   const xIntright = {x: 1, y: 0};
   const xIntExpectedPoints = [

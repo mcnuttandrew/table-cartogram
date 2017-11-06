@@ -9,7 +9,7 @@ import {
 
 import {geoCenter} from '../utils';
 import {RV_COLORS} from './colors';
-const tableCartogram = require('../second-pass.js').default;
+const tableCartogram = require('../index.js').default;
 
 export default class GenericTable extends React.Component {
   render() {

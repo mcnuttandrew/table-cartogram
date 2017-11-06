@@ -6,7 +6,7 @@ import {
   getSplitTable,
   generateZigZag,
   generateZigZagPrime
-} from '../second-pass';
+} from '../index';
 
 /* eslint-disable max-len */
 

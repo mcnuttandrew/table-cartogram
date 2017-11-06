@@ -167,41 +167,6 @@ export function partitionQuadrangle(points, intersectionPoints, {alpha, beta, ga
     beta: [partition, betaLeft, pointB, pointC],
     gamma: [pointC, pointD, gammaRight, partition]
   };
-
-  //
-  // // const alphas = getConst([gammaRight, pointE, pointA, betaLeft], alpha);
-  // const alphas = getConst([gammaRight, pointD, pointC], gamma, true);
-  // const betas = getConst([betaLeft, pointB, pointC], beta);
-  //
-  // const knownArea = alpha + beta + gamma;
-  // // const knownArea = area(points);
-  // const Amatrix = [[betas.C, betas.B], [alphas.C, alphas.B]];
-
-  // need to check all of the Plus Minus combos, bc of abs value
-  // const result = [
-  //   [betas.A, alphas.A],
-  //   [betas.Am, alphas.A],
-  //   [betas.A, alphas.Am],
-  //   [betas.Am, alphas.Am]
-  // ].reduce((solution, Bvec) => {
-  //   const partition = getXYforAB(Amatrix, Bvec);
-  //   const trialSolution = {
-  //     alpha: [pointA, betaLeft, partition, gammaRight, pointE],
-  //     beta: [partition, betaLeft, pointB, pointC],
-  //     gamma: [pointC, pointD, gammaRight, partition]
-  //   };
-  //   // console.log(alpha, area(trialSolution.alpha), beta, area(trialSolution.beta), gamma, area(trialSolution.gamma))
-  //   const solutionArea = area(trialSolution.alpha) + area(trialSolution.beta) + area(trialSolution.gamma);
-  //   // console.log('target', knownArea, solutionArea)
-  //   const solutionScore = Math.abs(solutionArea - knownArea);
-  //   // console.log(checkIfInside(points, partition))
-  //   return {
-  //     score: solutionScore < solution.score ? solutionScore : solution.score,
-  //     solution: solutionScore < solution.score ? trialSolution : solution.solution
-  //   }
-  // }, {score: Infinity, solution: false});
-
-  // return result.solution;
 }
 
 function getXYforAB(A, B) {
@@ -243,4 +208,8 @@ export function geoCenter(points) {
     return {x: center.x + row.x, y: center.y + row.y};
   }, {x: 0, y: 0});
   return {x: sum.x / points.length, y: sum.y / points.length};
+}
+
+export function deepCopyTable(table) {
+  return table.reduce((acc, row) => acc.concat([row.slice(0)]), []);
 }
