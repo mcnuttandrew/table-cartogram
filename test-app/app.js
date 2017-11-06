@@ -21,7 +21,7 @@
 import ReactDOM from 'react-dom';
 import React, {Component} from 'react';
 import GenericTable from './generic-test-table';
-// console.log(require('../second-pass.js'))
+
 const EXAMPLE_TABLE = [
   [2, 3, 2, 4],
   [3, 9, 3, 7],
@@ -32,7 +32,11 @@ const EXAMPLE_TABLE = [
 const ONE_BYS = [
   [1, 1],
   [1, 1]
-  // [1, 1, 1]
+
+  // [1, 1, 1, 1],
+  // [1, 1, 1, 1],
+  // [1, 1, 1, 1],
+  // [1, 1, 1, 1]
 ];
 
 const BLACK_AND_WHITE_TABLE = [
@@ -43,11 +47,11 @@ const BLACK_AND_WHITE_TABLE = [
 ];
 
 const TEST_DATA = [
-  // {
-  //   name: 'EXAMPLE_TABLE - QUADS',
-  //   data: EXAMPLE_TABLE,
-  //   mode: 'quad'
-  // },
+  {
+    name: 'EXAMPLE_TABLE - QUADS',
+    data: EXAMPLE_TABLE,
+    mode: 'quad'
+  },
   // {
   //   name: 'EXAMPLE_TABLE - TRIANGLE',
   //   data: EXAMPLE_TABLE,
@@ -81,7 +85,7 @@ export default class App extends Component {
   render() {
     return (
       <div>
-        <div> TABLE CARTOGRAM VISUAL TEST SUITE </div>
+        <div style={{fontSize: '22px'}}> TABLE CARTOGRAM VISUAL TEST SUITE </div>
         <div style={{display: 'flex', flexDirection: 'column'}}>
           {
             TEST_DATA.map((tableProps, i) => <GenericTable key={i} {...tableProps} />)

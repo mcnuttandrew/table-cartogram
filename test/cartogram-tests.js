@@ -8,6 +8,8 @@ import {
   generateZigZagPrime
 } from '../second-pass';
 
+/* eslint-disable max-len */
+
 // import {
 //   default as tableCartogramFirstPass,
 // } from '../index';
@@ -18,16 +20,16 @@ import {
 } from '../utils';
 
 import ZionVisitors from './zion-visitors';
-const MONTHS = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
 const ZION_VISITORS = ZionVisitors.map(year => MONTHS.map(month => year[month])).slice(20);
-var EXAMPLE_TABLE = [
+const EXAMPLE_TABLE = [
   [2, 3, 2, 4],
   [3, 9, 3, 7],
   [2, 3, 4, 9],
   [3, 2, 2, 3]
 ];
 
-var EXAMPLE_TABLE_2 = [
+const EXAMPLE_TABLE_2 = [
   [1, 1, 1],
   [1, 1, 1],
   [1, 1, 1]
@@ -40,13 +42,20 @@ const BLACK_AND_WHITE_TABLE = [
   [7, 9, 9, 6]
 ];
 
-tape("tableCartogram ", function(t) {
+tape('tableCartogram ', t => {
   t.equal(typeof tableCartogram, 'function', 'should correctly find a function');
   t.end();
 });
 
+tape('getSplitTable', t => {
+  const ONEBY = [[1, 1], [1, 1]];
+  const {tableTop, tableBottom} = getSplitTable(ONEBY);
+  t.deepEqual(tableTop, [[1, 1], [0.5, 0.5]], 'shoudl find the correct top');
+  t.deepEqual(tableBottom, [[0.5, 0.5], [1, 1]], 'shoudl find the correct bottom');
+  t.end();
+});
 
-// tape("tableCartogram - size", function(t) {
+// tape('tableCartogram - size', t => {
 //   var cartogram = tableCartogram();
 //   var initialSize = cartogram.size();
 //   t.deepEqual(initialSize, [1, 1], 'should find the correct defaults');
@@ -55,7 +64,7 @@ tape("tableCartogram ", function(t) {
 //   t.end();
 // });
 //
-tape("tableCartogram helper functions", function(t) {
+tape('tableCartogram helper functions', t => {
   t.equal(getSplitPoint(EXAMPLE_TABLE), 1, 'getSplitPoint should return correct split point');
   t.equal(getLambda(1, EXAMPLE_TABLE), 0.8863636363636364, 'getLambda should get the correct value for the example split point and table');
 
@@ -71,7 +80,7 @@ tape("tableCartogram helper functions", function(t) {
     [3, 2, 2, 3]
   ];
   t.deepEqual(tableBottom, expectedBottom, 'should find the correct table bottom');
-  const EXPECTED_ZIG_ZAP =  [
+  const EXPECTED_ZIG_ZAP = [
     {x: 0, y: 0},
     {x: 4.659090909090909, y: 1},
     {x: 11.363636363636363, y: 0},
@@ -105,12 +114,11 @@ function sumArea(cartogram) {
   return cartogram.reduce((sum, cell) => sum + area(cell.vertices), 0);
 }
 
-
-tape.only("tableCartogram - size", function(t) {
+tape('tableCartogram - size', t => {
   [
-    // BLACK_AND_WHITE_TABLE
-    // EXAMPLE_TABLE,
-    // ZION_VISITORS,
+    EXAMPLE_TABLE,
+    ZION_VISITORS,
+    BLACK_AND_WHITE_TABLE,
     EXAMPLE_TABLE_2
   ].forEach(testTable(t, 0));
   t.end();
@@ -153,8 +161,8 @@ function countInstancesOfValuesInOutput(table) {
 
 function testTable(t, saveIndex) {
   return (table, index) => {
-    var cartogram = tableCartogram();
-    var mappedTable = cartogram(table);
+    const cartogram = tableCartogram();
+    const mappedTable = cartogram(table);
     if (saveIndex === index) {
       writeToFile('../react-vis/showcase/misc/triangles.json', mappedTable);
     }
@@ -185,5 +193,5 @@ function testTable(t, saveIndex) {
       return Math.abs(proportionOfArea - proportionOfValue) < Math.pow(10, -8);
     });
     t.ok(allCellsHaveCorrectProportions, 'should find that all cells have the correct relationship between value and area');
-  }
+  };
 }

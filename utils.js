@@ -6,6 +6,9 @@
  * @returns {Array} array of interpolated points
  */
 export function findEquidistantPoints(left, right, numberOfPoints) {
+  if (numberOfPoints === 1) {
+    return [left];
+  }
   const slope = (right.y - left.y) / (right.x - left.x);
   const offset = left.y - slope * left.x;
   const xRange = right.x - left.x;
@@ -13,14 +16,14 @@ export function findEquidistantPoints(left, right, numberOfPoints) {
   const slopeIsVertical = Number.isNaN(slope) || Math.abs(slope) === Infinity;
 
   const points = [];
-  for (var i = 0; i < numberOfPoints; i++) {
+  for (let i = 0; i < numberOfPoints; i++) {
     const fraction = i / (numberOfPoints - 1);
     const xVal = fraction * xRange + left.x;
     const newPoint = {
       x: slopeIsVertical ? left.x : xVal,
       y: slopeIsVertical ? fraction * yRange + left.y : (slope * xVal + offset)
-    }
-    points.push(newPoint)
+    };
+    points.push(newPoint);
   }
   return points;
 }
@@ -123,7 +126,6 @@ function getConst(pp, area, print) {
       const slope = -(right.y - left.y) / (left.x - right.x);
       const intersect = (arrrr - sum) / (left.x - right.x);
       const evalLin = (point) => ({x: point.x, y: slope * point.x + intersect})
-      console.log([{x: -10000, y: 0}, {x: 10000, y: 0}].map(evalLin));
     });
   }
 
@@ -153,21 +155,18 @@ export function partitionQuadrangle(points, intersectionPoints, {alpha, beta, ga
   const outerBeta = area([betaLeft, pointB, pointC]);
   const innerBeta = beta - outerBeta;
 
-
   const triangleSoln = partitionTriangle(
     [pointC, betaLeft, gammaRight],
     // [pointC, gammaRight, betaLeft],
     {alpha: innerAlpha, beta: innerBeta, gamma: innerGamma}
   );
-  console.log(triangleSoln)
+  // console.log({alpha: innerAlpha, beta: innerBeta, gamma: innerGamma}, {alpha, beta,gamma})
   const partition = triangleSoln.alpha[0];
   return {
     alpha: [pointA, betaLeft, partition, gammaRight, pointE],
     beta: [partition, betaLeft, pointB, pointC],
     gamma: [pointC, pointD, gammaRight, partition]
   };
-
-
 
   //
   // // const alphas = getConst([gammaRight, pointE, pointA, betaLeft], alpha);

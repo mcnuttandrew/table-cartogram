@@ -8,7 +8,9 @@ import {
 } from '../utils';
 import tape from 'tape';
 
-tape("findEquidistantPoints", function(t) {
+/* eslint-disable max-len*/
+
+tape.only('findEquidistantPoints', t => {
   const xIntleft = {x: 0, y: 0};
   const xIntright = {x: 1, y: 0};
   const xIntExpectedPoints = [
@@ -17,7 +19,7 @@ tape("findEquidistantPoints", function(t) {
     {x: 0.5, y: 0},
     {x: 0.75, y: 0},
     {x: 1, y: 0}
-  ]
+  ];
   t.deepEqual(findEquidistantPoints(xIntleft, xIntright, 5), xIntExpectedPoints, 'should find the correct points for x interpolation');
 
   const yIntleft = {x: 0, y: 1};
@@ -42,11 +44,15 @@ tape("findEquidistantPoints", function(t) {
   ];
   t.deepEqual(findEquidistantPoints(left, right, 5), expectedPoints, 'should find the correct points for diagonal interpolation');
 
+  const expectedEmptyPoints = [
+    {x: 0, y: 1}
+  ];
+  t.deepEqual(findEquidistantPoints(left, right, 1), expectedEmptyPoints, 'should find the correct points for a single point');
+
   t.end();
 });
 
-
-tape("area", function(t) {
+tape('area', t => {
   const SQUARE = [
     {x: 10, y: 10},
     {x: 20, y: 10},
@@ -67,7 +73,7 @@ tape("area", function(t) {
   t.end();
 });
 
-tape("partitionTriangle - Equal Partition", function(t) {
+tape('partitionTriangle - Equal Partition', t => {
   const equilateral = generatePolygon(3, 5, {x: 10, y: 10});
   const equalArea = area(equilateral) / 3;
   const partitions = partitionTriangle(equilateral, {alpha: equalArea, beta: equalArea, gamma: equalArea});
@@ -80,14 +86,14 @@ tape("partitionTriangle - Equal Partition", function(t) {
   t.end();
 });
 
-tape("partitionTriangle - Unequal Partition", function(t) {
+tape('partitionTriangle - Unequal Partition', t => {
   const equilateral = generatePolygon(3, 5, {x: 10, y: 10});
   const totalArea = area(equilateral);
   const areas = {
     alpha: totalArea * 0.7,
     beta: totalArea * 0.2,
     gamma: totalArea * 0.1
-  }
+  };
   const partitions = partitionTriangle(equilateral, areas);
 
   ['alpha', 'beta', 'gamma'].forEach(areaSector => {
@@ -99,7 +105,7 @@ tape("partitionTriangle - Unequal Partition", function(t) {
   t.end();
 });
 
-tape("partitionTriangle - Real triangle example", function(t) {
+tape('partitionTriangle - Real triangle example', t => {
   const triangle = [
     {x: 4.659090909090909, y: 1},
     {x: 0, y: 0},
@@ -110,7 +116,7 @@ tape("partitionTriangle - Real triangle example", function(t) {
     alpha: 4.305166199439327,
     beta: 0.8259911894273129,
     gamma: 0.5506607929515418
-  }
+  };
   const partitions = partitionTriangle(triangle, areas);
   ['alpha', 'beta', 'gamma'].forEach(areaSector => {
     const foundArea = round(area(partitions[areaSector]));
@@ -123,20 +129,7 @@ tape("partitionTriangle - Real triangle example", function(t) {
   t.end();
 });
 
-const fs = require('fs');
-function writeToFile(name, contents) {
-  fs.writeFile(name, JSON.stringify(contents), 'utf8', (err) => {
-    /* eslint-disable no-console */
-    if (err) {
-      console.log(err);
-    } else {
-      console.log('complete');
-    }
-    /* eslint-enable no-console */
-  });
-}
-
-tape("partitionQuadrangle - Equal Partition", function(t) {
+tape('partitionQuadrangle - Equal Partition', t => {
   const equilateral = generatePolygon(5, 5, {x: 10, y: 10});
   const equalArea = area(equilateral) / 3;
   const interpolatedA = findEquidistantPoints(equilateral[0], equilateral[1], 3);
@@ -151,14 +144,11 @@ tape("partitionQuadrangle - Equal Partition", function(t) {
     const predictedArea = round(equalArea);
     t.equal(foundArea, predictedArea, `should find the correct ${areaSector} partition for the correct partition`);
   });
-  // const mappedPart = Object.keys(partitions).map(key => ({vertices: partitions[key]}));
-  // writeToFile(
-  //   '../react-vis/showcase/misc/triangles.json', mappedPart);
 
   t.end();
 });
 
-tape("partitionQuadrangle - Unequal Partition", function(t) {
+tape('partitionQuadrangle - Unequal Partition', t => {
   const equilateral = generatePolygon(5, 5, {x: 10, y: 10});
   const totalArea = area(equilateral);
   const interpolatedA = findEquidistantPoints(equilateral[0], equilateral[1], 3);
@@ -167,10 +157,6 @@ tape("partitionQuadrangle - Unequal Partition", function(t) {
   const areas = {alpha: totalArea * 0.7, beta: totalArea * 0.2, gamma: totalArea * 0.1};
   const startPoints = [interpolatedA[1], interpolatedB[1]];
   const partitions = partitionQuadrangle(equilateral, startPoints, areas);
-
-  // const mappedPart = Object.keys(partitions).map(key => ({vertices: partitions[key]}));
-  // writeToFile(
-  //   '../react-vis/showcase/misc/triangles.json', mappedPart);
 
   ['alpha', 'beta', 'gamma'].forEach(areaSector => {
     const foundArea = round(area(partitions[areaSector]));
@@ -181,8 +167,7 @@ tape("partitionQuadrangle - Unequal Partition", function(t) {
   t.end();
 });
 
-tape("partitionQuadrangle - Square Partition", function(t) {
-  // const equilateral = generatePolygon(5, 5, {x: 10, y: 10});
+tape('partitionQuadrangle - Square Partition', t => {
   const equilateral = [
     {x: -1, y: -1},
     {x: -1, y: 1},
@@ -197,10 +182,6 @@ tape("partitionQuadrangle - Square Partition", function(t) {
   const areas = {alpha: totalArea * 0.5, beta: totalArea * 0.4, gamma: totalArea * 0.1};
   const startPoints = [interpolatedA[1], interpolatedB[1]];
   const partitions = partitionQuadrangle(equilateral, startPoints, areas);
-
-  // const mappedPart = Object.keys(partitions).map(key => ({vertices: partitions[key]}));
-  // writeToFile(
-  //   '../react-vis/showcase/misc/triangles.json', mappedPart);
 
   ['alpha', 'beta', 'gamma'].forEach(areaSector => {
     const foundArea = round(area(partitions[areaSector]));

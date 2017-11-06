@@ -42,6 +42,8 @@ export function getLambda(splitPoint, table) {
 }
 
 export function getSplitTable(table) {
+  // split point (referred to as k in the paper)
+  // is the greatest point in such that the preceding rows are less than S/2
   const splitPoint = getSplitPoint(table);
   const lambda = getLambda(splitPoint, table);
 
@@ -271,7 +273,7 @@ function getPolygonOutline(vertices, index, maxLen) {
   const farthestX = vertices[0].x;
   const virtualRightA = {x: 2 * farthestX - vertices[1].x, y: vertices[1].y};
   const virtualRightB = {x: 2 * farthestX - vertices[2].x, y: vertices[2].y};
-
+  // console.log('polyline', index)
   return {
     leftA: isLeftEdge ? virtualLeftA : vertices[1],
     leftB: isLeftEdge ? virtualLeftB : vertices[2],
@@ -286,8 +288,12 @@ function computeSubDivisionsOfPolygons(table, tableTop, tableBottom, fPolygons) 
     const isTop = index % 2;
     const subTable = isTop ? tableTop : tableBottom;
     const tableCopy = deepCopyTable(subTable);
+    const tableAccessor = (rowIndex, column) => {
+      return isTop ?
+        table[(subTable.length - 1) - rowIndex][column] :
+        table[((table.length - 1) - (subTable.length - 1)) + rowIndex][column];
+    };
     const numberOfPoints = subTable.length;
-    let currentPoints = polygon.vertices;
 
     const {
       leftA,
@@ -297,37 +303,46 @@ function computeSubDivisionsOfPolygons(table, tableTop, tableBottom, fPolygons) 
       rightA
     } = getPolygonOutline(polygon.vertices, index, fPolygons.length - 1);
 
-    const leftPoints = findEquidistantPoints(leftB, leftA, Math.max(numberOfPoints, 2));
-    const rightPoints = findEquidistantPoints(rightB, rightA, Math.max(numberOfPoints, 2));
-    currentPoints = [leftA, leftB, focalPoint, rightB, rightA];
-
-    const newPolygons = [];
-
     // ternarys denote edge casing
     const isLeftEdge = !index;
     const isRightEdge = index >= (fPolygons.length - 1);
-    const left = isLeftEdge ? (index + 1) : isRightEdge ? index - 1 : index;
-    const right = isRightEdge ? index - 1 : index + 1;
-    console.log(index)
-    // edge case
-    if ((isTop ? 0 : 1) > tableCopy.length) {
-      return acc;
-    }
-    console.log((isTop ? 0 : 1), tableCopy.length)
 
+    let leftPoints = findEquidistantPoints(leftB, leftA, numberOfPoints);
+    if (numberOfPoints === 1) {
+      leftPoints = findEquidistantPoints(leftA, leftB, numberOfPoints);
+    }
+    let rightPoints = findEquidistantPoints(rightB, rightA, numberOfPoints);
+    if (numberOfPoints === 1) {
+      rightPoints = findEquidistantPoints(rightA, rightB, numberOfPoints);
+    }
+    let currentPoints = [leftA, leftB, focalPoint, rightB, rightA];
+
+    const newPolygons = [];
+
+    // im suspeicous of this
+    // dont forget the non edge have been shifted to the left
+    const left = isLeftEdge ? (index + 1) : isRightEdge ? index - 1 : index - 1;
+    const right = isRightEdge ? index - 1 : index;
+    // handle the 2x2 case
+    // if ((isTop ? 0 : 1) > tableCopy.length) {
+    //   return acc;
+    // }
+    console.log(leftPoints, rightPoints)
     for (let j = (isTop ? 0 : 1); j < numberOfPoints; j++) {
-      // console.log(j, numberOfPoints, tableCopy)
+
       const areas = getAreas(left, right, currentPoints, tableCopy, j);
       const interpoints = [leftPoints[j], rightPoints[j]];
       const subPolygons = partitionQuadrangle(currentPoints, interpoints, areas);
+      // console.log(index, areas, subTable)
       if (!isLeftEdge && subPolygons.beta) {
-        newPolygons.push({value: 0, vertices: subPolygons.beta});
+        newPolygons.push({value: tableAccessor(j, left), vertices: subPolygons.beta});
       }
       if (!isRightEdge && subPolygons.gamma) {
-        newPolygons.push({value: 0, vertices: subPolygons.gamma});
+        newPolygons.push({value: tableAccessor(j, right), vertices: subPolygons.gamma});
       }
       currentPoints = subPolygons.alpha;
     }
+    // console.log(newPolygons, newPolygons.length)
     return acc.concat(newPolygons);
   }, []);
 }
@@ -340,7 +355,6 @@ export default function() {
   function tableCartogram(table) {
     // begin by determining the split point for the table
     // (known as k and lambda in the paper, splitPoint and lambda here)
-    // const summedRows = table.map(row => row.reduce((sum, cell) => sum + cell, 0))
     // sumOfAllValues is also known as S
     // TODO: paper notes this must be at least 4 check in later
     const {tableTop, tableBottom} = getSplitTable(table);
@@ -350,8 +364,16 @@ export default function() {
     }
     // quad mode
     const zigZagPrime = generateZigZagPrime(table, zigZag);
+    if (mode === 'zigzag') {
+      return zigZagPrime;
+    }
     const fPolygons = generateFPolygons(table, zigZag, zigZagPrime);
-    return computeSubDivisionsOfPolygons(table, tableTop, tableBottom, fPolygons);
+
+    if (mode === 'polygon') {
+      return fPolygons;
+    }
+    const polys = computeSubDivisionsOfPolygons(table, tableTop, tableBottom, fPolygons);
+    return polys;
   }
 
   tableCartogram.size = function sizeFunction(x) {
