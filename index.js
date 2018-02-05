@@ -3,7 +3,9 @@ import {
   partitionQuadrangle,
   area,
   findEquidistantPoints,
-  deepCopyTable
+  deepCopyTable,
+  round,
+  fractionalInterpolation
 } from './utils';
 
 function columnSum(table) {
@@ -47,6 +49,7 @@ export function getSplitTable(table) {
   // is the greatest point in such that the preceding rows are less than S/2
   const splitPoint = getSplitPoint(table);
   const lambda = getLambda(splitPoint, table);
+  // console.log(splitPoint, lambda)
 
   const tableTop = [];
   for (let i = 0; i < splitPoint; i++) {
@@ -72,7 +75,7 @@ function getAreas(left, right, containingPolygon, table, row) {
   const alpha = table.slice(row + 1).reduce((sum, trow) => {
     return sum + (trow[left] || 0) + (trow[right] || 0);
   }, 0);
-  // console.log(`alpha: ${alpha}, beta: ${beta}, gamma: ${gamma}`, table)
+
   const containingArea = area(containingPolygon);
   // handle case when sum is zero
   const polygonSum = (alpha + beta + gamma) || 1;
@@ -177,14 +180,15 @@ export function generateZigZag(table, tableTop, tableBottom, height) {
   const m = tableTop[0].length;
   // build column sums
   const Dt = [];
-  console.log(tableTop, tableBottom)
+
   const columnSumTop = columnSum(tableTop);
-  for (let j = 1; j < Math.floor(m / 2 + 1); j++) {
-    Dt.push((columnSumTop[(2 * j - 2) - 1] || 0) + (columnSumTop[(2 * j - 1) - 1] || 0));
+  for (let j = 0; j < Math.floor(m / 2 + 1); j++) {
+    // bizzare indices due to paper being in 1 index, and js being in 0 index
+    Dt.push((columnSumTop[(2 * (j + 1) - 2) - 1] || 0) + (columnSumTop[(2 * (j + 1) - 1) - 1] || 0));
   }
   const columnSumBottom = columnSum(tableBottom);
   const Db = [];
-  for (let l = 1; l < Math.ceil(m / 2); l++) {
+  for (let l = 1; l < Math.ceil((m + 1) / 2); l++) {
     Db.push((columnSumBottom[(2 * l - 1) - 1] || 0) + (columnSumBottom[(2 * l) - 1] || 0));
   }
   // generate zigzag
@@ -202,24 +206,57 @@ export function generateZigZag(table, tableTop, tableBottom, height) {
       zigZag.push({x: summedDb.pop(), y: 0});
     }
   }
-  zigZag.push({x: getSumOfAllValues(table) / 2, y: m % 2 ? height : 0});
+  // zigZag.push({x: getSumOfAllValues(table) / 2, y: m % 2 ? height : 0});
+  if (zigZag[zigZag.length - 1].x === zigZag[zigZag.length - 2].x) {
+    zigZag.pop();
+  }
   return zigZag;
 }
 
 // use for convexification
-export function generateZigZagPrime(table, zigZag) {
+export function generateZigZagPrime(table, zigZag, tableTop, tableBottom) {
   const sumOfAllValues = getSumOfAllValues(table);
+  const splitPoint = getSplitPoint(table) + 1;
+  const tableTopSum = getSumOfAllValues(table.slice(0, splitPoint));
+  const tableBottomSum = getSumOfAllValues(table.slice(splitPoint));
+
   const tableMin = table.reduce((acc, row) =>
-    row.reduce((mem, cell) => Math.min(mem, cell), acc), Infinity
-  );
+    row.reduce((mem, cell) => Math.min(mem, cell), acc), Infinity);
+  const zigZagHeight = zigZag[1].y - zigZag[0].y;
+  // const splitPoint = getSplitPoint(table);
+  // const lambda = getLambda(getSplitPoint(table), table);
+  const lambda = tableTopSum / (tableTopSum + tableBottomSum);
+  // console.log('????', lambda * zigZagHeight, (1 - lambda) * zigZagHeight)
   const convexifyValue = 2 * tableMin / sumOfAllValues;
-  return zigZag.map(({x, y}, index) => ({x, y: y + (index % 2 ? -1 : 1) * convexifyValue}));
+  console.log('zz height', zigZagHeight)
+  return zigZag.map(({x, y}, index) => {
+    // if the bottom table is empty, just dont draw it at all
+    if (!tableBottomSum) {
+      return {x, y: 0};
+    }
+    const newY = lambda > 0.5 ?
+        ((!(index % 2) ? convexifyValue : (1 - lambda + convexifyValue)) * zigZagHeight) :
+      lambda === 0.5 ?
+        lambda * zigZagHeight :
+      ((index % 2) ? convexifyValue : lambda - convexifyValue) * zigZagHeight;
+    // const newY = (lambda > 0.5 ?
+    //   !(index % 2) ? lambda - convexifyValue : (1 - lambda + convexifyValue) :
+    //   (index % 2) ? lambda - convexifyValue : (1 - lambda + convexifyValue)) * zigZagHeight;
+    // const newY = lambda + (index % 2) ? convexifyValue : -convexifyValue;
+    // seems like we could probably math this one out?
+    // like it seems likly
+    // this is a weird constant one
+    // const newY =  (1 - lambda) * zigZagHeig  ht;
+    return {
+      x,
+      y: newY
+    };
+  });
+  // return zigZag.map(({x, y}, index) => ({x, y: y + (index % 2 ? -1 : 1) * convexifyValue}));
 }
 
-function generateFPolygons(table, zigZag, zigZagPrime) {
+function generateFPolygons(table, zigZag, zigZagPrime, height) {
   const sumOfAllValues = getSumOfAllValues(table);
-  // TODO FIX
-  const height = 1;
 
   const fPolygons = [{vertices: [
     {x: 0, y: height},
@@ -270,7 +307,6 @@ function getPolygonOutline(vertices, index, maxLen) {
   const farthestX = vertices[0].x;
   const virtualRightA = {x: 2 * farthestX - vertices[1].x, y: vertices[1].y};
   const virtualRightB = {x: 2 * farthestX - vertices[2].x, y: vertices[2].y};
-  // console.log('polyline', index)
   return {
     leftA: isLeftEdge ? virtualLeftA : vertices[1],
     leftB: isLeftEdge ? virtualLeftB : vertices[2],
@@ -282,12 +318,19 @@ function getPolygonOutline(vertices, index, maxLen) {
 
 function computeSubDivisionsOfPolygons(table, tableTop, tableBottom, fPolygons) {
   return fPolygons.reduce((acc, polygon, index) => {
+    // if (index !== 1) {
+    //   return acc;
+    // }
     const isTop = !(index % 2);
     const subTable = isTop ? tableTop : tableBottom;
     const tableCopy = deepCopyTable(subTable);
     if (isTop) {
       tableCopy.reverse();
     }
+    // okay here it is, right here, we are going to modify the table copy
+    const lambda = getLambda(getSplitPoint(table), table);
+    tableCopy[0] = tableCopy[0].map(cell => cell / (isTop ? lambda : (1 - lambda)));
+    // console.log(tableCopy[])
     const tableAccessor = (rowIndex, column) => {
       return isTop ?
         table[(subTable.length - 1) - rowIndex][column] :
@@ -317,24 +360,33 @@ function computeSubDivisionsOfPolygons(table, tableTop, tableBottom, fPolygons) 
       rightPoints = [rightA];
     }
     let currentPoints = [leftA, leftB, focalPoint, rightB, rightA];
-
+    // console.log(currentPoints)
     const newPolygons = [];
 
     // im suspeicous of this
     // dont forget the non edge have been shifted to the left
     const left = isLeftEdge ? (index) : isRightEdge ? index - 1 : index - 1;
     const right = isRightEdge ? index - 1 : index;
-
     for (let j = (isTop ? 0 : 1); j < numberOfPoints; j++) {
       const areas = getAreas(right, left, currentPoints, tableCopy, j);
+      // console.log(areas)
       const interpoints = [leftPoints[j], rightPoints[j]];
 
+      // console.log(currentPoints, interpoints, areas)
       const subPolygons = partitionQuadrangle(currentPoints, interpoints, areas);
       if (!isLeftEdge && areas.beta) {
-        newPolygons.push({value: tableAccessor(j, left), vertices: subPolygons.beta});
+        newPolygons.push({
+          value: tableAccessor(j, left),
+          displayValue: `${tableAccessor(j, left)} - ${round(area(subPolygons.beta), Math.pow(10, 3))}`,
+          vertices: subPolygons.beta
+        });
       }
       if (!isRightEdge && areas.gamma) {
-        newPolygons.push({value: tableAccessor(j, right), vertices: subPolygons.gamma});
+        newPolygons.push({
+          value: tableAccessor(j, right),
+          displayValue: `${tableAccessor(j, right)} - ${round(area(subPolygons.gamma), Math.pow(10, 3))}`,
+          vertices: subPolygons.gamma
+        });
       }
       currentPoints = subPolygons.alpha;
     }
@@ -358,11 +410,12 @@ export default function() {
       return generateBaseParition(table, tableTop, tableBottom, zigZag);
     }
     // quad mode
-    const zigZagPrime = generateZigZagPrime(table, zigZag);
+    const zigZagPrime = generateZigZagPrime(table, zigZag, tableTop, tableBottom);
+    // console.log(zigZagPrime)
     if (mode === 'zigzag') {
       return zigZagPrime;
     }
-    const fPolygons = generateFPolygons(table, zigZag, zigZagPrime);
+    const fPolygons = generateFPolygons(table, zigZag, zigZagPrime, height);
 
     if (mode === 'polygon') {
       return fPolygons;

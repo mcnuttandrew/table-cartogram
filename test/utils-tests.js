@@ -1,14 +1,38 @@
 import {
   area,
   findEquidistantPoints,
-  partitionTriangle,
-  round,
+  fractionalInterpolation,
   generatePolygon,
-  partitionQuadrangle
+  partitionTriangle,
+  partitionQuadrangle,
+  round
 } from '../utils';
 import tape from 'tape';
 
 /* eslint-disable max-len*/
+
+tape('fractionalInterpolation', t => {
+  const a = {x: 0, y: 0};
+  const b = {x: 0, y: 10};
+  t.deepEqual(fractionalInterpolation(a, b, 0.9), {x: 0, y: 9}, 'should find the correct vertical interpolation');
+  const c = {x: 10, y: 0};
+  t.deepEqual(fractionalInterpolation(a, c, 0.9), {x: 9, y: 0}, 'should find the correct horizontal interpolation');
+  const d = {x: 10, y: 10};
+  t.deepEqual(fractionalInterpolation(a, d, 0.9), {x: 9, y: 9}, 'should find the correct diagonal interpolation');
+
+  const testFraction = 0.5707317073170731;
+
+  const pointA = {x: -4.659090909090909, y: 1};
+  const pointB = {x: -4.659090909090909, y: 0.4590163934426229};
+  const fracPointLeft = fractionalInterpolation(pointA, pointB, testFraction);
+
+  const pointE = {x: 4.659090909090909, y: 1};
+  const pointD = {x: 4.659090909090909, y: 0.4590163934426229};
+  const fracPointRight = fractionalInterpolation(pointE, pointD, testFraction);
+
+  t.equal(fracPointLeft.y, fracPointRight.y, 'should find a common y');
+  t.end();
+});
 
 tape('findEquidistantPoints', t => {
   const xIntleft = {x: 0, y: 0};
@@ -167,27 +191,27 @@ tape('partitionQuadrangle - Equal Partition', t => {
 //   t.end();
 // });
 //
-// tape('partitionQuadrangle - Square Partition', t => {
-//   const equilateral = [
-//     {x: -1, y: -1},
-//     {x: -1, y: 1},
-//     {x: -0.5, y: 1},
-//     {x: 1, y: 1},
-//     {x: 1, y: -1}
-//   ];
-//   const totalArea = area(equilateral);
-//   const interpolatedA = findEquidistantPoints(equilateral[0], equilateral[1], 3);
-//   const interpolatedB = findEquidistantPoints(equilateral[3], equilateral[4], 3);
-//
-//   const areas = {alpha: totalArea * 0.5, beta: totalArea * 0.4, gamma: totalArea * 0.1};
-//   const startPoints = [interpolatedA[1], interpolatedB[1]];
-//   const partitions = partitionQuadrangle(equilateral, startPoints, areas);
-//
-//   ['alpha', 'beta', 'gamma'].forEach(areaSector => {
-//     const foundArea = round(area(partitions[areaSector]));
-//     const predictedArea = round(areas[areaSector]);
-//     t.equal(foundArea, predictedArea, `should find the correct ${areaSector} partition for an equal partition`);
-//   });
-//
-//   t.end();
-// });
+tape('partitionQuadrangle - Square Partition', t => {
+  const equilateral = [
+    {x: -1, y: -1},
+    {x: -1, y: 1},
+    {x: -0.5, y: 1},
+    {x: 1, y: 1},
+    {x: 1, y: -1}
+  ];
+  const totalArea = area(equilateral);
+  const interpolatedA = findEquidistantPoints(equilateral[0], equilateral[1], 3);
+  const interpolatedB = findEquidistantPoints(equilateral[3], equilateral[4], 3);
+
+  const areas = {alpha: totalArea * 0.5, beta: totalArea * 0.4, gamma: totalArea * 0.1};
+  const startPoints = [interpolatedA[1], interpolatedB[1]];
+  const partitions = partitionQuadrangle(equilateral, startPoints, areas);
+
+  ['alpha', 'beta', 'gamma'].forEach(areaSector => {
+    const foundArea = round(area(partitions[areaSector]));
+    const predictedArea = round(areas[areaSector]);
+    t.equal(foundArea, predictedArea, `should find the correct ${areaSector} partition for an equal partition`);
+  });
+
+  t.end();
+});
