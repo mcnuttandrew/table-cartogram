@@ -136,7 +136,7 @@ export function objectiveFunction(vector, targetTable) {
     areas.push(rowAreas);
   }
 
-  const sumArea = findSumForTable(areas);
+  // const sumArea = findSumForTable(areas);
   const sumTrueArea = findSumForTable(targetTable);
   // compare the areas and generate absolute error
   // TODO: is using the abs error right? (like as opposed to relative error?)
@@ -144,22 +144,23 @@ export function objectiveFunction(vector, targetTable) {
   for (let i = 0; i < areas.length; i++) {
     const rowErrors = [];
     for (let j = 0; j < areas[0].length; j++) {
-      const error = targetTable[i][j] / sumTrueArea - areas[i][j] / sumArea;
-      rowErrors.push(Math.abs(error));
+      // const error = targetTable[i][j] / sumTrueArea - areas[i][j] / sumArea;
+      const error = Math.abs(targetTable[i][j] / sumTrueArea - areas[i][j]) / areas[i][j];// / targetTable[i][j];
+      rowErrors.push((error));
     }
     errors.push(rowErrors);
   }
   // if the proposed table doesn't conform to the "rules" then throw it out
   // penalty is always 0 or infinity
   const penal = buildPenalties(newTable);
+  // TODO could include another penalty to try to force convexity
   return findSumForTable(errors) + penal;
 }
 
 // TODO im not confident in the accuracy of this function
 // NOT SURE HOW I'D WRITE A TEST FOR IT SHRUG
-const EPSILON = Math.pow(10, -3);
-function monteCarloPerturb(vector) {
-  return vector.map(cell => cell + (Math.random() - 0.5) * EPSILON);
+function monteCarloPerturb(vector, stepSize = Math.pow(10, -2)) {
+  return vector.map(cell => cell + (Math.random() - 0.5) * stepSize);
 }
 
 // THE DEFAULT FIGURATION FoR THE TARGET TABLE SEEMS WRONG
@@ -177,7 +178,9 @@ function monteCarloOptimization(objFunc, candidateVector, numIterations) {
   let iteratVector = candidateVector.slice(0);
   let oldScore = objFunc(candidateVector);
   for (let i = 0; i < numIterations; i++) {
-    const newVector = monteCarloPerturb(iteratVector);
+    const stepSize = Math.pow(10, -(i / numIterations * 4 + 2));
+    // everybody fucking loves adaptive step size
+    const newVector = monteCarloPerturb(iteratVector, stepSize);
     const newScore = objFunc(newVector);
     if (newScore < oldScore) {
       iteratVector = newVector;
@@ -226,6 +229,7 @@ export function convertToManyPolygons(table) {
 export function tableCartogram(table, numIterations = MAX_ITERATIONS, monteCarlo) {
   const outputTable = buildIterativeCartogram(table, numIterations, monteCarlo);
   // const targetArea = findSumForTable(table);
+  console.log(outputTable)
   const rects = [];
   for (let i = 0; i < outputTable.length - 1; i++) {
     for (let j = 0; j < outputTable[0].length - 1; j++) {
@@ -240,5 +244,6 @@ export function tableCartogram(table, numIterations = MAX_ITERATIONS, monteCarlo
       rects.push({vertices: newRect, value, error: 1});
     }
   }
+  console.log(rects)
   return rects;
 }

@@ -160,6 +160,7 @@ function renderIterative(exampleTable, iterations, monteCarlo) {
     <XYPlot
       animation
       colorType="linear"
+      yDomain={[1, 0]}
       width={600}
       height={600}>
       {gons.map((cell, index) => {
@@ -187,8 +188,8 @@ function renderIterative(exampleTable, iterations, monteCarlo) {
         })
       }
       <LabelSeries data={gons.map((cell, index) => {
-        // return {...geoCenter(cell.vertices), label: cell.value};
-        return {...geoCenter(cell.vertices), label: `${round(area(cell.vertices), Math.pow(10, 6))}`};
+        return {...geoCenter(cell.vertices), label: cell.value};
+        // return {...geoCenter(cell.vertices), label: `${round(area(cell.vertices), Math.pow(10, 6))}`};
       })} />
     </XYPlot>
   );
@@ -196,7 +197,7 @@ function renderIterative(exampleTable, iterations, monteCarlo) {
 
 export default class App extends Component {
   render() {
-    const exampleTable = [[1, 1, 1], [1, 1, 1], [1, 1, 1]];
+    const exampleTable = [[1, 1, 1], [1, 1, 1]];
     return (
       <div>
         <div style={{fontSize: '22px'}}> TABLE CARTOGRAM VISUAL TEST SUITE </div>
@@ -206,11 +207,13 @@ export default class App extends Component {
             tests={[
               translateVectorToTabletranslateTableToVector,
               findSumForTableTest,
-              buildIterativeCartogramTest
+              // buildIterativeCartogramTest
             ]}/>
           <div style={{display: 'flex'}}>
-            {renderIterative(exampleTable, 10000, true)}
-            {renderIterative(exampleTable, 10000, false)}
+            {
+              renderIterative(BLACK_AND_WHITE_TABLE, 10000, true)
+            }
+            {renderIterative(BLACK_AND_WHITE_TABLE, 10000, false)}
           </div>
         </div>
         <div style={{display: 'flex', flexDirection: 'column'}}>
