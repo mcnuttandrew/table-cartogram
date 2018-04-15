@@ -3,6 +3,31 @@ import React, {Component} from 'react';
 import GenericTable from './components/generic-test-table';
 import PolygonPartition from './components/polygon-partition';
 
+import {
+  XYPlot,
+  PolygonSeries,
+  LabelSeries
+} from 'react-vis';
+
+import {TapReactBrowser} from 'tap-react-browser';
+import {
+  translateVectorToTabletranslateTableToVector,
+  findSumForTableTest,
+  buildIterativeCartogramTest,
+} from '../test/iterative-tests';
+
+import {
+  buildIterativeCartogram,
+  translateVectorToTable,
+  translateTableToVector,
+  findSumForTable,
+  convertToManyPolygons,
+  tableCartogram
+} from '../iterative';
+
+import {geoCenter, area, round} from '../utils';
+
+import {RV_COLORS} from './colors';
 import ZionVisitors from '../test/zion-visitors';
 const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
 const ZION_VISITORS = ZionVisitors.map(year => MONTHS.map(month => year[month])).slice(5);
@@ -127,19 +152,75 @@ const POLYGON_PARTITION_EXAMPLES = [
 
 ];
 
+function renderIterative(exampleTable, iterations, monteCarlo) {
+  // const adjTable = buildIterativeCartogram(exampleTable, iterations, monteCarlo);
+  // const gons = convertToManyPolygons(adjTable);
+  const gons = tableCartogram(exampleTable, iterations, monteCarlo)
+  return (
+    <XYPlot
+      animation
+      colorType="linear"
+      width={600}
+      height={600}>
+      {gons.map((cell, index) => {
+        return (<PolygonSeries
+          key={`triangle-${index}`}
+          data={cell.vertices}
+          style={{
+            strokeWidth: 0.5,
+            strokeOpacity: 1,
+            opacity: 0.5,
+            fill: RV_COLORS[(index + 3) % RV_COLORS.length]
+          }}/>);
+      })}
+      {
+        gons.map((cell, index) => {
+          return (<PolygonSeries
+            key={`poly-${index}`}
+            data={cell.vertices}
+            style={{
+              fill: 'none',
+              strokeOpacity: 1,
+              strokeWidth: 1,
+              stroke: 'black'
+            }}/>);
+        })
+      }
+      <LabelSeries data={gons.map((cell, index) => {
+        // return {...geoCenter(cell.vertices), label: cell.value};
+        return {...geoCenter(cell.vertices), label: `${round(area(cell.vertices), Math.pow(10, 6))}`};
+      })} />
+    </XYPlot>
+  );
+}
+
 export default class App extends Component {
   render() {
+    const exampleTable = [[1, 1, 1], [1, 1, 1], [1, 1, 1]];
     return (
       <div>
         <div style={{fontSize: '22px'}}> TABLE CARTOGRAM VISUAL TEST SUITE </div>
+        <div>
+          <TapReactBrowser
+            runAsPromises 
+            tests={[
+              translateVectorToTabletranslateTableToVector,
+              findSumForTableTest,
+              buildIterativeCartogramTest
+            ]}/>
+          <div style={{display: 'flex'}}>
+            {renderIterative(exampleTable, 10000, true)}
+            {renderIterative(exampleTable, 10000, false)}
+          </div>
+        </div>
         <div style={{display: 'flex', flexDirection: 'column'}}>
           {
-            TEST_DATA.map((tableProps, i) => <GenericTable key={i} {...tableProps} />)
+            // TEST_DATA.map((tableProps, i) => <GenericTable key={i} {...tableProps} />)
           }
         </div>
         <div style={{display: 'flex', flexDirection: 'column'}}>
-          <div style={{fontSize: '18px'}}> POLYGON PARTITION </div>
           {
+            // <div style={{fontSize: '18px'}}> POLYGON PARTITION </div>
             // POLYGON_PARTITION_EXAMPLES.map((polyProps, i) => <PolygonPartition key={i} {...polyProps}/>)
           }
         </div>

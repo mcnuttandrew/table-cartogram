@@ -36,6 +36,7 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "react-vis": "^1.7.9"
+    "react-vis": "^1.9.2",
+    "tap-react-browser": "^0.0.6"
   }
 }

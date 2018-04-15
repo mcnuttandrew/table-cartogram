@@ -16,6 +16,9 @@ const config = {
       test: /\.(sass|scss)$/,
       use: ['style-loader', 'css-loader', 'sass-loader']
     }]
+  },
+  node: {
+    fs: 'empty'
   }
 
 };

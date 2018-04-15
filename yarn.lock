@@ -65,6 +65,10 @@ are-we-there-yet@~1.1.2:
     delegates "^1.0.0"
     readable-stream "^2.0.6"
 
+area-polygon@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/area-polygon/-/area-polygon-1.0.1.tgz#802a7540838be418b8ae1cd99c1e4cbbb92d6d1b"
+
 argparse@^1.0.7:
   version "1.0.9"
   resolved "https://registry.yarnpkg.com/argparse/-/argparse-1.0.9.tgz#73d83bc263f86e97f8cc4f6bae1b0e90a7d22c86"
@@ -1928,6 +1932,16 @@ minimist@0.0.8:
 minimist@^1.2.0, minimist@~1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.0.tgz#a35008b20f41383eec1fb914f4cd5df79a264284"
+
+minimize-golden-section-1d@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/minimize-golden-section-1d/-/minimize-golden-section-1d-2.0.1.tgz#3f616c715bb32feee94ab738f7896c9f5ac73dfc"
+
+minimize-powell@^1.0.7:
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/minimize-powell/-/minimize-powell-1.0.7.tgz#49d20f4044bda5470d40ce42f9b278e1594f2a19"
+  dependencies:
+    minimize-golden-section-1d "^2.0.1"
 
 "mkdirp@>=0.5 0", mkdirp@^0.5.0, mkdirp@^0.5.1:
   version "0.5.1"

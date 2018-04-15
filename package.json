@@ -14,8 +14,8 @@
     "babel-preset-es2017": "^6.24.1",
     "babel-preset-react": "^6.16.0",
     "babel-preset-stage-0": "^6.16.0",
-    "eslint-config-uber-es2015": "^3.0.1",
     "eslint": "^3.13.1",
+    "eslint-config-uber-es2015": "^3.0.1",
     "eslint-config-uber-jsx": "^3.0.1",
     "eslint-plugin-babel": "^4.0.0",
     "eslint-plugin-react": "^6.9.0",
@@ -55,5 +55,9 @@
         ]
       }
     }
+  },
+  "dependencies": {
+    "area-polygon": "^1.0.1",
+    "minimize-powell": "^1.0.7"
   }
 }
