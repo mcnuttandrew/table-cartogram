@@ -1,6 +1,7 @@
 import {area} from './utils';
 // import {minimizePowell} from './gradient-stuff';
 // import area from 'area-polygon';
+import oldTableCartogram from './index';
 import minimizePowell from 'minimize-powell';
 
 export function translateTableToVector(table, targetTable) {
@@ -80,7 +81,7 @@ function buildPenalties(newTable) {
       const cell = newTable[i][j];
       // dont allow the values to move outside of the box
       if (cell.x > 1 || cell.x < 0 || cell.y > 1 || cell.y < 0) {
-        return Infinity;
+        return 100000;
       }
       // don't allow values to move out of correct order
       let violates = false;
@@ -108,7 +109,7 @@ function buildPenalties(newTable) {
       }
 
       if (violates) {
-        penalties = 100;
+        penalties = 1000;
       }
     }
   }
@@ -136,7 +137,7 @@ export function objectiveFunction(vector, targetTable) {
     areas.push(rowAreas);
   }
 
-  // const sumArea = findSumForTable(areas);
+  const sumArea = findSumForTable(areas);
   const sumTrueArea = findSumForTable(targetTable);
   // compare the areas and generate absolute error
   // TODO: is using the abs error right? (like as opposed to relative error?)
@@ -145,7 +146,9 @@ export function objectiveFunction(vector, targetTable) {
     const rowErrors = [];
     for (let j = 0; j < areas[0].length; j++) {
       // const error = targetTable[i][j] / sumTrueArea - areas[i][j] / sumArea;
-      const error = Math.abs(targetTable[i][j] / sumTrueArea - areas[i][j]) / areas[i][j];// / targetTable[i][j];
+      // const error = Math.abs(targetTable[i][j] / sumTrueArea - areas[i][j]) / areas[i][j];
+      const error = sumTrueArea * Math.abs(targetTable[i][j] / sumTrueArea - areas[i][j]) / targetTable[i][j];
+      // const error = Math.abs(targetTable[i][j] - sumTrueArea / sumArea * areas[i][j]) / targetTable[i][j];
       rowErrors.push((error));
     }
     errors.push(rowErrors);
@@ -166,11 +169,29 @@ function monteCarloPerturb(vector, stepSize = Math.pow(10, -2)) {
 // THE DEFAULT FIGURATION FoR THE TARGET TABLE SEEMS WRONG
 // MAYBE USE ONE OF THE OLD TABLE CARTOGRAM TECHNIQUES
 // use the indexes of the auto generated arrays for positioning
-function generateInitialTable(tableHeight, tableWidth) {
+function generateInitialTable(tableHeight, tableWidth, table) {
   const numCols = tableHeight;
   const numRows = tableWidth;
-  return [...new Array(numCols + 1)].map((i, y) =>
-    [...new Array(numRows + 1)].map((j, x) => ({x: x / numCols, y: y / numRows}))
+  const rowSums = table.map(row => findSumForTable([row]));
+  const tableTranspose = table[0].map((col, i) => table.map(row => row[i]));
+  const colSums = tableTranspose.map(row => findSumForTable([row]));
+  for (let i = 1; i < rowSums.length; i++) {
+    rowSums[i] += rowSums[i - 1];
+  }
+  for (let i = 1; i < colSums.length; i++) {
+    colSums[i] += colSums[i - 1];
+  }
+  const total = findSumForTable(table);
+  // console.log(rowSums, total)
+  return [...new Array(numCols + 1)].map((i, y) => {
+    // console.log(y, rowSums[y - 1])
+    return [...new Array(numRows + 1)].map((j, x) => ({
+      // x: x / numRows,
+      x: x ? (colSums[x - 1] / total) : 0,
+      y: y ? (rowSums[y - 1] / total) : 0
+      // y: y / numCols
+    }));
+  }
   );
 }
 
@@ -196,7 +217,8 @@ export function buildIterativeCartogram(table, numIterations = MAX_ITERATIONS, m
   const width = table[0].length;
   const height = table.length;
 
-  const newTable = generateInitialTable(height, width);
+  const newTable = generateInitialTable(height, width, table);
+  console.log('new table', newTable)
   // STILL TODO, add a notion of scaling so it doesnt come out all wonky
   // initial implementation can monte carlo
   const candidateVector = translateTableToVector(newTable, table);
@@ -228,8 +250,10 @@ export function convertToManyPolygons(table) {
 
 export function tableCartogram(table, numIterations = MAX_ITERATIONS, monteCarlo) {
   const outputTable = buildIterativeCartogram(table, numIterations, monteCarlo);
+  // TODO if using monte carlo launch some configurable number at once and pick the one
+  // that minimizes the error
   // const targetArea = findSumForTable(table);
-  console.log(outputTable)
+  // console.log(outputTable)
   const rects = [];
   for (let i = 0; i < outputTable.length - 1; i++) {
     for (let j = 0; j < outputTable[0].length - 1; j++) {
@@ -244,6 +268,6 @@ export function tableCartogram(table, numIterations = MAX_ITERATIONS, monteCarlo
       rects.push({vertices: newRect, value, error: 1});
     }
   }
-  console.log(rects)
+  // console.log(rects)
   return rects;
 }

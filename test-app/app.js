@@ -31,7 +31,6 @@ import {RV_COLORS} from './colors';
 import ZionVisitors from '../test/zion-visitors';
 const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
 const ZION_VISITORS = ZionVisitors.map(year => MONTHS.map(month => year[month])).slice(5);
-
 const EXAMPLE_TABLE = [
   [2, 3, 2, 4],
   [3, 9, 3, 7],
@@ -175,25 +174,54 @@ function renderIterative(exampleTable, iterations, monteCarlo) {
           }}/>);
       })}
       {
-        gons.map((cell, index) => {
-          return (<PolygonSeries
-            key={`poly-${index}`}
-            data={cell.vertices}
-            style={{
-              fill: 'none',
-              strokeOpacity: 1,
-              strokeWidth: 1,
-              stroke: 'black'
-            }}/>);
-        })
+        // gons.map((cell, index) => {
+        //   return (<PolygonSeries
+        //     key={`poly-${index}`}
+        //     data={cell.vertices}
+        //     style={{
+              // fill: 'none',
+              // strokeOpacity: 1,
+              // strokeWidth: 1,
+              // stroke: 'black'
+        //     }}/>);
+        // })
       }
+      <PolygonSeries 
+        style={{
+          fill: 'none',
+          strokeOpacity: 1,
+          strokeWidth: 1,
+          stroke: 'black'
+        }}
+        data={[{x: 0, y: 0}, {x: 0, y: 1}, {x: 1, y: 1}, {x: 1, y: 0}]} />
       <LabelSeries data={gons.map((cell, index) => {
-        return {...geoCenter(cell.vertices), label: cell.value};
+        return {
+          ...geoCenter(cell.vertices), 
+          label: cell.value
+        };
         // return {...geoCenter(cell.vertices), label: `${round(area(cell.vertices), Math.pow(10, 6))}`};
+      })} />
+      
+      <LabelSeries data={gons.map((cell, index) => {
+        return {
+          ...geoCenter(cell.vertices), 
+          label: `${round(area(cell.vertices), Math.pow(10, 6))}`,
+          style: {
+            transform: 'translate(0, 15)'
+          }
+        };
       })} />
     </XYPlot>
   );
 }
+
+const DUMB_CALENDER = [
+  [ 1,  2,  3,  4,  5,  6,  7],
+  [ 8,  9, 10, 11, 12, 13, 14],
+  [15, 16, 17, 18, 19, 20, 21],
+  [22, 23, 24, 25, 26, 27, 28],
+  // [29, 30,  1,  2,  3,  4,  5]
+]
 
 export default class App extends Component {
   render() {
@@ -213,7 +241,9 @@ export default class App extends Component {
             {
               renderIterative(BLACK_AND_WHITE_TABLE, 10000, true)
             }
-            {renderIterative(BLACK_AND_WHITE_TABLE, 10000, false)}
+            {
+              renderIterative(BLACK_AND_WHITE_TABLE, 10000, false)
+            }
           </div>
         </div>
         <div style={{display: 'flex', flexDirection: 'column'}}>
