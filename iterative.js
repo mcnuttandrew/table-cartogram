@@ -1,7 +1,6 @@
-import {area} from './utils';
+import {area, geoCenter} from './utils';
 // import {minimizePowell} from './gradient-stuff';
 // import area from 'area-polygon';
-import oldTableCartogram from './index';
 import minimizePowell from 'minimize-powell';
 
 export function translateTableToVector(table, targetTable) {
@@ -67,6 +66,10 @@ export function findSumForTable(areas) {
   return areas.reduce((sum, row) => row.reduce((acc, cell) => acc + cell, sum), 0);
 }
 
+export function findMaxForTable(areas) {
+  return areas.reduce((max, row) => row.reduce((acc, cell) => Math.max(acc, cell), max), -Infinity);
+}
+
 function buildPenalties(newTable) {
   let penalties = 0;
   for (let i = 0; i < newTable.length; i++) {
@@ -116,39 +119,61 @@ function buildPenalties(newTable) {
   return penalties;
 }
 
+
+const diffVecs = (a, b) => ({x: a.x - b.x, y: a.y - b.y});
+const dotVecs = (a, b) => a.x * b.x + a.y * b.y;
+const normVec = a => Math.sqrt(Math.pow(a.x, 2) + Math.pow(a.y, 2));
+function checkForConcaveAngles(rect) {
+  for (let i = 1; i < 4; i++) {
+    const aVec = diffVecs(rect[i], rect[i - 1]);
+    const bVec = diffVecs(rect[i], rect[(i + 1) === 4 ? 0 : (i + 1)]);
+    const cosVal = dotVecs(aVec, bVec) / (normVec(aVec) * normVec(bVec));
+    const angle = Math.acos(cosVal);
+    // console.log(angle)
+    if (angle >= Math.PI) {
+      return true;
+      // console.log(rect)
+    }
+  }
+  return false;
+}
+
 export function objectiveFunction(vector, targetTable) {
   // PROBABLY SOME GOOD SAVINGS BY NOT TRANSLATING back and forth constantly
   // SHRUGGIE
   const newTable = translateVectorToTable(vector, targetTable, 1, 1);
   // sum up the relative amount of "error"
   // generate the areas of each of the boxes
-  const areas = [];
+  const rects = [];
   for (let i = 0; i < newTable.length - 1; i++) {
-    const rowAreas = [];
+    const rowRects = [];
     for (let j = 0; j < newTable[0].length - 1; j++) {
-      const newArea = area([
+
+      rowRects.push([
         newTable[i][j],
         newTable[i + 1][j],
         newTable[i + 1][j + 1],
         newTable[i][j + 1]
       ]);
-      rowAreas.push(newArea);
     }
-    areas.push(rowAreas);
+    rects.push(rowRects);
   }
 
+  const areas = rects.map(row => row.map(rect => area(rect)));
   const sumArea = findSumForTable(areas);
   const sumTrueArea = findSumForTable(targetTable);
   // compare the areas and generate absolute error
   // TODO: is using the abs error right? (like as opposed to relative error?)
   const errors = [];
-  for (let i = 0; i < areas.length; i++) {
+  for (let i = 0; i < rects.length; i++) {
     const rowErrors = [];
-    for (let j = 0; j < areas[0].length; j++) {
-      // const error = targetTable[i][j] / sumTrueArea - areas[i][j] / sumArea;
-      // const error = Math.abs(targetTable[i][j] / sumTrueArea - areas[i][j]) / areas[i][j];
-      const error = sumTrueArea * Math.abs(targetTable[i][j] / sumTrueArea - areas[i][j]) / targetTable[i][j];
-      // const error = Math.abs(targetTable[i][j] - sumTrueArea / sumArea * areas[i][j]) / targetTable[i][j];
+    for (let j = 0; j < rects[0].length; j++) {
+      const foundArea = area(rects[i][j]);
+      // const error = targetTable[i][j] / sumTrueArea - foundArea / sumArea;
+      // const error = Math.abs(targetTable[i][j] / sumTrueArea - foundArea) / foundArea;
+      // const error = sumTrueArea * Math.abs(targetTable[i][j] / sumTrueArea - foundArea) / targetTable[i][j];
+      const error = Math.abs(targetTable[i][j] - sumTrueArea / sumArea * foundArea) / targetTable[i][j];
+
       rowErrors.push((error));
     }
     errors.push(rowErrors);
@@ -157,7 +182,9 @@ export function objectiveFunction(vector, targetTable) {
   // penalty is always 0 or infinity
   const penal = buildPenalties(newTable);
   // TODO could include another penalty to try to force convexity
-  return findSumForTable(errors) + penal;
+  // console.log(findMaxForTable(errors))
+  return findMaxForTable(errors) + penal;
+  // return findSumForTable(errors) + penal;
 }
 
 // TODO im not confident in the accuracy of this function
@@ -187,9 +214,9 @@ function generateInitialTable(tableHeight, tableWidth, table) {
     // console.log(y, rowSums[y - 1])
     return [...new Array(numRows + 1)].map((j, x) => ({
       // x: x / numRows,
+      // y: y / numCols
       x: x ? (colSums[x - 1] / total) : 0,
       y: y ? (rowSums[y - 1] / total) : 0
-      // y: y / numCols
     }));
   }
   );

@@ -154,7 +154,10 @@ const POLYGON_PARTITION_EXAMPLES = [
 function renderIterative(exampleTable, iterations, monteCarlo) {
   // const adjTable = buildIterativeCartogram(exampleTable, iterations, monteCarlo);
   // const gons = convertToManyPolygons(adjTable);
-  const gons = tableCartogram(exampleTable, iterations, monteCarlo)
+  const startTime = (new Date()).getTime();
+  const gons = tableCartogram(exampleTable, iterations, monteCarlo);
+  const endTime = (new Date()).getTime();
+  console.log(`Computed Time for ${monteCarlo ? 'Monte' : 'Powell'}: ${endTime - startTime}`)
   return (
     <XYPlot
       animation
@@ -186,7 +189,7 @@ function renderIterative(exampleTable, iterations, monteCarlo) {
         //     }}/>);
         // })
       }
-      <PolygonSeries 
+      <PolygonSeries
         style={{
           fill: 'none',
           strokeOpacity: 1,
@@ -196,15 +199,15 @@ function renderIterative(exampleTable, iterations, monteCarlo) {
         data={[{x: 0, y: 0}, {x: 0, y: 1}, {x: 1, y: 1}, {x: 1, y: 0}]} />
       <LabelSeries data={gons.map((cell, index) => {
         return {
-          ...geoCenter(cell.vertices), 
+          ...geoCenter(cell.vertices),
           label: cell.value
         };
         // return {...geoCenter(cell.vertices), label: `${round(area(cell.vertices), Math.pow(10, 6))}`};
       })} />
-      
+
       <LabelSeries data={gons.map((cell, index) => {
         return {
-          ...geoCenter(cell.vertices), 
+          ...geoCenter(cell.vertices),
           label: `${round(area(cell.vertices), Math.pow(10, 6))}`,
           style: {
             transform: 'translate(0, 15)'
@@ -231,7 +234,7 @@ export default class App extends Component {
         <div style={{fontSize: '22px'}}> TABLE CARTOGRAM VISUAL TEST SUITE </div>
         <div>
           <TapReactBrowser
-            runAsPromises 
+            runAsPromises
             tests={[
               translateVectorToTabletranslateTableToVector,
               findSumForTableTest,
@@ -239,10 +242,10 @@ export default class App extends Component {
             ]}/>
           <div style={{display: 'flex'}}>
             {
-              renderIterative(BLACK_AND_WHITE_TABLE, 10000, true)
+              renderIterative(DUMB_CALENDER, 10000, true)
             }
             {
-              renderIterative(BLACK_AND_WHITE_TABLE, 10000, false)
+              renderIterative(DUMB_CALENDER, 10000, false)
             }
           </div>
         </div>
