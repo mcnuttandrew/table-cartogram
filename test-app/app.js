@@ -1,34 +1,34 @@
 import ReactDOM from 'react-dom';
 import React, {Component} from 'react';
-import GenericTable from './components/generic-test-table';
-import PolygonPartition from './components/polygon-partition';
-
-import {
-  XYPlot,
-  PolygonSeries,
-  LabelSeries
-} from 'react-vis';
 
 import {TapReactBrowser} from 'tap-react-browser';
 import {
   translateVectorToTabletranslateTableToVector,
   findSumForTableTest,
-  buildIterativeCartogramTest,
+  buildIterativeCartogramTest
 } from '../test/iterative-tests';
 
-import {
-  buildIterativeCartogram,
-  translateVectorToTable,
-  translateTableToVector,
-  findSumForTable,
-  convertToManyPolygons,
-  tableCartogram
-} from '../iterative';
-
-import {geoCenter, area, round} from '../utils';
-
-import {RV_COLORS} from './colors';
+import IterativeDisplay from './components/iterative-display';
 import ZionVisitors from '../test/zion-visitors';
+
+// [['WA', 6.725], ['MT', 0.989], ['ND', 0.673], ['MN', 5.304], ['WI', 5.687], ['NY', 19.378], ['VT' 0.626], ['ME', 1.328]],
+// [['OR', 3.831], ['ID', 1.568], ['SD', 0.814], ['IA', 3.046], ['MI', 9.884], ['PA', 12.702], ['NH' 1.316], ['MA', 6.548]],
+// [['NV', 2.701], ['WY', 0.564], ['NE', 1.826], ['IL', 12.831], ['IN', 6.484], ['OH', 11.537], ['CT' 3.574], ['RI', 1.053]],
+// [['UT', 2.764], ['CO', 5.029], ['KS', 2.853], ['MO', 5.989], ['KY', 4.339], ['WV', 1.853], ['MD' 5.774], ['NJ', 8.792]],
+// [['CA', 37.254], ['NM', 2.059], ['OK', 3.751], ['AR', 2.916], ['TN', 6.346], ['SC', 4.625], ['VA' 8.001], ['DE', 0.898]],
+// [['AZ', 6.392], ['TX', 25.146], ['LA', 4.533], ['MS', 2.967], ['AL', 4.78], ['GA', 9.688], ['FL' 18.801], ['NC', 9.535]],
+
+const USA_USA_USA = [
+  [6.725, 0.989, 0.673, 5.304, 5.687, 19.378, 0.626, 1.328],
+  [3.831, 1.568, 0.814, 3.046, 9.884, 12.702, 1.316, 6.548],
+  [2.701, 0.564, 1.826, 12.831, 6.484, 11.537, 3.574, 1.053],
+  [2.764, 5.029, 2.853, 5.989, 4.339, 1.853, 5.774, 8.792],
+  [37.254, 2.059, 3.751, 2.916, 6.346, 4.625, 8.001, 0.898],
+  [6.392, 25.146, 4.533, 2.967, 4.78, 9.688, 18.801, 9.535]
+];
+
+
+
 const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
 const ZION_VISITORS = ZionVisitors.map(year => MONTHS.map(month => year[month])).slice(5);
 const EXAMPLE_TABLE = [
@@ -50,26 +50,22 @@ const BIG_TOP = [
 
 const BIG_BOTTOM = [
   [1, 1, 1],
-  [20, 1, 20],
+  [20, 1, 1],
 ];
+
+const CHECKER_BOARD = [
+[1, 10, 1, 10],
+[10, 1, 10, 1],
+[1, 10, 0, 10],
+[10, 1, 10, 1]
+]
 
 const ONE_BYS = [
-  // [1, 1],
-  // [1, 1]
-
   [1, 1, 1, 1],
   [1, 1, 1, 1],
-  [1, 1, 2, 1],
-  [1, 1, 1, 1],
-  // //
-
-  // [10, 1, 10, 1],
-  // [1, 10, 1, 10],
-  // [10, 1, 10, 1],
-  // [1, 10, 1, 10]
+  [1, 1, 30, 1],
+  [1, 1, 1, 1]
 ];
-
-
 
 const BLACK_AND_WHITE_TABLE = [
   [4.5, 4.5, 16, 2.5],
@@ -78,145 +74,19 @@ const BLACK_AND_WHITE_TABLE = [
   [7, 9, 9, 6]
 ];
 
-const TEST_DATA = [
-  {
-    name: 'BIG TOP',
-    data: BIG_TOP,
-  },
-  {
-    name: 'BIG BOTTOM',
-    data: BIG_BOTTOM
-  },
-  {
-    name: 'EXAMPLE_TABLE',
-    data: EXAMPLE_TABLE,
-  },
-  {
-    name: '1x1slower 2',
-    data: [[1, 1, 1, 1],
-    [1, 1, 1, 1],
-    [1, 1, 2, 1],
-    [1, 1, 1, 1],],
-  },
-  {
-    name: '1x1supper 2',
-    data: [[1, 1, 1, 1],
-    [1, 2, 1, 1],
-    [1, 1, 1, 1],
-    [1, 1, 1, 1],],
-  },
-  // {
-  //   name: 'B + W',
-  //   data: BLACK_AND_WHITE_TABLE,
-  //   size: {height: 500, width: 500}
-  // }
-  // {
-  //   name: 'ZION_VISITORS',
-  //   data: ZION_VISITORS,
-  //   size: {height: 1200, width: 1200}
-  // }
+const oneByOnesLower2 = [
+  [1, 1, 1, 1],
+  [1, 1, 1, 1],
+  [1, 1, 2, 1],
+  [1, 1, 1, 1]
 ];
 
-const POLYGON_PARTITION_EXAMPLES = [
-  // {
-  //   points: [
-  //     {x: -4.659090909090909, y: 1},
-  //     {x: -4.659090909090909, y: 0.4590163934426229},
-  //     {x: 0, y: 0.06557377049180328},
-  //     {x: 4.659090909090909, y: 0.4590163934426229},
-  //     {x: 4.659090909090909, y: 1}
-  //   ],
-  //   areas: {alpha: 2.9508196721311477, beta: 1.9616244411326378, gamma: 1.9616244411326378}
-  // },
-  // {
-  //   areas: {alpha: 0, beta: 9.878048780487806, gamma: 0.4939024390243902},
-  //   points: [
-  //     {x: 10.731707317073171, y: 1},
-  //     {x: 10.731707317073171, y: 0.11363636363636369},
-  //     {x: 11.73170731707317, y: 0.045454545454545456},
-  //     {x: 22, y: 0.11363636363636369},
-  //     {x: 22, y: 1}
-  //   ]
-  // },
-  {
-    points: [
-      {x: 0, y: 0},
-      {x: 0, y: 0.045454545454545456},
-      {x: 10.731707317073171, y: 0.11363636363636369},
-      {x: 11.73170731707317, y: 0.045454545454545456},
-      {x: 11.73170731707317, y: 0}
-    ],
-    areas: {alpha: 0, beta: 0.4666019955654103, gamma: 0.4666019955654103}
-  }
-
+const oneByOnesUpper2 = [
+  [1, 1, 1, 1],
+  [1, 2, 1, 1],
+  [1, 1, 1, 1],
+  [1, 1, 1, 1]
 ];
-
-function renderIterative(exampleTable, iterations, monteCarlo) {
-  // const adjTable = buildIterativeCartogram(exampleTable, iterations, monteCarlo);
-  // const gons = convertToManyPolygons(adjTable);
-  const startTime = (new Date()).getTime();
-  const gons = tableCartogram(exampleTable, iterations, monteCarlo);
-  const endTime = (new Date()).getTime();
-  console.log(`Computed Time for ${monteCarlo ? 'Monte' : 'Powell'}: ${endTime - startTime}`)
-  return (
-    <XYPlot
-      animation
-      colorType="linear"
-      yDomain={[1, 0]}
-      width={600}
-      height={600}>
-      {gons.map((cell, index) => {
-        return (<PolygonSeries
-          key={`triangle-${index}`}
-          data={cell.vertices}
-          style={{
-            strokeWidth: 0.5,
-            strokeOpacity: 1,
-            opacity: 0.5,
-            fill: RV_COLORS[(index + 3) % RV_COLORS.length]
-          }}/>);
-      })}
-      {
-        // gons.map((cell, index) => {
-        //   return (<PolygonSeries
-        //     key={`poly-${index}`}
-        //     data={cell.vertices}
-        //     style={{
-              // fill: 'none',
-              // strokeOpacity: 1,
-              // strokeWidth: 1,
-              // stroke: 'black'
-        //     }}/>);
-        // })
-      }
-      <PolygonSeries
-        style={{
-          fill: 'none',
-          strokeOpacity: 1,
-          strokeWidth: 1,
-          stroke: 'black'
-        }}
-        data={[{x: 0, y: 0}, {x: 0, y: 1}, {x: 1, y: 1}, {x: 1, y: 0}]} />
-      <LabelSeries data={gons.map((cell, index) => {
-        return {
-          ...geoCenter(cell.vertices),
-          label: cell.value
-        };
-        // return {...geoCenter(cell.vertices), label: `${round(area(cell.vertices), Math.pow(10, 6))}`};
-      })} />
-
-      <LabelSeries data={gons.map((cell, index) => {
-        return {
-          ...geoCenter(cell.vertices),
-          label: `${round(area(cell.vertices), Math.pow(10, 6))}`,
-          style: {
-            transform: 'translate(0, 15)'
-          }
-        };
-      })} />
-    </XYPlot>
-  );
-}
 
 const DUMB_CALENDER = [
   [ 1,  2,  3,  4,  5,  6,  7],
@@ -225,10 +95,10 @@ const DUMB_CALENDER = [
   [22, 23, 24, 25, 26, 27, 28],
   // [29, 30,  1,  2,  3,  4,  5]
 ]
+const twoByThree = [[1, 1, 1], [1, 1, 1]];
 
 export default class App extends Component {
   render() {
-    const exampleTable = [[1, 1, 1], [1, 1, 1]];
     return (
       <div>
         <div style={{fontSize: '22px'}}> TABLE CARTOGRAM VISUAL TEST SUITE </div>
@@ -241,24 +111,17 @@ export default class App extends Component {
               // buildIterativeCartogramTest
             ]}/>
           <div style={{display: 'flex'}}>
-            {
-              renderIterative(DUMB_CALENDER, 10000, true)
-            }
-            {
-              renderIterative(DUMB_CALENDER, 10000, false)
-            }
+            <IterativeDisplay
+              data={CHECKER_BOARD}
+              iterations={10000}
+              technique="monteCarlo"
+              />
+            <IterativeDisplay
+              data={CHECKER_BOARD}
+              iterations={10000}
+              technique="gradient"
+              />
           </div>
-        </div>
-        <div style={{display: 'flex', flexDirection: 'column'}}>
-          {
-            // TEST_DATA.map((tableProps, i) => <GenericTable key={i} {...tableProps} />)
-          }
-        </div>
-        <div style={{display: 'flex', flexDirection: 'column'}}>
-          {
-            // <div style={{fontSize: '18px'}}> POLYGON PARTITION </div>
-            // POLYGON_PARTITION_EXAMPLES.map((polyProps, i) => <PolygonPartition key={i} {...polyProps}/>)
-          }
         </div>
       </div>
     );

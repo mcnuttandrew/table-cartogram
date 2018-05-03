@@ -2,6 +2,8 @@ import {area, geoCenter} from './utils';
 // import {minimizePowell} from './gradient-stuff';
 // import area from 'area-polygon';
 import minimizePowell from 'minimize-powell';
+import {nelderMead} from 'fmin';
+import {minimize_GradientDescent} from 'optimization-js';
 
 export function translateTableToVector(table, targetTable) {
   const vector = [];
@@ -138,27 +140,30 @@ function checkForConcaveAngles(rect) {
   return false;
 }
 
-export function objectiveFunction(vector, targetTable) {
-  // PROBABLY SOME GOOD SAVINGS BY NOT TRANSLATING back and forth constantly
-  // SHRUGGIE
-  const newTable = translateVectorToTable(vector, targetTable, 1, 1);
-  // sum up the relative amount of "error"
-  // generate the areas of each of the boxes
+function getRectsFromTable(table) {
   const rects = [];
-  for (let i = 0; i < newTable.length - 1; i++) {
+  for (let i = 0; i < table.length - 1; i++) {
     const rowRects = [];
-    for (let j = 0; j < newTable[0].length - 1; j++) {
+    for (let j = 0; j < table[0].length - 1; j++) {
 
       rowRects.push([
-        newTable[i][j],
-        newTable[i + 1][j],
-        newTable[i + 1][j + 1],
-        newTable[i][j + 1]
+        table[i][j],
+        table[i + 1][j],
+        table[i + 1][j + 1],
+        table[i][j + 1]
       ]);
     }
     rects.push(rowRects);
   }
+  return rects;
+}
 
+export function objectiveFunction(vector, targetTable) {
+  // PROBABLY SOME GOOD SAVINGS BY NOT TRANSLATING back and forth constantly
+  const newTable = translateVectorToTable(vector, targetTable, 1, 1);
+  const rects = getRectsFromTable(newTable);
+  // sum up the relative amount of "error"
+  // generate the areas of each of the boxes
   const areas = rects.map(row => row.map(rect => area(rect)));
   const sumArea = findSumForTable(areas);
   const sumTrueArea = findSumForTable(targetTable);
@@ -182,19 +187,11 @@ export function objectiveFunction(vector, targetTable) {
   // penalty is always 0 or infinity
   const penal = buildPenalties(newTable);
   // TODO could include another penalty to try to force convexity
-  // console.log(findMaxForTable(errors))
-  return findMaxForTable(errors) + penal;
+  // return findMaxForTable(errors) + penal;
   // return findSumForTable(errors) + penal;
+  return findSumForTable(errors) / (errors.length * errors[0].length) + penal;
 }
 
-// TODO im not confident in the accuracy of this function
-// NOT SURE HOW I'D WRITE A TEST FOR IT SHRUG
-function monteCarloPerturb(vector, stepSize = Math.pow(10, -2)) {
-  return vector.map(cell => cell + (Math.random() - 0.5) * stepSize);
-}
-
-// THE DEFAULT FIGURATION FoR THE TARGET TABLE SEEMS WRONG
-// MAYBE USE ONE OF THE OLD TABLE CARTOGRAM TECHNIQUES
 // use the indexes of the auto generated arrays for positioning
 function generateInitialTable(tableHeight, tableWidth, table) {
   const numCols = tableHeight;
@@ -213,13 +210,21 @@ function generateInitialTable(tableHeight, tableWidth, table) {
   return [...new Array(numCols + 1)].map((i, y) => {
     // console.log(y, rowSums[y - 1])
     return [...new Array(numRows + 1)].map((j, x) => ({
+      // linear grid
       // x: x / numRows,
       // y: y / numCols
+      // PSUEDO CARTOGRAM TECHNIQUE
       x: x ? (colSums[x - 1] / total) : 0,
       y: y ? (rowSums[y - 1] / total) : 0
     }));
   }
   );
+}
+
+// TODO im not confident in the accuracy of this function
+// NOT SURE HOW I'D WRITE A TEST FOR IT SHRUG
+function monteCarloPerturb(vector, stepSize = Math.pow(10, -2)) {
+  return vector.map(cell => cell + (Math.random() - 0.5) * stepSize);
 }
 
 function monteCarloOptimization(objFunc, candidateVector, numIterations) {
@@ -239,24 +244,30 @@ function monteCarloOptimization(objFunc, candidateVector, numIterations) {
 }
 
 const MAX_ITERATIONS = 3000;
-export function buildIterativeCartogram(table, numIterations = MAX_ITERATIONS, monteCarlo) {
+export function buildIterativeCartogram(table, numIterations = MAX_ITERATIONS, technique) {
   // TODO need to add a mechanism for scaling. This computation
   const width = table[0].length;
   const height = table.length;
 
   const newTable = generateInitialTable(height, width, table);
-  console.log('new table', newTable)
   // STILL TODO, add a notion of scaling so it doesnt come out all wonky
   // initial implementation can monte carlo
   const candidateVector = translateTableToVector(newTable, table);
   const objFunc = vec => objectiveFunction(vec, table);
-  if (monteCarlo) {
+
+  switch (technique) {
+  case 'powell':
+    const powellFinalVec = minimizePowell(objFunc, candidateVector, {maxIter: 100});
+    return translateVectorToTable(powellFinalVec, table, 1, 1);
+  case 'gradient':
+    const gradient = minimize_GradientDescent(objFunc, x => 0, candidateVector);
+    console.log(gradient)
+    return translateVectorToTable(gradient.argument, table, 1, 1);
+  default:
+  case 'monteCarlo':
     const monteFinalVec = monteCarloOptimization(objFunc, candidateVector, numIterations);
     return translateVectorToTable(monteFinalVec, table, 1, 1);
   }
-
-  const powellFinalVec = minimizePowell(objFunc, candidateVector, {bounds: [0, 1]});
-  return translateVectorToTable(powellFinalVec, table, 1, 1);
 }
 
 export function convertToManyPolygons(table) {
@@ -275,9 +286,10 @@ export function convertToManyPolygons(table) {
   return rects;
 }
 
-export function tableCartogram(table, numIterations = MAX_ITERATIONS, monteCarlo) {
-  const outputTable = buildIterativeCartogram(table, numIterations, monteCarlo);
+export function tableCartogram(table, numIterations = MAX_ITERATIONS, technique) {
+  const outputTable = buildIterativeCartogram(table, numIterations, technique);
   // TODO if using monte carlo launch some configurable number at once and pick the one
+  // this would be an ensemble technique
   // that minimizes the error
   // const targetArea = findSumForTable(table);
   // console.log(outputTable)
