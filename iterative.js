@@ -2,8 +2,8 @@ import {area, geoCenter} from './utils';
 // import {minimizePowell} from './gradient-stuff';
 // import area from 'area-polygon';
 import minimizePowell from 'minimize-powell';
-import {nelderMead} from 'fmin';
-import {minimize_GradientDescent} from 'optimization-js';
+import {gradientDescent} from 'fmin';
+import {minimize_L_BFGS} from 'optimization-js';
 
 export function translateTableToVector(table, targetTable) {
   const vector = [];
@@ -86,7 +86,7 @@ function buildPenalties(newTable) {
       const cell = newTable[i][j];
       // dont allow the values to move outside of the box
       if (cell.x > 1 || cell.x < 0 || cell.y > 1 || cell.y < 0) {
-        return 100000;
+        return 5000;
       }
       // don't allow values to move out of correct order
       let violates = false;
@@ -215,7 +215,7 @@ function generateInitialTable(tableHeight, tableWidth, table) {
       // y: y / numCols
       // PSUEDO CARTOGRAM TECHNIQUE
       x: x ? (colSums[x - 1] / total) : 0,
-      y: y ? (rowSums[y - 1] / total) : 0
+      y: y ? (rowSums[y - 1] / total) : 0,
     }));
   }
   );
@@ -243,6 +243,117 @@ function monteCarloOptimization(objFunc, candidateVector, numIterations) {
   return iteratVector;
 }
 
+// monte carlo with adjustment on a single direction per pass
+function altMonteCarloOptimization(objFunc, candidateVector, numIterations) {
+  let iteratVector = candidateVector.slice(0);
+  let oldScore = objFunc(candidateVector);
+  for (let i = 0; i < numIterations; i++) {
+    const stepSize = Math.pow(10, -(i / numIterations * 4 + 2));
+    // everybody fucking loves adaptive step size
+    // const tempVector = monteCarloPerturb(iteratVector, stepSize);
+    const vals = iteratVector.reduce((acc, _, idx) => {
+      const leftVec = iteratVector.map((d, jdx) => jdx === idx ? d - stepSize : d);
+      const newScoreLeft = objFunc(leftVec);
+      const rightVec = iteratVector.map((d, jdx) => jdx === idx ? d + stepSize : d);
+      const newScoreRight = objFunc(rightVec);
+      if (newScoreLeft < acc.newScore && newScoreLeft < newScoreRight) {
+        return {
+          newScore: newScoreLeft,
+          newVector: leftVec
+        };
+      }
+      if (newScoreRight < acc.newScore && newScoreRight < newScoreLeft) {
+        return {
+          newScore: newScoreRight,
+          newVector: rightVec
+        };
+      }
+
+      return acc;
+    }, {
+      newScore: Infinity,
+      newVector: iteratVector
+    });
+    const {newScore, newVector} = vals;
+    // const newScore = objFunc(newVector);
+    if (newScore < oldScore) {
+      // console.log('!')
+      iteratVector = newVector;
+      oldScore = newScore;
+    }
+  }
+  return iteratVector;
+}
+
+function matrixIterate(width, height, cell) {
+  const output = [];
+  for (let i = 0; i < width; i++) {
+    const row = [];
+    for (let j = 0; j < height; j++) {
+      row.push(cell(j, i));
+    }
+    output.push(row);
+  }
+  return output;
+}
+
+const matrixAdd = (matA, matB) =>
+  matrixIterate(matA[0].length, matA.length, (x, y) => matA[y][x] + matB[y][x]);
+const transposeMatrix = mat => mat[0].map((col, i) => mat.map(row => row[i]));
+
+// function numericalGradient(obj, currentVec, stepSize) {
+// //   Numb = Length[Flatten[x]];
+// // fi = N[f[x]];
+// // DataMat = Table[Flatten[x], {k, Numb}] + \[CapitalDelta] IdentityMatrix[Numb];
+// // DataMat =
+// //  Transpose[Table[{DataMat[[j, i]], DataMat[[j, i + 1]]}, {i, 1, 2 Num, 2}, {j, 2 Num}]];
+// // fbump = Table[N[f[DataMat[[k]] ] ], {k, 2 Num}];
+// // grad = Table[Sum[(fbump[[k]] - fi)[[j]], {j, Length[fi]}], {k, 2 Num}]/\[CapitalDelta];
+// // grad = Table[{grad[[i]], grad[[i + 1]]}, {i, 1, 2 Num, 2}];
+// // Return[grad];
+//   const len = currentVec.len;
+//   const initialScore = obj(currentVec);// wrong
+//   const matrixizedInput = [...new Array(len)].map(x => currentVec.map(i => i));
+//   const identityBump = matrixIterate(len, len, (i, j) => i === j ? stepSize : 0);
+//   const dataMat = matrixAdd(matrixizedInput, identityBump);
+//   const secondMat = transposeMatrix(matrixIterate(2 * len, 2 * len, (i, j) =>
+//     [dataMat[j][2 * i], dataMat[j][2 * i + 1]]));
+//   const fbump = [...new Array(2 * len)].map((x, k) => obj(secondMat[k]));
+//   const grad = [...new Array(2 * len)].map((x, k) => )
+//
+// }
+const DELTA = 1;
+function finiteDiference(obj, currentPos, stepSize) {
+  // console.log(obj, currentPos)
+  // const stepForward = [...new Array(currentPos.length)].map((x, i) => currentPos[i] + stepSize);
+  // const stepBackward = [...new Array(currentPos.length)].map((x, i) => currentPos[i] - stepSize);
+  // return (obj(stepForward) - obj(stepBackward)) / 2 * stepSize;
+
+  // const outputVector = [];
+  const output = currentPos.map((d, i) => {
+    const forward = obj(currentPos.map((row, idx) => row + (idx === i ? DELTA : 0)));
+    const backward = obj(currentPos.map((row, idx) => row - (idx === i ? DELTA : 0)));
+    // console.log(forward, backward)
+    return (forward - backward) / 2;
+  });
+  // console.log(output)
+  return output;
+
+  // return currentPos;
+  // const outputVector = [];
+  // for (let i = 0; i < currentPos.length; i++) {
+  //   const leftTerm = (i ? currentPos[i - 1] : currentPos[currentPos.length - 1]);
+  //   const rightTerm = (i === (currentPos.length - 1) ? currentPos[0] : currentPos[i + 1]);
+  //   outputVector[i] = leftTerm + rightTerm - 2 * currentPos[i];
+  //   outputVector[i] /= Math.pow(DELTA, 2);
+  // }
+  // const sum = outputVector.reduce((acc, row) => acc + row, 0);
+  // console.log('THERE', sum, outputVector)
+  // return outputVector.map(row => row / sum);
+  // outputVector.push(0);
+  // return outputVector;
+}
+
 const MAX_ITERATIONS = 3000;
 export function buildIterativeCartogram(table, numIterations = MAX_ITERATIONS, technique) {
   // TODO need to add a mechanism for scaling. This computation
@@ -253,6 +364,7 @@ export function buildIterativeCartogram(table, numIterations = MAX_ITERATIONS, t
   // STILL TODO, add a notion of scaling so it doesnt come out all wonky
   // initial implementation can monte carlo
   const candidateVector = translateTableToVector(newTable, table);
+  // console.log(table)
   const objFunc = vec => objectiveFunction(vec, table);
 
   switch (technique) {
@@ -260,9 +372,17 @@ export function buildIterativeCartogram(table, numIterations = MAX_ITERATIONS, t
     const powellFinalVec = minimizePowell(objFunc, candidateVector, {maxIter: 100});
     return translateVectorToTable(powellFinalVec, table, 1, 1);
   case 'gradient':
-    const gradient = minimize_GradientDescent(objFunc, x => 0, candidateVector);
-    console.log(gradient)
+    const gradient = minimize_L_BFGS(objFunc, x => {
+      // console.log(x)
+      // console.log("WHJHASOJDJASDP")
+      // return 0;
+      return finiteDiference(objFunc, x.argument || x, 0.01);
+    }, candidateVector);
+    // console.log(gradient)
     return translateVectorToTable(gradient.argument, table, 1, 1);
+  case 'altMonteCarlo':
+    const altMonteFinalVec = altMonteCarloOptimization(objFunc, candidateVector, numIterations);
+    return translateVectorToTable(altMonteFinalVec, table, 1, 1);
   default:
   case 'monteCarlo':
     const monteFinalVec = monteCarloOptimization(objFunc, candidateVector, numIterations);
@@ -286,7 +406,13 @@ export function convertToManyPolygons(table) {
   return rects;
 }
 
+const inputTableIsInvalid = table => !table.every(row => row.every(cell => cell));
 export function tableCartogram(table, numIterations = MAX_ITERATIONS, technique) {
+  if (inputTableIsInvalid(table)) {
+    console.error('INVALID INPUT TABLE')
+    return [];
+  }
+
   const outputTable = buildIterativeCartogram(table, numIterations, technique);
   // TODO if using monte carlo launch some configurable number at once and pick the one
   // this would be an ensemble technique

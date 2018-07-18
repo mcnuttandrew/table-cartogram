@@ -1,20 +1,14 @@
-const entry = {app: './app'};
-const jsRule = {
-  test: /\.js$/,
-  loader: 'babel-loader',
-  exclude: [/node_modules/]
-};
+module.exports = {
 
-const config = {
-
-  entry,
+  entry: {app: './app'},
 
   devtool: 'source-maps',
 
   module: {
-    rules: [jsRule, {
-      test: /\.(sass|scss)$/,
-      use: ['style-loader', 'css-loader', 'sass-loader']
+    rules: [{
+      test: /\.js$/,
+      loader: 'babel-loader',
+      exclude: [/node_modules/]
     }]
   },
   node: {
@@ -22,5 +16,3 @@ const config = {
   }
 
 };
-
-module.exports = config;

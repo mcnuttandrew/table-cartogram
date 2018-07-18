@@ -56,9 +56,16 @@ const BIG_BOTTOM = [
 const CHECKER_BOARD = [
 [1, 10, 1, 10],
 [10, 1, 10, 1],
-[1, 10, 0, 10],
+[1, 10, 1, 10],
 [10, 1, 10, 1]
-]
+];
+
+const CHECKER_BOARD_SMALL = [
+  [1, 5, 1, 5],
+  [5, 1, 5, 1],
+  [1, 5, 1, 5],
+  [5, 1, 5, 1],
+];
 
 const ONE_BYS = [
   [1, 1, 1, 1],
@@ -94,7 +101,7 @@ const DUMB_CALENDER = [
   [15, 16, 17, 18, 19, 20, 21],
   [22, 23, 24, 25, 26, 27, 28],
   // [29, 30,  1,  2,  3,  4,  5]
-]
+];
 const twoByThree = [[1, 1, 1], [1, 1, 1]];
 
 export default class App extends Component {
@@ -112,14 +119,14 @@ export default class App extends Component {
             ]}/>
           <div style={{display: 'flex'}}>
             <IterativeDisplay
-              data={CHECKER_BOARD}
-              iterations={10000}
+              data={CHECKER_BOARD_SMALL}
+              iterations={100000}
               technique="monteCarlo"
               />
             <IterativeDisplay
-              data={CHECKER_BOARD}
+              data={CHECKER_BOARD_SMALL}
               iterations={10000}
-              technique="gradient"
+              technique="powell"
               />
           </div>
         </div>
