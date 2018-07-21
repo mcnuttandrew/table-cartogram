@@ -1,4 +1,5 @@
 import {area, geoCenter} from './utils';
+import {buildForceDirectedTable} from './force-directed';
 // import {minimizePowell} from './gradient-stuff';
 // import area from 'area-polygon';
 import minimizePowell from 'minimize-powell';
@@ -140,7 +141,7 @@ function checkForConcaveAngles(rect) {
   return false;
 }
 
-function getRectsFromTable(table) {
+export function getRectsFromTable(table) {
   const rects = [];
   for (let i = 0; i < table.length - 1; i++) {
     const rowRects = [];
@@ -193,7 +194,7 @@ export function objectiveFunction(vector, targetTable) {
 }
 
 // use the indexes of the auto generated arrays for positioning
-function generateInitialTable(tableHeight, tableWidth, table) {
+export function generateInitialTable(tableHeight, tableWidth, table) {
   const numCols = tableHeight;
   const numRows = tableWidth;
   const rowSums = table.map(row => findSumForTable([row]));
@@ -412,7 +413,12 @@ export function tableCartogram(table, numIterations = MAX_ITERATIONS, technique)
     console.error('INVALID INPUT TABLE')
     return [];
   }
-
+  // console.log(buildForceDirectedTable(table).map)
+  // const outputTable = buildForceDirectedTable(table).reduce((acc, cell, idx) => {
+  //   acc[idx % (table.length + 1)][Math.floor(idx / (table.length + 1))] = cell;
+  //   return acc;
+  // }, [...Array(table.length + 1)].map(d => []));
+  // console.log(outputTable)
   const outputTable = buildIterativeCartogram(table, numIterations, technique);
   // TODO if using monte carlo launch some configurable number at once and pick the one
   // this would be an ensemble technique

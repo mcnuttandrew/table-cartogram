@@ -102,7 +102,14 @@ const DUMB_CALENDER = [
   [22, 23, 24, 25, 26, 27, 28],
   // [29, 30,  1,  2,  3,  4,  5]
 ];
+
+const SMALL_RAMP = [
+  [1, 2, 3],
+  [4, 5, 6],
+  [7, 8, 9]
+];
 const twoByThree = [[1, 1, 1], [1, 1, 1]];
+const ONE_BY = [[1, 2], [2, 1]];
 
 export default class App extends Component {
   render() {
@@ -123,11 +130,14 @@ export default class App extends Component {
               iterations={100000}
               technique="monteCarlo"
               />
-            <IterativeDisplay
-              data={CHECKER_BOARD_SMALL}
-              iterations={10000}
-              technique="powell"
-              />
+              {
+
+                // <IterativeDisplay
+                // data={CHECKER_BOARD_SMALL}
+                // iterations={10000}
+                // technique="powell"
+                // />
+              }
           </div>
         </div>
       </div>

@@ -91,7 +91,7 @@ export default class IterativeDisplay extends React.Component {
           <LabelSeries data={gons.map((cell, index) => {
             return {
               ...geoCenter(cell.vertices),
-              label: cell.value
+              label: `${cell.value}`
             };
             // return {...geoCenter(cell.vertices), label: `${round(area(cell.vertices), Math.pow(10, 6))}`};
           })} />
