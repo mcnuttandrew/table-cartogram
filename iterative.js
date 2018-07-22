@@ -3,7 +3,7 @@ import {buildForceDirectedTable} from './force-directed';
 // import {minimizePowell} from './gradient-stuff';
 // import area from 'area-polygon';
 import minimizePowell from 'minimize-powell';
-import {gradientDescent} from 'fmin';
+import {conjugateGradient} from 'fmin';
 import {minimize_L_BFGS, minimize_GradientDescent} from 'optimization-js';
 import oldCartogram from './';
 
@@ -88,7 +88,7 @@ function buildPenalties(newTable) {
       const cell = newTable[i][j];
       // dont allow the values to move outside of the box
       if (cell.x > 1 || cell.x < 0 || cell.y > 1 || cell.y < 0) {
-        return 5000;
+        penalties += 1000;
       }
       // don't allow values to move out of correct order
       let violates = false;
@@ -116,13 +116,12 @@ function buildPenalties(newTable) {
       }
 
       if (violates) {
-        penalties = 1000;
+        penalties += 1000;
       }
     }
   }
   return penalties;
 }
-
 
 const diffVecs = (a, b) => ({x: a.x - b.x, y: a.y - b.y});
 const dotVecs = (a, b) => a.x * b.x + a.y * b.y;
@@ -161,6 +160,8 @@ export function getRectsFromTable(table) {
 }
 
 export function objectiveFunction(vector, targetTable) {
+  const sumed = targetTable.reduce((acc, row) => acc + row.reduce((mem, cell) => mem + cell, 0), 0);
+  const expectedAreas = targetTable.map(row => row.map(cell => cell / sumed));
   // PROBABLY SOME GOOD SAVINGS BY NOT TRANSLATING back and forth constantly
   const newTable = translateVectorToTable(vector, targetTable, 1, 1);
   const rects = getRectsFromTable(newTable);
@@ -180,7 +181,7 @@ export function objectiveFunction(vector, targetTable) {
       // const error = Math.abs(targetTable[i][j] / sumTrueArea - foundArea) / foundArea;
       // const error = sumTrueArea * Math.abs(targetTable[i][j] / sumTrueArea - foundArea) / targetTable[i][j];
       const error = Math.abs(targetTable[i][j] - sumTrueArea / sumArea * foundArea) / targetTable[i][j];
-
+      // const error = (expectedAreas[i][j] - foundArea) / foundArea;
       rowErrors.push((error));
     }
     errors.push(rowErrors);
@@ -191,18 +192,16 @@ export function objectiveFunction(vector, targetTable) {
   // TODO could include another penalty to try to force convexity
   // return findMaxForTable(errors) + penal;
   // return findSumForTable(errors) + penal;
+  // const concavePenalty = rects.reduce((acc, row) =>
+  //     acc + row.reduce((mem, rect) => mem + (checkForConcaveAngles(rect) ? 1 : 0), 0), 0)
   return findSumForTable(errors) / (errors.length * errors[0].length) + penal;
 }
 
 function psuedoCartogramLayout(numRows, numCols, colSums, rowSums, total) {
   return [...new Array(numCols + 1)].map((i, y) => {
     return [...new Array(numRows + 1)].map((j, x) => ({
-      // linear grid
-      // x: x / numRows,
-      // y: y / numCols
-      // PSUEDO CARTOGRAM TECHNIQUE
       x: x ? (colSums[x - 1] / total) : 0,
-      y: y ? (rowSums[y - 1] / total) : 0,
+      y: y ? (rowSums[y - 1] / total) : 0
     }));
   });
 }
@@ -230,31 +229,8 @@ export function generateInitialTable(tableHeight, tableWidth, table, objFunc) {
     colSums[i] += colSums[i - 1];
   }
   const total = findSumForTable(table);
-  // EFFORTS TO BRING IN TABLE CARTOGRAM TRIANGLE LAYOUT
-  // const generator = oldCartogram().mode('triangle');
-  // const seenVertices = {};
-  // const tabledLayout = generator(table)
-  //   .reduce((acc, row) => {
-  //     console.log(row)
-  //     return acc.concat(row.vertices);
-  //   }, [])
-  //   .filter(({x, y}) => {
-  //     const key = `${Math.abs(x)}-${Math.abs(y)}`;
-  //     if (seenVertices[key]) {
-  //       return false;
-  //     }
-  //     seenVertices[key] = true;
-  //     return true;
-  //   })
-  //   .sort((a, b) => a.y - b.y);
-  // .reduce((acc, row) => {
-  //   acc[row.coords.y] = acc[row.coords.y].concat();
-  //   return acc;
-  // }, [...new Array(numCols)].map(d => []));
-  // tabledLayout.map(row => row.)
-  // console.log(tabledLayout);
-  // console.log(rowSums, total)
-  const layout = 'pickBest';
+
+  const layout = 'psuedoCartogram';
   switch (layout) {
   default:
   case 'psuedoCartogram':
@@ -280,9 +256,6 @@ export function generateInitialTable(tableHeight, tableWidth, table, objFunc) {
     console.log(measurements.bestIndex)
     return layouts[measurements.bestIndex];
   }
-  // const candidateVector = translateTableToVector(newTable, table);
-  // almost done writing, system for automatically picking best starting layout
-
 }
 
 // TODO im not confident in the accuracy of this function
@@ -349,6 +322,31 @@ function altMonteCarloOptimization(objFunc, candidateVector, numIterations) {
   return iteratVector;
 }
 
+// monte with a genetic algo type iteration cycle
+function stagedMonteCarlo(numIterations, candidateVector, objFunc) {
+  const stepSize = Math.floor(numIterations / 6);
+  const generationSize = 10;
+  let currentCandidate = candidateVector;
+  for (let i = 0; i < numIterations; i += stepSize) {
+    const passes = [...new Array(generationSize)].map(d =>
+        monteCarloOptimization(objFunc, currentCandidate, stepSize));
+    const measurements = passes.reduce((acc, pass, idx) => {
+      const newScore = objFunc(pass);
+      // console.log(newScore)
+      if (acc.bestScore > newScore) {
+        return {
+          bestIndex: idx,
+          bestScore: newScore
+        };
+      }
+      return acc;
+    }, {bestIndex: -1, bestScore: Infinity});
+    console.log(measurements.bestScore)
+    currentCandidate = passes[measurements.bestIndex];
+  }
+  return currentCandidate;
+}
+
 function matrixIterate(width, height, cell) {
   const output = [];
   for (let i = 0; i < width; i++) {
@@ -365,85 +363,49 @@ const matrixAdd = (matA, matB) =>
   matrixIterate(matA[0].length, matA.length, (x, y) => matA[y][x] + matB[y][x]);
 const transposeMatrix = mat => mat[0].map((col, i) => mat.map(row => row[i]));
 
-// function numericalGradient(obj, currentVec, stepSize) {
-// //   Numb = Length[Flatten[x]];
-// // fi = N[f[x]];
-// // DataMat = Table[Flatten[x], {k, Numb}] + \[CapitalDelta] IdentityMatrix[Numb];
-// // DataMat =
-// //  Transpose[Table[{DataMat[[j, i]], DataMat[[j, i + 1]]}, {i, 1, 2 Num, 2}, {j, 2 Num}]];
-// // fbump = Table[N[f[DataMat[[k]] ] ], {k, 2 Num}];
-// // grad = Table[Sum[(fbump[[k]] - fi)[[j]], {j, Length[fi]}], {k, 2 Num}]/\[CapitalDelta];
-// // grad = Table[{grad[[i]], grad[[i + 1]]}, {i, 1, 2 Num, 2}];
-// // Return[grad];
-//   const len = currentVec.len;
-//   const initialScore = obj(currentVec);// wrong
-//   const matrixizedInput = [...new Array(len)].map(x => currentVec.map(i => i));
-//   const identityBump = matrixIterate(len, len, (i, j) => i === j ? stepSize : 0);
-//   const dataMat = matrixAdd(matrixizedInput, identityBump);
-//   const secondMat = transposeMatrix(matrixIterate(2 * len, 2 * len, (i, j) =>
-//     [dataMat[j][2 * i], dataMat[j][2 * i + 1]]));
-//   const fbump = [...new Array(2 * len)].map((x, k) => obj(secondMat[k]));
-//   const grad = [...new Array(2 * len)].map((x, k) => )
-//
-// }
-const DELTA = 1;
+// const DELTA = 0.001;
 function finiteDiference(obj, currentPos, stepSize) {
-  // console.log(obj, currentPos)
-  // const stepForward = [...new Array(currentPos.length)].map((x, i) => currentPos[i] + stepSize);
-  // const stepBackward = [...new Array(currentPos.length)].map((x, i) => currentPos[i] - stepSize);
-  // return (obj(stepForward) - obj(stepBackward)) / 2 * stepSize;
-
-  // const outputVector = [];
   const output = currentPos.map((d, i) => {
-    const forward = obj(currentPos.map((row, idx) => row + (idx === i ? DELTA : 0)));
-    const backward = obj(currentPos.map((row, idx) => row - (idx === i ? DELTA : 0)));
-    // console.log(forward, backward)
-    return (forward - backward) / 2;
+    const forward = obj(currentPos.map((row, idx) => row + (idx === i ? stepSize : 0)));
+    const backward = obj(currentPos.map((row, idx) => row - (idx === i ? stepSize : 0)));
+    return (forward - backward) / (2 * stepSize);
   });
   // console.log(output)
   return output;
-
-  // return currentPos;
-  // const outputVector = [];
-  // for (let i = 0; i < currentPos.length; i++) {
-  //   const leftTerm = (i ? currentPos[i - 1] : currentPos[currentPos.length - 1]);
-  //   const rightTerm = (i === (currentPos.length - 1) ? currentPos[0] : currentPos[i + 1]);
-  //   outputVector[i] = leftTerm + rightTerm - 2 * currentPos[i];
-  //   outputVector[i] /= Math.pow(DELTA, 2);
-  // }
-  // const sum = outputVector.reduce((acc, row) => acc + row, 0);
-  // console.log('THERE', sum, outputVector)
-  // return outputVector.map(row => row / sum);
-  // outputVector.push(0);
-  // return outputVector;
 }
 
 const MAX_ITERATIONS = 3000;
 export function buildIterativeCartogram(table, numIterations = MAX_ITERATIONS, technique) {
-  // TODO need to add a mechanism for scaling. This computation
+  // TODO need to add a mechanism for scaling
   const width = table[0].length;
   const height = table.length;
 
   const objFunc = vec => objectiveFunction(vec, table);
   const newTable = generateInitialTable(height, width, table, objFunc);
-  // STILL TODO, add a notion of scaling so it doesnt come out all wonky
-  // initial implementation can monte carlo
   const candidateVector = translateTableToVector(newTable, table);
-  // console.log(table)
 
   switch (technique) {
   case 'powell':
-    const powellFinalVec = minimizePowell(objFunc, candidateVector, {maxIter: 100});
+    const powellFinalVec = minimizePowell(objFunc, candidateVector, {maxIter: 1000});
     return translateVectorToTable(powellFinalVec, table, 1, 1);
   case 'gradient':
-    const gradient = minimize_L_BFGS(objFunc, x => {
-      // console.log(x)
-      // console.log("WHJHASOJDJASDP")
-      // return 0;
-      return finiteDiference(objFunc, x.argument || x, 0.01);
-    }, candidateVector);
+    // const gradient = minimize_L_BFGS(objFunc, x => {
+    //   console.log('eval')
+    //   return finiteDiference(objFunc, x.argument || x, 0.01);
+    // }, candidateVector);
+    const gradientResult = conjugateGradient((currentVec, fxprime) => {
+      fxprime = fxprime || candidateVector.map(d => 0);
+      // return finiteDiference(objFunc, x.argument || x, 0.01);
+      finiteDiference(objFunc, currentVec, 0.0001).forEach((val, idx) => {
+        fxprime[idx] = val;
+      });
+      const result = objFunc(currentVec);
+      console.log(result)
+      return result;
+    }, candidateVector, {learnRate: 0.000001});
     // console.log(gradient)
-    return translateVectorToTable(gradient.argument, table, 1, 1);
+    console.log(gradientResult)
+    return translateVectorToTable(gradientResult.x, table, 1, 1);
   case 'altMonteCarlo':
     const altMonteFinalVec = altMonteCarloOptimization(objFunc, candidateVector, numIterations);
     return translateVectorToTable(altMonteFinalVec, table, 1, 1);
@@ -451,6 +413,9 @@ export function buildIterativeCartogram(table, numIterations = MAX_ITERATIONS, t
   case 'monteCarlo':
     const monteFinalVec = monteCarloOptimization(objFunc, candidateVector, numIterations);
     return translateVectorToTable(monteFinalVec, table, 1, 1);
+  case 'stagedMonteCarlo':
+    const currentCandidate = stagedMonteCarlo(numIterations, candidateVector, objFunc);
+    return translateVectorToTable(currentCandidate, table, 1, 1);
   }
 }
 

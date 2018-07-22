@@ -50,13 +50,13 @@ const checkerBoardGenerator = (width, height, high, low, offset = 0) =>
   [...new Array(height)].map((_, ydx) =>
     [...new Array(width)].map((d, xdx) => (xdx + (ydx % 2) + offset) % (2) ? high : low));
 
-const CHECKER_BOARD = checkerBoardGenerator(4, 4, 10, 1);
+const CHECKER_BOARD = checkerBoardGenerator(4, 4, 50, 1);
 const CHECKER_BOARD_SMALL = checkerBoardGenerator(4, 4, 5, 1);
 
 const ONE_BYS = [
   [1, 1, 1, 1],
   [1, 1, 1, 1],
-  [1, 1, 30, 1],
+  [1, 1, 5, 1],
   [1, 1, 1, 1]
 ];
 
@@ -95,7 +95,7 @@ const SMALL_RAMP = [
   [7, 8, 9]
 ];
 const twoByThree = [[1, 1, 1], [1, 1, 1]];
-const ONE_BY = [[1, 2], [2, 1]];
+const ONE_BY = checkerBoardGenerator(2, 2, 2, 1);
 
 export default class App extends Component {
   render() {
@@ -112,9 +112,9 @@ export default class App extends Component {
             ]}/>
           <div style={{display: 'flex'}}>
             <IterativeDisplay
-              data={CHECKER_BOARD}
+              data={DUMB_CALENDER}
               iterations={100000}
-              technique="monteCarlo"
+              technique="gradient"
               />
               {
 

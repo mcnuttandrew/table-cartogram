@@ -32,11 +32,12 @@ export default class IterativeDisplay extends React.Component {
       const endTime = (new Date()).getTime();
       const errors = [];
       const tableSum = data.reduce((acc, row) => acc + row.reduce((mem, cell) => mem + cell, 0), 0);
+      const expectedAreas = data.map(row => row.map(cell => cell / tableSum));
       for (let i = 0; i < data.length; i++) {
         for (let j = 0; j < data[0].length; j++) {
           const gonArea = area(gons[i * data[0].length + j].vertices);
-          const expectedArea = data[i][j] / tableSum;
-          errors.push(Math.abs(gonArea - expectedArea) / expectedArea);
+          // const expectedArea = data[i][j] / tableSum;
+          errors.push(Math.abs(gonArea - expectedAreas[i][j]) / expectedAreas[i][j]);
         }
       }
       const error = errors.reduce((acc, row) => acc + row, 0) / errors.length;
