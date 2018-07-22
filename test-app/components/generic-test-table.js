@@ -13,7 +13,7 @@ const tableCartogram = require('../../index.js').default;
 
 export default class GenericTable extends React.Component {
   state = {
-    mode: 'quad'
+    mode: 'triangle'
   }
   render() {
     const {data, name, size} = this.props;
@@ -21,7 +21,7 @@ export default class GenericTable extends React.Component {
     const triangles = tableCartogram().mode(mode)(data);
     const polygons = tableCartogram().mode('polygon')(data);
     const line = tableCartogram().mode('zigzag')(data);
-
+    console.log(triangles)
     return (
       <div>
         {name}
@@ -31,8 +31,8 @@ export default class GenericTable extends React.Component {
         <XYPlot
           animation
           colorType="linear"
-          width={600}
-          height={300}
+          width={500}
+          height={500}
           {...size}>
           {triangles.map((cell, index) => {
             return (<PolygonSeries

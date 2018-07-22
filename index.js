@@ -96,6 +96,11 @@ function iterativelyGeneratePartitions(args) {
       table[(subTable.length - 1) - row][column] :
       table[((table.length - 1) - (subTable.length - 1)) + row][column];
   };
+  const tableLabel = (row, column) => {
+    return isTop ?
+      {y: (subTable.length - 1) - row, x: column} :
+      {y: ((table.length - 1) - (subTable.length - 1)) + row, x: column};
+  };
   const partitions = [];
   let currentPoints = points;
   const tableCopy = deepCopyTable(subTable);
@@ -113,10 +118,18 @@ function iterativelyGeneratePartitions(args) {
 
     // if we find a size zero polygon, ignore it
     if (areas.beta) {
-      partitions.push({vertices: partionedArea.beta, value: tableAccessor(row, left)});
+      partitions.push({
+        vertices: partionedArea.beta,
+        value: tableAccessor(row, left),
+        coords: tableLabel(row, left)
+      });
     }
     if (areas.gamma) {
-      partitions.push({vertices: partionedArea.gamma, value: tableAccessor(row, right)});
+      partitions.push({
+        vertices: partionedArea.gamma,
+        value: tableAccessor(row, right),
+        coords: tableLabel(row, right)
+      });
     }
     // use the alpha as the next area to sub-divide against
     currentPoints = partionedArea.alpha;
@@ -228,7 +241,7 @@ export function generateZigZagPrime(table, zigZag, tableTop, tableBottom) {
   const lambda = tableTopSum / (tableTopSum + tableBottomSum);
   // console.log('????', lambda * zigZagHeight, (1 - lambda) * zigZagHeight)
   const convexifyValue = 2 * tableMin / sumOfAllValues;
-  console.log('zz height', zigZagHeight)
+  // console.log('zz height', zigZagHeight)
   return zigZag.map(({x, y}, index) => {
     // if the bottom table is empty, just dont draw it at all
     if (!tableBottomSum) {

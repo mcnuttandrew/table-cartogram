@@ -81,9 +81,6 @@ export function buildForceDirectedTable(table) {
 
   for (let i = 0; i < 100; i++) {
     const simulation = forceSimulation(nodes)
-      // .force('charge', forceManyBody().strength((a, b) => {
-      //   console.log('sim?')
-      // }))
       .force('link', forceLink(links).distance(1).strength(link => {
         // console.log('link check?')
         const sumForce = link.cells.reduce((acc, {x, y}) => {
@@ -97,20 +94,21 @@ export function buildForceDirectedTable(table) {
           ];
 
           const foundArea = area(currentRect);
-          const newForce = (expectedArea - foundArea) / expectedArea;
+          const newForce = (expectedArea - foundArea);
           // return acc + (newForce < 0 ? -0.1 : 0.1);
-          return acc + newForce;
+          return acc + newForce / 10;
         }, 0);// / link.cells.length;
+        // console.log(sumForce)
         let orderForce = 0;
         // console.log(link.type, link)
         if (
-          (link.type === 'left' && (link.target.x > link.source.x)) ||
-          (link.type === 'right' && (link.target.x < link.source.x)) ||
-          (link.type === 'top' && (link.target.y > link.source.y)) ||
-          (link.type === 'bottom' && (link.target.y < link.source.y))
+          (link.type === 'left' && (link.target.x >= link.source.x)) ||
+          (link.type === 'right' && (link.target.x <= link.source.x)) ||
+          (link.type === 'top' && (link.target.y >= link.source.y)) ||
+          (link.type === 'bottom' && (link.target.y <= link.source.y))
         ) {
           console.log('misordered')
-          orderForce = ((link.type === 'left' || link.type === 'top') ? -1 : 1) * 0.5;
+          orderForce = ((link.type === 'left' || link.type === 'top') ? -1 : 1) * 1;
         }
 
         const boundCheck = buildCellFilter(1, 1, true);
@@ -119,17 +117,18 @@ export function buildForceDirectedTable(table) {
         if (boundaryForce) {
           console.log('bound')
         }
-        const force = (sumForce + orderForce + boundaryForce);
+        const force = (sumForce + orderForce + 0 * boundaryForce);
         // console.log(force)
         return force;
       }))
-      .velocityDecay(0.9)
+      // .velocityDecay(0.9)
       .stop();
 
     // console.log(nodes)
     simulation.tick();
     nodes.forEach(node => {
       ['x', 'y'].forEach(letter => {
+        node[`v${letter}`] = 0;
         if (node[letter] < 0) {
           node[letter] = 0;
         }
@@ -140,5 +139,5 @@ export function buildForceDirectedTable(table) {
     });
   }
 
-  return nodes;
+  return nodes.map(d => ({...d, x: d.y, y: d.x}));
 }

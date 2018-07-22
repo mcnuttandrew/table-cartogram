@@ -4,7 +4,8 @@ import {buildForceDirectedTable} from './force-directed';
 // import area from 'area-polygon';
 import minimizePowell from 'minimize-powell';
 import {gradientDescent} from 'fmin';
-import {minimize_L_BFGS} from 'optimization-js';
+import {minimize_L_BFGS, minimize_GradientDescent} from 'optimization-js';
+import oldCartogram from './';
 
 export function translateTableToVector(table, targetTable) {
   const vector = [];
@@ -193,8 +194,30 @@ export function objectiveFunction(vector, targetTable) {
   return findSumForTable(errors) / (errors.length * errors[0].length) + penal;
 }
 
+function psuedoCartogramLayout(numRows, numCols, colSums, rowSums, total) {
+  return [...new Array(numCols + 1)].map((i, y) => {
+    return [...new Array(numRows + 1)].map((j, x) => ({
+      // linear grid
+      // x: x / numRows,
+      // y: y / numCols
+      // PSUEDO CARTOGRAM TECHNIQUE
+      x: x ? (colSums[x - 1] / total) : 0,
+      y: y ? (rowSums[y - 1] / total) : 0,
+    }));
+  });
+}
+
+function gridLayout(numRows, numCols, colSums, rowSums, total) {
+  return [...new Array(numCols + 1)].map((i, y) => {
+    return [...new Array(numRows + 1)].map((j, x) => ({
+      x: x / numRows,
+      y: y / numCols
+    }));
+  });
+}
+
 // use the indexes of the auto generated arrays for positioning
-export function generateInitialTable(tableHeight, tableWidth, table) {
+export function generateInitialTable(tableHeight, tableWidth, table, objFunc) {
   const numCols = tableHeight;
   const numRows = tableWidth;
   const rowSums = table.map(row => findSumForTable([row]));
@@ -207,19 +230,59 @@ export function generateInitialTable(tableHeight, tableWidth, table) {
     colSums[i] += colSums[i - 1];
   }
   const total = findSumForTable(table);
+  // EFFORTS TO BRING IN TABLE CARTOGRAM TRIANGLE LAYOUT
+  // const generator = oldCartogram().mode('triangle');
+  // const seenVertices = {};
+  // const tabledLayout = generator(table)
+  //   .reduce((acc, row) => {
+  //     console.log(row)
+  //     return acc.concat(row.vertices);
+  //   }, [])
+  //   .filter(({x, y}) => {
+  //     const key = `${Math.abs(x)}-${Math.abs(y)}`;
+  //     if (seenVertices[key]) {
+  //       return false;
+  //     }
+  //     seenVertices[key] = true;
+  //     return true;
+  //   })
+  //   .sort((a, b) => a.y - b.y);
+  // .reduce((acc, row) => {
+  //   acc[row.coords.y] = acc[row.coords.y].concat();
+  //   return acc;
+  // }, [...new Array(numCols)].map(d => []));
+  // tabledLayout.map(row => row.)
+  // console.log(tabledLayout);
   // console.log(rowSums, total)
-  return [...new Array(numCols + 1)].map((i, y) => {
-    // console.log(y, rowSums[y - 1])
-    return [...new Array(numRows + 1)].map((j, x) => ({
-      // linear grid
-      // x: x / numRows,
-      // y: y / numCols
-      // PSUEDO CARTOGRAM TECHNIQUE
-      x: x ? (colSums[x - 1] / total) : 0,
-      y: y ? (rowSums[y - 1] / total) : 0,
-    }));
+  const layout = 'pickBest';
+  switch (layout) {
+  default:
+  case 'psuedoCartogram':
+    return psuedoCartogramLayout(numRows, numCols, colSums, rowSums, total);
+  case 'grid':
+    return gridLayout(numRows, numCols, colSums, rowSums, total);
+  case 'pickBest':
+    const layouts = [
+      psuedoCartogramLayout(numRows, numCols, colSums, rowSums, total),
+      gridLayout(numRows, numCols, colSums, rowSums, total)
+    ];
+    const measurements = layouts.reduce((acc, newTable, idx) => {
+      const newScore = objFunc(translateTableToVector(newTable, table));
+      // console.log(newScore)
+      if (acc.bestScore > newScore) {
+        return {
+          bestIndex: idx,
+          bestScore: newScore
+        };
+      }
+      return acc;
+    }, {bestIndex: -1, bestScore: Infinity});
+    console.log(measurements.bestIndex)
+    return layouts[measurements.bestIndex];
   }
-  );
+  // const candidateVector = translateTableToVector(newTable, table);
+  // almost done writing, system for automatically picking best starting layout
+
 }
 
 // TODO im not confident in the accuracy of this function
@@ -361,12 +424,12 @@ export function buildIterativeCartogram(table, numIterations = MAX_ITERATIONS, t
   const width = table[0].length;
   const height = table.length;
 
-  const newTable = generateInitialTable(height, width, table);
+  const objFunc = vec => objectiveFunction(vec, table);
+  const newTable = generateInitialTable(height, width, table, objFunc);
   // STILL TODO, add a notion of scaling so it doesnt come out all wonky
   // initial implementation can monte carlo
   const candidateVector = translateTableToVector(newTable, table);
   // console.log(table)
-  const objFunc = vec => objectiveFunction(vec, table);
 
   switch (technique) {
   case 'powell':
