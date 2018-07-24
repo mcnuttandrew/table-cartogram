@@ -1,3 +1,4 @@
+import pointInPolygon from 'point-in-polygon';
 import {area, geoCenter} from './utils';
 import {buildForceDirectedTable} from './force-directed';
 // import {minimizePowell} from './gradient-stuff';
@@ -6,6 +7,7 @@ import minimizePowell from 'minimize-powell';
 import {conjugateGradient} from 'fmin';
 import {minimize_L_BFGS, minimize_GradientDescent} from 'optimization-js';
 import oldCartogram from './';
+
 
 export function translateTableToVector(table, targetTable) {
   const vector = [];
@@ -76,6 +78,7 @@ export function findMaxForTable(areas) {
 
 function buildPenalties(newTable) {
   let penalties = 0;
+  const rects = getRectsFromTable(newTable).reduce((acc, row) => acc.concat(row));
   for (let i = 0; i < newTable.length; i++) {
     for (let j = 0; j < newTable[0].length; j++) {
       const inFirstRow = i === 0;
@@ -118,8 +121,14 @@ function buildPenalties(newTable) {
       if (violates) {
         penalties += 1000;
       }
+
+      const insideViolation = rects.every(rect => pointInPolygon(rect, [cell.x, cell.y]));
+      if (insideViolation) {
+        penalties += 1000;
+      }
     }
   }
+
   return penalties;
 }
 
@@ -314,7 +323,6 @@ function altMonteCarloOptimization(objFunc, candidateVector, numIterations) {
     const {newScore, newVector} = vals;
     // const newScore = objFunc(newVector);
     if (newScore < oldScore) {
-      // console.log('!')
       iteratVector = newVector;
       oldScore = newScore;
     }
@@ -332,7 +340,6 @@ function stagedMonteCarlo(numIterations, candidateVector, objFunc) {
         monteCarloOptimization(objFunc, currentCandidate, stepSize));
     const measurements = passes.reduce((acc, pass, idx) => {
       const newScore = objFunc(pass);
-      // console.log(newScore)
       if (acc.bestScore > newScore) {
         return {
           bestIndex: idx,
@@ -341,7 +348,7 @@ function stagedMonteCarlo(numIterations, candidateVector, objFunc) {
       }
       return acc;
     }, {bestIndex: -1, bestScore: Infinity});
-    console.log(measurements.bestScore)
+    console.log(`${Math.floor(i / numIterations * 100)} % done`)
     currentCandidate = passes[measurements.bestIndex];
   }
   return currentCandidate;
@@ -389,6 +396,7 @@ export function buildIterativeCartogram(table, numIterations = MAX_ITERATIONS, t
     const powellFinalVec = minimizePowell(objFunc, candidateVector, {maxIter: 1000});
     return translateVectorToTable(powellFinalVec, table, 1, 1);
   case 'gradient':
+    // const monte = stagedMonteCarlo(objFunc, candidateVector, numIterations);
     // const gradient = minimize_L_BFGS(objFunc, x => {
     //   console.log('eval')
     //   return finiteDiference(objFunc, x.argument || x, 0.01);
@@ -400,11 +408,9 @@ export function buildIterativeCartogram(table, numIterations = MAX_ITERATIONS, t
         fxprime[idx] = val;
       });
       const result = objFunc(currentVec);
-      console.log(result)
       return result;
     }, candidateVector, {learnRate: 0.000001});
     // console.log(gradient)
-    console.log(gradientResult)
     return translateVectorToTable(gradientResult.x, table, 1, 1);
   case 'altMonteCarlo':
     const altMonteFinalVec = altMonteCarloOptimization(objFunc, candidateVector, numIterations);

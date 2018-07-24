@@ -30,17 +30,19 @@ export default class IterativeDisplay extends React.Component {
       const startTime = (new Date()).getTime();
       const gons = tableCartogram(data, iterations, technique);
       const endTime = (new Date()).getTime();
-      const errors = [];
       const tableSum = data.reduce((acc, row) => acc + row.reduce((mem, cell) => mem + cell, 0), 0);
       const expectedAreas = data.map(row => row.map(cell => cell / tableSum));
+      const errors = [];
       for (let i = 0; i < data.length; i++) {
         for (let j = 0; j < data[0].length; j++) {
           const gonArea = area(gons[i * data[0].length + j].vertices);
-          // const expectedArea = data[i][j] / tableSum;
-          errors.push(Math.abs(gonArea - expectedAreas[i][j]) / expectedAreas[i][j]);
+          const computedErr = Math.abs(gonArea - expectedAreas[i][j]) / Math.max(gonArea, expectedAreas[i][j]);
+          errors.push(computedErr);
         }
       }
-      const error = errors.reduce((acc, row) => acc + row, 0) / errors.length;
+      let error = errors.reduce((acc, row) => acc + row, 0);
+      console.log('sum error', error, error / errors.length)
+      error /= errors.length;
       resolve({gons, error, startTime, endTime});
     }).then(state => this.setState({...state, loaded: true}));
   }
@@ -61,26 +63,13 @@ export default class IterativeDisplay extends React.Component {
               key={`triangle-${index}`}
               data={cell.vertices}
               style={{
-                strokeWidth: 0.5,
-                // color={area(cell.vertices)}
+                strokeWidth: 1,
+                stroke: 'black',
                 strokeOpacity: 1,
                 opacity: 0.5,
                 fill: RV_COLORS[(index + 3) % RV_COLORS.length]
               }}/>);
           })}
-          {
-            // gons.map((cell, index) => {
-            //   return (<PolygonSeries
-            //     key={`poly-${index}`}
-            //     data={cell.vertices}
-            //     style={{
-                  // fill: 'none',
-                  // strokeOpacity: 1,
-                  // strokeWidth: 1,
-                  // stroke: 'black'
-            //     }}/>);
-            // })
-          }
           <PolygonSeries
             style={{
               fill: 'none',
@@ -89,13 +78,10 @@ export default class IterativeDisplay extends React.Component {
               stroke: 'black'
             }}
             data={[{x: 0, y: 0}, {x: 0, y: 1}, {x: 1, y: 1}, {x: 1, y: 0}]} />
-          <LabelSeries data={gons.map((cell, index) => {
-            return {
-              ...geoCenter(cell.vertices),
-              label: `${cell.value}`
-            };
-            // return {...geoCenter(cell.vertices), label: `${round(area(cell.vertices), Math.pow(10, 6))}`};
-          })} />
+          <LabelSeries data={gons.map((cell, index) => ({
+            ...geoCenter(cell.vertices),
+            label: `${cell.value}`
+          }))} />
 
           <LabelSeries data={gons.map((cell, index) => {
             return {
@@ -109,7 +95,7 @@ export default class IterativeDisplay extends React.Component {
         </XYPlot>}
         {!loaded && <h1>COMPUTING</h1>}
         {loaded && <h4>{technique.toUpperCase()}</h4>}
-        {loaded && <h4>{`AVERAGE ERROR ${String(error * 100).slice(0, 5)} %`}</h4>}
+        {loaded && <h4>{`AVERAGE ERROR ${round(error, Math.pow(10, 6)) * 100} %`}</h4>}
         {loaded && <h4>{`COMPUTATION TIME ${(endTime - startTime) / 1000} seconds`}</h4>}
       </div>
     );
