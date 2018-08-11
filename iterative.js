@@ -76,6 +76,71 @@ export function findMaxForTable(areas) {
   return areas.reduce((max, row) => row.reduce((acc, cell) => Math.max(acc, cell), max), -Infinity);
 }
 
+
+function continuousMax(x, y) {
+  return 0.5 * (x + y + Math.abs(x - y));
+}
+
+function expPenalty(x) {
+  return continuousMax(0, -x) * Math.exp(-x) * 100;
+}
+
+function continuousBuildPenalties(newTable) {
+  let penalties = 0;
+  const rects = getRectsFromTable(newTable).reduce((acc, row) => acc.concat(row));
+  for (let i = 0; i < newTable.length; i++) {
+    for (let j = 0; j < newTable[0].length; j++) {
+      const inFirstRow = i === 0;
+      const inLeftColumn = j === 0;
+      // bounds are probably wrong
+      const inRightColumn = j === (newTable[0].length - 1);
+      const inLastRow = i === (newTable.length - 1);
+      const inCorner = ((inFirstRow && (inLeftColumn || inRightColumn))) ||
+              ((inLastRow && (inLeftColumn || inRightColumn)));
+      const cell = newTable[i][j];
+      // dont allow the values to move outside of the box
+      penalties += expPenalty(1 - cell.x);
+      penalties += expPenalty(cell.x);
+      penalties += expPenalty(1 - cell.y);
+      penalties += expPenalty(cell.y);
+
+      const evalPenalites = ({val, dim, lessThan}) => {
+        penalties += expPenalty(lessThan ? cell[dim] - val : val - cell[dim]);
+      };
+      // don't allow values to move out of correct order
+      if (inCorner) {
+        // no penaltys for corners, they are not manipualted
+      } else if (inFirstRow || inLastRow) {
+        [
+          {lessThan: true, dim: 'x', val: newTable[i][j - 1].x},
+          {lessThan: false, dim: 'x', val: newTable[i][j + 1].x},
+          {lessThan: !inFirstRow, dim: 'y', val: newTable[i + (inFirstRow ? 1 : -1)][j].y}
+        ].forEach(evalPenalites);
+      } else if (inLeftColumn || inRightColumn) {
+        [
+          {lessThan: true, dim: 'y', val: newTable[i - 1][j].y},
+          {lessThan: false, dim: 'y', val: newTable[i + 1][j].y},
+          {lessThan: !inLeftColumn, dim: 'x', val: newTable[i][j + (inLeftColumn ? 1 : -1)].x}
+        ].forEach(evalPenalites);
+      } else {
+        [
+          {lessThan: true, dim: 'y', val: newTable[i - 1][j].y},
+          {lessThan: false, dim: 'y', val: newTable[i + 1][j].y},
+          {lessThan: true, dim: 'x', val: newTable[i][j - 1].x},
+          {lessThan: false, dim: 'x', val: newTable[i][j + 1].x}
+        ].forEach(evalPenalites);
+      }
+
+      const insideViolation = rects.every(rect => pointInPolygon(rect, [cell.x, cell.y]));
+      if (insideViolation) {
+        penalties += 1000;
+      }
+    }
+  }
+
+  return penalties;
+}
+
 function buildPenalties(newTable) {
   let penalties = 0;
   const rects = getRectsFromTable(newTable).reduce((acc, row) => acc.concat(row));

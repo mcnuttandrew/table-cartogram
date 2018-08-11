@@ -14,13 +14,13 @@ import IterativeDisplay from './components/iterative-display';
 
 function App() {
   const tables = [
-    {data: EXAMPLES.BLACK_AND_WHITE_TABLE, technique: 'gradient'},
+    // {data: EXAMPLES.BLACK_AND_WHITE_TABLE, technique: 'gradient'},
     // {data: EXAMPLES.ONE_BYS, technique: 'gradient'}
-    // {data: EXAMPLES.CHECKER_BOARD, technique: 'gradient'},
+    {data: EXAMPLES.CHECKER_BOARD, technique: 'gradient'},
   ].map(config => (
     <IterativeDisplay
       {...config}
-      iterations={10000}
+      iterations={100000}
       key={config.technique}/>
   ));
   const SHOW_TESTS = false;
