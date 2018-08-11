@@ -239,7 +239,7 @@ export function generateInitialTable(tableHeight, tableWidth, table, objFunc) {
   }
   const total = findSumForTable(table);
 
-  const layout = 'psuedoCartogram';
+  const layout = 'pickBest';
   switch (layout) {
   default:
   case 'psuedoCartogram':
@@ -329,6 +329,8 @@ function altMonteCarloOptimization(objFunc, candidateVector, numIterations) {
   }
   return iteratVector;
 }
+
+const times = n => [...new Array(n)].map((d, i) => i);
 
 // monte with a genetic algo type iteration cycle
 function stagedMonteCarlo(numIterations, candidateVector, objFunc) {

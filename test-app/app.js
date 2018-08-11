@@ -14,7 +14,7 @@ import IterativeDisplay from './components/iterative-display';
 
 function App() {
   const tables = [
-    {data: EXAMPLES.ONE_BYS, technique: 'stagedMonteCarlo'},
+    {data: EXAMPLES.BLACK_AND_WHITE_TABLE, technique: 'gradient'},
     // {data: EXAMPLES.ONE_BYS, technique: 'gradient'}
     // {data: EXAMPLES.CHECKER_BOARD, technique: 'gradient'},
   ].map(config => (
