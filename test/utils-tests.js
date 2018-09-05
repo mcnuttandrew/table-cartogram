@@ -6,7 +6,7 @@ import {
   partitionTriangle,
   partitionQuadrangle,
   round
-} from '../utils';
+} from '../old-stuff/utils';
 import tape from 'tape';
 
 /* eslint-disable max-len*/

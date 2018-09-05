@@ -8,13 +8,13 @@ import {
 
 import {
   tableCartogram
-} from '../../iterative';
+} from '../../';
 
 import {
   area,
   round,
   geoCenter
-} from '../../utils';
+} from '../../old-stuff/utils';
 
 import {RV_COLORS} from '../colors';
 

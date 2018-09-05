@@ -7,9 +7,9 @@ import {
   LabelSeries
 } from 'react-vis';
 
-import {geoCenter} from '../../utils';
+import {geoCenter} from '../../old-stuff/utils';
 import {RV_COLORS} from '../colors';
-const tableCartogram = require('../../index.js').default;
+const tableCartogram = require('../../old-stuff/first-attempt.js').default;
 
 export default class GenericTable extends React.Component {
   state = {

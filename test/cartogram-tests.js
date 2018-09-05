@@ -17,7 +17,7 @@ import {
 import {
   area,
   round
-} from '../utils';
+} from '../old-stuff/utils';
 
 import ZionVisitors from './zion-visitors';
 const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];

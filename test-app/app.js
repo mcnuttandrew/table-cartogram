@@ -16,7 +16,7 @@ function App() {
   const tables = [
     // {data: EXAMPLES.BLACK_AND_WHITE_TABLE, technique: 'gradient'},
     // {data: EXAMPLES.ONE_BYS, technique: 'gradient'}
-    {data: EXAMPLES.CHECKER_BOARD, technique: 'gradient'},
+    {data: EXAMPLES.CHECKER_BOARD, technique: 'monteCarlo'},
   ].map(config => (
     <IterativeDisplay
       {...config}

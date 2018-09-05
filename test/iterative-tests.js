@@ -1,12 +1,13 @@
-import tape from 'tape';
 import {
-  buildIterativeCartogram,
+  buildIterativeCartogram
+} from '../';
+
+import {
   translateVectorToTable,
   translateTableToVector,
   findSumForTable
-} from '../iterative';
+} from '../iterative-methods/utils';
 
-// tape('buildIterativeCartogram', );
 export function buildIterativeCartogramTest(t) {
   ['monte', 'powell'].forEach(optimizationAlgo => {
     const usingMonte = optimizationAlgo === 'monte';
@@ -80,7 +81,6 @@ export function translateVectorToTabletranslateTableToVector(t) {
     'should correctly transform the constructed two by 3');
   t.end();
 }
-// tape('translateVectorToTable/translateTableToVector', );
 
 export function findSumForTableTest(t) {
   const inputTable = [[1, 1, 3], [2, 3, 4]];
@@ -88,6 +88,3 @@ export function findSumForTableTest(t) {
   t.equal(findSumForTable(getNbyMTable(100, 100), 0), 0, 'should get zero for empty table');
   t.end();
 }
-// tape();
-
-
