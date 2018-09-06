@@ -1,4 +1,4 @@
-import {conjugateGradient} from 'fmin';
+import {gradientDescentLineSearch} from 'fmin';
 import minimizePowell from 'minimize-powell';
 
 import {objectiveFunction} from './objective-function';
@@ -93,15 +93,12 @@ function stagedMonteCarlo(numIterations, candidateVector, objFunc) {
   return currentCandidate;
 }
 
-// const DELTA = 0.001;
 function finiteDiference(obj, currentPos, stepSize) {
-  const output = currentPos.map((d, i) => {
+  return currentPos.map((d, i) => {
     const forward = obj(currentPos.map((row, idx) => row + (idx === i ? stepSize : 0)));
     const backward = obj(currentPos.map((row, idx) => row - (idx === i ? stepSize : 0)));
     return (forward - backward) / (2 * stepSize);
   });
-  // console.log(output)
-  return output;
 }
 
 function executeOptimization(objFunc, candidateVector, technique, table, numIterations) {
@@ -118,16 +115,14 @@ function executeOptimization(objFunc, candidateVector, technique, table, numIter
     //   console.log('eval')
     //   return finiteDiference(objFunc, x.argument || x, 0.01);
     // }, candidateVector);
-    const gradientResult = conjugateGradient((currentVec, fxprime) => {
+    const gradientResult = gradientDescentLineSearch((currentVec, fxprime) => {
       fxprime = fxprime || candidateVector.map(d => 0);
-      // return finiteDiference(objFunc, x.argument || x, 0.01);
-      finiteDiference(objFunc, currentVec, 0.0001).forEach((val, idx) => {
-        fxprime[idx] = val;
-      });
-      const result = objFunc(currentVec);
-      return result;
-    }, candidateVector, {learnRate: 0.000001, maxIterations: numIterations});
-    // console.log(gradient)
+      const delta = finiteDiference(objFunc, currentVec, 0.0001);
+      for (let idx = 0; idx < delta.length; idx++) {
+        fxprime[idx] = delta[idx];
+      }
+      return objFunc(currentVec);
+    }, candidateVector, {maxIterations: numIterations});
     return translateVectorToTable(gradientResult.x, table, 1, 1);
   case 'altMonteCarlo':
     const altMonteFinalVec = altMonteCarloOptimization(objFunc, candidateVector, numIterations);
@@ -135,7 +130,6 @@ function executeOptimization(objFunc, candidateVector, technique, table, numIter
   default:
   case 'monteCarlo':
     const monteFinalVec = monteCarloOptimization(objFunc, candidateVector, numIterations);
-    // console.log(objFunc(monteFinalVec))
     return translateVectorToTable(monteFinalVec, table, 1, 1);
   case 'stagedMonteCarlo':
     const currentCandidate = stagedMonteCarlo(numIterations, candidateVector, objFunc);
@@ -156,7 +150,7 @@ export function buildIterativeCartogram(table, numIterations = MAX_ITERATIONS, t
   return executeOptimization(objFunc, candidateVector, technique, table, numIterations);
 }
 
-export function buildIterativeCartogramWithUpdate(table, technique) {
+export function buildIterativeCartogramWithUpdate(table) {
   // TODO need to add a mechanism for scaling
   const width = table[0].length;
   const height = table.length;
@@ -165,7 +159,7 @@ export function buildIterativeCartogramWithUpdate(table, technique) {
   const newTable = generateInitialTable(height, width, table, objFunc);
   let candidateVector = translateTableToVector(newTable, table);
 
-  return numIterations => {
+  return (numIterations, technique) => {
     const resultTable = executeOptimization(objFunc, candidateVector, technique, table, numIterations);
     candidateVector = translateTableToVector(resultTable, table);
     return resultTable;

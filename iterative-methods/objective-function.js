@@ -10,6 +10,10 @@ function expPenalty(x) {
   return continuousMax(0, -x) * Math.exp(-x) * 100;
 }
 
+function dist(a, b) {
+  return Math.sqrt(Math.pow(a[0] - b[0], 2) + Math.pow(a[1] - b[1], 2));
+}
+
 export function continuousBuildPenalties(newTable) {
   let penalties = 0;
   const rects = getRectsFromTable(newTable)
@@ -58,15 +62,23 @@ export function continuousBuildPenalties(newTable) {
         ].forEach(evalPenalites);
       }
 
-      const insideViolation = rects.some(points => {
-        if (points.some(d => d[0] === cell.x && d[1] === cell.y)) {
-          return false;
-        }
-        return pointInPolygon([cell.x, cell.y], points);
-      });
-      if (insideViolation) {
-        penalties += 1000;
-      }
+      // TODO FINISH THE MATH !!!
+      // const insideViolation = rects.some(points => {
+      //   if (points.some(d => d[0] === cell.x && d[1] === cell.y)) {
+      //     return false;
+      //   }
+      //   const inside = pointInPolygon([cell.x, cell.y], points);
+      //   if (pointInPolygon([cell.x, cell.y], points)) {
+      //     points.map(d => {
+      //       const r = dist([cell.x, cell.y], d);
+      //
+      //     })
+      //     penalties += expPenalty();
+      //   }
+      // });
+      // if (insideViolation) {
+      //   penalties += 1000;
+      // }
     }
   }
 
@@ -78,7 +90,6 @@ export function buildPenalties(newTable) {
   const rects = getRectsFromTable(newTable)
     .reduce((acc, row) => acc.concat(row))
     .map(row => row.map(({x, y}) => [x, y]));
-  let insideCount = 0;
   for (let i = 0; i < newTable.length; i++) {
     for (let j = 0; j < newTable[0].length; j++) {
       const inFirstRow = i === 0;
@@ -95,6 +106,7 @@ export function buildPenalties(newTable) {
       }
       // don't allow values to move out of correct order
       let violates = false;
+      const evalFunc = ({val, dim, lessThan}) => lessThan ? cell[dim] > val : cell[dim] < val;
       if (inCorner) {
         // no penaltys for corners, they are not manipualted
       } else if (inFirstRow || inLastRow) {
@@ -102,20 +114,20 @@ export function buildPenalties(newTable) {
           {lessThan: true, dim: 'x', val: newTable[i][j - 1].x},
           {lessThan: false, dim: 'x', val: newTable[i][j + 1].x},
           {lessThan: !inFirstRow, dim: 'y', val: newTable[i + (inFirstRow ? 1 : -1)][j].y}
-        ].every(({val, dim, lessThan}) => lessThan ? cell[dim] > val : cell[dim] < val);
+        ].every(evalFunc);
       } else if (inLeftColumn || inRightColumn) {
         violates = ![
           {lessThan: true, dim: 'y', val: newTable[i - 1][j].y},
           {lessThan: false, dim: 'y', val: newTable[i + 1][j].y},
           {lessThan: !inLeftColumn, dim: 'x', val: newTable[i][j + (inLeftColumn ? 1 : -1)].x}
-        ].every(({val, dim, lessThan}) => lessThan ? cell[dim] > val : cell[dim] < val);
+        ].every(evalFunc);
       } else {
         violates = ![
           {lessThan: true, dim: 'y', val: newTable[i - 1][j].y},
           {lessThan: false, dim: 'y', val: newTable[i + 1][j].y},
           {lessThan: true, dim: 'x', val: newTable[i][j - 1].x},
           {lessThan: false, dim: 'x', val: newTable[i][j + 1].x}
-        ].every(({val, dim, lessThan}) => lessThan ? cell[dim] > val : cell[dim] < val);
+        ].every(evalFunc);
       }
 
       if (violates) {
@@ -129,13 +141,10 @@ export function buildPenalties(newTable) {
         return pointInPolygon([cell.x, cell.y], points);
       });
       if (insideViolation) {
-        insideCount += 1;
-        // console.log('inside violation')
         penalties += 500;
       }
     }
   }
-  // console.log(insideCount)
   return penalties;
 }
 
@@ -168,8 +177,8 @@ export function objectiveFunction(vector, targetTable) {
   }
   // if the proposed table doesn't conform to the "rules" then throw it out
   // penalty is always 0 or infinity
-  const penal = buildPenalties(newTable);
-  // const penal = continuousBuildPenalties(newTable);
+  // const penal = buildPenalties(newTable);
+  const penal = continuousBuildPenalties(newTable);
   // TODO could include another penalty to try to force convexity
   // return findMaxForTable(errors) + penal;
   // return findSumForTable(errors) + penal;

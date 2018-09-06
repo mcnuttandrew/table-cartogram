@@ -39,8 +39,8 @@ const oneByOnesUpper2 = checkerBoardGenerator(4, 4, 1, 1);
 oneByOnesUpper2[1][1] = 2;
 const oneByOnesLower2 = checkerBoardGenerator(4, 4, 1, 1);
 oneByOnesLower2[2][2] = 2;
-const ONE_BYS = checkerBoardGenerator(4, 4, 1, 1);
-ONE_BYS[2][2] = 5;
+const ONE_BYS = checkerBoardGenerator(4, 6, 1, 1);
+ONE_BYS[2][2] = 25;
 
 const BIG_TOP = checkerBoardGenerator(3, 2, 1, 1);
 BIG_TOP[0][0] = 20;
@@ -52,6 +52,10 @@ const PATHOLOGICAL_2_BY = [
   [100, 1],
   [0.1, 10]
 ];
+
+const MULTIPLICATION_TABLE = [...new Array(10)].map((d, i) =>
+  [...new Array(10)].map((_, j) => (i + 1) * (j + 1))
+);
 
 export default {
   SMALL_RAMP: ramp(3, 3),
@@ -69,5 +73,6 @@ export default {
   BIG_BOTTOM,
   CHECKER_BOARD: checkerBoardGenerator(4, 4, 50, 1),
   CHECKER_BOARD_SMALL: checkerBoardGenerator(4, 4, 5, 1),
-  PATHOLOGICAL_2_BY
+  PATHOLOGICAL_2_BY,
+  MULTIPLICATION_TABLE
 };

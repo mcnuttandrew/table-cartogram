@@ -16,12 +16,13 @@ function App() {
   const tables = [
     // {data: EXAMPLES.BLACK_AND_WHITE_TABLE, technique: 'gradient'},
     // {data: EXAMPLES.ONE_BYS, technique: 'gradient'}
-    {data: EXAMPLES.USA_USA_USA, technique: 'monteCarlo'},
+    // {data: EXAMPLES.PATHOLOGICAL_2_BY, technique: 'gradient', stepSize: 100},
+    {data: EXAMPLES.EXAMPLE_TABLE, technique: 'monteCarlo', stepSize: 1000},
   ].map(config => (
     <IterativeDisplay
       {...config}
       iterations={0}
-      withUpdate={true}
+      withUpdate={false}
       key={config.technique}/>
   ));
   const SHOW_TESTS = false;

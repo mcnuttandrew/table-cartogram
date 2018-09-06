@@ -37,6 +37,7 @@ export function tableCartogramWithUpdate(table, technique) {
     console.error('INVALID INPUT TABLE')
     return [];
   }
-  const updateFunction = buildIterativeCartogramWithUpdate(table, technique);
-  return numIterations => prepareRects(updateFunction(numIterations), table);
+  const updateFunction = buildIterativeCartogramWithUpdate(table);
+  return (numIterations, optionalSecondTechnique = technique) =>
+    prepareRects(updateFunction(numIterations, optionalSecondTechnique), table);
 }

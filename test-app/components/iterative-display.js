@@ -39,16 +39,20 @@ function computeErrors(data, gons) {
   return error;
 }
 
+let CONVERGENCE_THRESHOLD = 10;
+
 export default class IterativeDisplay extends React.Component {
   state = {
     loaded: false,
     error: null,
     errorLog: [],
     gons: [],
-    stepsTaken: 0
+    stepsTaken: 0,
+    previousValueAndCount: {value: null, count: 0},
+    converged: false
   }
   componentDidMount() {
-    const {data, iterations, technique, withUpdate} = this.props;
+    const {data, iterations, technique, withUpdate, stepSize = 100} = this.props;
     if (!withUpdate) {
       new Promise((resolve, reject) => {
         const startTime = (new Date()).getTime();
@@ -61,26 +65,37 @@ export default class IterativeDisplay extends React.Component {
     }
 
     const cartogram = tableCartogramWithUpdate(data, technique);
-    const STEP_SIZE = 1000;
     const startTime = (new Date()).getTime();
-    setInterval(() => {
-      const gons = cartogram(STEP_SIZE);
+    const ticker = setInterval(() => {
+      const gons = cartogram(this.state.stepsTaken ? stepSize : 0);
       const endTime = (new Date()).getTime();
       const error = computeErrors(data, gons);
+      let previousValueAndCount = this.state.previousValueAndCount;
+      if (previousValueAndCount.value !== error) {
+        previousValueAndCount.count = 0;
+        previousValueAndCount.value = error;
+      } else {
+        previousValueAndCount.count += 1
+      }
       this.setState({
         gons, 
         error, 
         startTime, 
         endTime, 
         loaded: true, 
-        stepsTaken: this.state.stepsTaken + STEP_SIZE,
-        errorLog: this.state.errorLog.concat([{x: this.state.stepsTaken, y: error}])
+        stepsTaken: this.state.stepsTaken + stepSize,
+        errorLog: this.state.errorLog.concat([{x: this.state.stepsTaken, y: error}]),
+        previousValueAndCount
       });
+      if (previousValueAndCount.count > CONVERGENCE_THRESHOLD) {
+        clearInterval(ticker);
+        this.setState({converged: true});
+      }
     }, 1000)
   }
   render() {
     const {technique} = this.props;
-    const {errorLog, gons, error, loaded, endTime, startTime, stepsTaken} = this.state;
+    const {errorLog, gons, error, loaded, endTime, startTime, stepsTaken, converged} = this.state;
 
     return (
       <div style={{display: 'flex', alignItems: 'center'}}>
@@ -131,6 +146,7 @@ export default class IterativeDisplay extends React.Component {
             {`Steps taken ${stepsTaken}`} <br/>
             {`AVERAGE ERROR ${round(error, Math.pow(10, 6)) * 100} %`} <br/>
             {`COMPUTATION TIME ${(endTime - startTime) / 1000} seconds`} <br/>
+            {converged ? 'converged' : ''}
           </p>}
           {(errorLog.length > 0) && <XYPlot 
             yDomain={[0, errorLog[0].y]}

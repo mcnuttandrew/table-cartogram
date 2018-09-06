@@ -9,41 +9,14 @@ function psuedoCartogramLayout(numRows, numCols, colSums, rowSums, total) {
   });
 }
 
-// function gridLayout(numRows, numCols, colSums, rowSums, total) {
-//   return [...new Array(numCols + 1)].map((i, y) => {
-//     return [...new Array(numRows + 1)].map((j, x) => ({
-//       x: x / numRows,
-//       y: y / numCols
-//     }));
-//   });
-// }
-//
-// function zigZagOnX(numRows, numCols, colSums, rowSums, total) {
-//   return [...new Array(numCols + 1)].map((i, y) => {
-//     return [...new Array(numRows + 1)].map((j, x) => ({
-//       x: x / numRows,
-//       y: y / numCols + (1 / numCols) * (x % 2 ? -1 : 1)
-//     }));
-//   });
-// }
-//
-// function zigZagOnY(numRows, numCols, colSums, rowSums, total) {
-//   return [...new Array(numCols + 1)].map((i, y) => {
-//     return [...new Array(numRows + 1)].map((j, x) => ({
-//       x: x / numRows + (1 / numRows) * (y % 2 ? -1 : 1),
-//       y: y / numCols
-//     }));
-//   });
-// }
-//
-// function zigZagOnXY(numRows, numCols, colSums, rowSums, total) {
-//   return [...new Array(numCols + 1)].map((i, y) => {
-//     return [...new Array(numRows + 1)].map((j, x) => ({
-//       x: x / numRows + (0.25 / numRows) * (y % 2 ? -1 : 1),
-//       y: y / numCols + (0.25 / numCols) * (x % 2 ? -1 : 1)
-//     }));
-//   });
-// }
+function psuedoCartogramLayoutZigZag(numRows, numCols, colSums, rowSums, total) {
+  return [...new Array(numCols + 1)].map((i, y) => {
+    return [...new Array(numRows + 1)].map((j, x) => ({
+      x: (x ? (colSums[x - 1] / total) : 0) + (0.025 / numRows) * (y % 2 ? -1 : 1),
+      y: (y ? (rowSums[y - 1] / total) : 0) + (0.025 / numCols) * (x % 2 ? -1 : 1)
+    }));
+  });
+}
 
 function buildZigZag(xAmount, yAmount) {
   return (numRows, numCols, colSums, rowSums, total) => {
@@ -66,7 +39,8 @@ const layouts = {
   zigZagOnX,
   zigZagOnY,
   zigZagOnXY,
-  psuedoCartogramLayout
+  psuedoCartogramLayout,
+  psuedoCartogramLayoutZigZag
 };
 
 // use the indexes of the auto generated arrays for positioning
@@ -102,6 +76,6 @@ export function generateInitialTable(tableHeight, tableWidth, table, objFunc) {
     }
     return acc;
   }, {bestIndex: -1, bestScore: layout === 'pickBest' ? Infinity : -Infinity});
-  console.log(layout, Object.keys(layouts)[measurements.bestIndex])
+  console.log(layout, Object.keys(layouts)[measurements.bestIndex]);
   return constructedLayouts[measurements.bestIndex];
 }
