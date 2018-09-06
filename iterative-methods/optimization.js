@@ -15,7 +15,8 @@ function monteCarloOptimization(objFunc, candidateVector, numIterations) {
   let iteratVector = candidateVector.slice(0);
   let oldScore = objFunc(candidateVector);
   for (let i = 0; i < numIterations; i++) {
-    const stepSize = Math.pow(10, -(i / numIterations * 4 + 2));
+    // const stepSize = Math.pow(10, -(i / numIterations * 4 + 2));
+    const stepSize = Math.pow(10, -2);
     // everybody fucking loves adaptive step size
     const newVector = monteCarloPerturb(iteratVector, stepSize);
     const newScore = objFunc(newVector);
@@ -103,19 +104,13 @@ function finiteDiference(obj, currentPos, stepSize) {
   return output;
 }
 
-const MAX_ITERATIONS = 3000;
-export function buildIterativeCartogram(table, numIterations = MAX_ITERATIONS, technique) {
-  // TODO need to add a mechanism for scaling
-  const width = table[0].length;
-  const height = table.length;
-
-  const objFunc = vec => objectiveFunction(vec, table);
-  const newTable = generateInitialTable(height, width, table, objFunc);
-  const candidateVector = translateTableToVector(newTable, table);
-
+function executeOptimization(objFunc, candidateVector, technique, table, numIterations) {
+  if (!numIterations) {
+    return translateVectorToTable(candidateVector, table, 1, 1);
+  }
   switch (technique) {
   case 'powell':
-    const powellFinalVec = minimizePowell(objFunc, candidateVector, {maxIter: 1000});
+    const powellFinalVec = minimizePowell(objFunc, candidateVector, {maxIter: numIterations});
     return translateVectorToTable(powellFinalVec, table, 1, 1);
   case 'gradient':
     // const monte = stagedMonteCarlo(objFunc, candidateVector, numIterations);
@@ -131,7 +126,7 @@ export function buildIterativeCartogram(table, numIterations = MAX_ITERATIONS, t
       });
       const result = objFunc(currentVec);
       return result;
-    }, candidateVector, {learnRate: 0.000001});
+    }, candidateVector, {learnRate: 0.000001, maxIterations: numIterations});
     // console.log(gradient)
     return translateVectorToTable(gradientResult.x, table, 1, 1);
   case 'altMonteCarlo':
@@ -140,9 +135,39 @@ export function buildIterativeCartogram(table, numIterations = MAX_ITERATIONS, t
   default:
   case 'monteCarlo':
     const monteFinalVec = monteCarloOptimization(objFunc, candidateVector, numIterations);
+    // console.log(objFunc(monteFinalVec))
     return translateVectorToTable(monteFinalVec, table, 1, 1);
   case 'stagedMonteCarlo':
     const currentCandidate = stagedMonteCarlo(numIterations, candidateVector, objFunc);
     return translateVectorToTable(currentCandidate, table, 1, 1);
   }
+}
+
+const MAX_ITERATIONS = 3000;
+export function buildIterativeCartogram(table, numIterations = MAX_ITERATIONS, technique) {
+  // TODO need to add a mechanism for scaling
+  const width = table[0].length;
+  const height = table.length;
+
+  const objFunc = vec => objectiveFunction(vec, table);
+  const newTable = generateInitialTable(height, width, table, objFunc);
+  const candidateVector = translateTableToVector(newTable, table);
+
+  return executeOptimization(objFunc, candidateVector, technique, table, numIterations);
+}
+
+export function buildIterativeCartogramWithUpdate(table, technique) {
+  // TODO need to add a mechanism for scaling
+  const width = table[0].length;
+  const height = table.length;
+
+  const objFunc = vec => objectiveFunction(vec, table);
+  const newTable = generateInitialTable(height, width, table, objFunc);
+  let candidateVector = translateTableToVector(newTable, table);
+
+  return numIterations => {
+    const resultTable = executeOptimization(objFunc, candidateVector, technique, table, numIterations);
+    candidateVector = translateTableToVector(resultTable, table);
+    return resultTable;
+  };
 }

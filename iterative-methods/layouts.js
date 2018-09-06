@@ -9,14 +9,65 @@ function psuedoCartogramLayout(numRows, numCols, colSums, rowSums, total) {
   });
 }
 
-function gridLayout(numRows, numCols, colSums, rowSums, total) {
-  return [...new Array(numCols + 1)].map((i, y) => {
-    return [...new Array(numRows + 1)].map((j, x) => ({
-      x: x / numRows,
-      y: y / numCols
-    }));
-  });
+// function gridLayout(numRows, numCols, colSums, rowSums, total) {
+//   return [...new Array(numCols + 1)].map((i, y) => {
+//     return [...new Array(numRows + 1)].map((j, x) => ({
+//       x: x / numRows,
+//       y: y / numCols
+//     }));
+//   });
+// }
+//
+// function zigZagOnX(numRows, numCols, colSums, rowSums, total) {
+//   return [...new Array(numCols + 1)].map((i, y) => {
+//     return [...new Array(numRows + 1)].map((j, x) => ({
+//       x: x / numRows,
+//       y: y / numCols + (1 / numCols) * (x % 2 ? -1 : 1)
+//     }));
+//   });
+// }
+//
+// function zigZagOnY(numRows, numCols, colSums, rowSums, total) {
+//   return [...new Array(numCols + 1)].map((i, y) => {
+//     return [...new Array(numRows + 1)].map((j, x) => ({
+//       x: x / numRows + (1 / numRows) * (y % 2 ? -1 : 1),
+//       y: y / numCols
+//     }));
+//   });
+// }
+//
+// function zigZagOnXY(numRows, numCols, colSums, rowSums, total) {
+//   return [...new Array(numCols + 1)].map((i, y) => {
+//     return [...new Array(numRows + 1)].map((j, x) => ({
+//       x: x / numRows + (0.25 / numRows) * (y % 2 ? -1 : 1),
+//       y: y / numCols + (0.25 / numCols) * (x % 2 ? -1 : 1)
+//     }));
+//   });
+// }
+
+function buildZigZag(xAmount, yAmount) {
+  return (numRows, numCols, colSums, rowSums, total) => {
+    return [...new Array(numCols + 1)].map((i, y) => {
+      return [...new Array(numRows + 1)].map((j, x) => ({
+        x: x / numRows + (xAmount / numRows) * (y % 2 ? -1 : 1),
+        y: y / numCols + (yAmount / numCols) * (x % 2 ? -1 : 1)
+      }));
+    });
+  };
 }
+
+const gridLayout = buildZigZag(0, 0);
+const zigZagOnX = buildZigZag(1, 0);
+const zigZagOnY = buildZigZag(0, 1);
+const zigZagOnXY = buildZigZag(0.25, 0.25);
+
+const layouts = {
+  gridLayout,
+  zigZagOnX,
+  zigZagOnY,
+  zigZagOnXY,
+  psuedoCartogramLayout
+};
 
 // use the indexes of the auto generated arrays for positioning
 export function generateInitialTable(tableHeight, tableWidth, table, objFunc) {
@@ -34,29 +85,23 @@ export function generateInitialTable(tableHeight, tableWidth, table, objFunc) {
   const total = findSumForTable(table);
 
   const layout = 'pickBest';
-  switch (layout) {
-  default:
-  case 'psuedoCartogram':
-    return psuedoCartogramLayout(numRows, numCols, colSums, rowSums, total);
-  case 'grid':
-    return gridLayout(numRows, numCols, colSums, rowSums, total);
-  case 'pickBest':
-    const layouts = [
-      psuedoCartogramLayout(numRows, numCols, colSums, rowSums, total),
-      gridLayout(numRows, numCols, colSums, rowSums, total)
-    ];
-    const measurements = layouts.reduce((acc, newTable, idx) => {
-      const newScore = objFunc(translateTableToVector(newTable, table));
-      // console.log(newScore)
-      if (acc.bestScore > newScore) {
-        return {
-          bestIndex: idx,
-          bestScore: newScore
-        };
-      }
-      return acc;
-    }, {bestIndex: -1, bestScore: Infinity});
-    console.log(measurements.bestIndex)
-    return layouts[measurements.bestIndex];
+  const layoutMethod = layouts[layout];
+  if (layoutMethod) {
+    return layoutMethod(numRows, numCols, colSums, rowSums, total);
   }
+
+  const constructedLayouts = Object.keys(layouts).map(key =>
+    layouts[key](numRows, numCols, colSums, rowSums, total));
+  const measurements = constructedLayouts.reduce((acc, newTable, idx) => {
+    const newScore = objFunc(translateTableToVector(newTable, table));
+    if (layout === 'pickBest' ? (acc.bestScore > newScore) : (acc.bestScore < newScore)) {
+      return {
+        bestIndex: idx,
+        bestScore: newScore
+      };
+    }
+    return acc;
+  }, {bestIndex: -1, bestScore: layout === 'pickBest' ? Infinity : -Infinity});
+  console.log(layout, Object.keys(layouts)[measurements.bestIndex])
+  return constructedLayouts[measurements.bestIndex];
 }

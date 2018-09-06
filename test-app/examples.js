@@ -1,7 +1,7 @@
 import ZionVisitors from '../test/zion-visitors';
 
 const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-const ZION_VISITORS = ZionVisitors.map(year => MONTHS.map(month => year[month])).slice(5);
+const ZION_VISITORS = ZionVisitors.map(year => MONTHS.map(month => year[month])).slice(0, 5);
 
 // EXAMPLES FROM PAPER
 const USA_USA_USA = [

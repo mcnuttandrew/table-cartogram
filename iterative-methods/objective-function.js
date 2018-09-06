@@ -2,44 +2,6 @@ import pointInPolygon from 'point-in-polygon';
 import {area} from '../old-stuff/utils';
 import {translateVectorToTable, getRectsFromTable, findSumForTable} from './utils';
 
-export function objectiveFunction(vector, targetTable) {
-  const sumed = targetTable.reduce((acc, row) => acc + row.reduce((mem, cell) => mem + cell, 0), 0);
-  const expectedAreas = targetTable.map(row => row.map(cell => cell / sumed));
-  // PROBABLY SOME GOOD SAVINGS BY NOT TRANSLATING back and forth constantly
-  const newTable = translateVectorToTable(vector, targetTable, 1, 1);
-  const rects = getRectsFromTable(newTable);
-  // sum up the relative amount of "error"
-  // generate the areas of each of the boxes
-  const areas = rects.map(row => row.map(rect => area(rect)));
-  const sumArea = findSumForTable(areas);
-  const sumTrueArea = findSumForTable(targetTable);
-  // compare the areas and generate absolute error
-  // TODO: is using the abs error right? (like as opposed to relative error?)
-  const errors = [];
-  for (let i = 0; i < rects.length; i++) {
-    const rowErrors = [];
-    for (let j = 0; j < rects[0].length; j++) {
-      const foundArea = area(rects[i][j]);
-      // const error = targetTable[i][j] / sumTrueArea - foundArea / sumArea;
-      // const error = Math.abs(targetTable[i][j] / sumTrueArea - foundArea) / foundArea;
-      // const error = sumTrueArea * Math.abs(targetTable[i][j] / sumTrueArea - foundArea) / targetTable[i][j];
-      const error = Math.abs(targetTable[i][j] - sumTrueArea / sumArea * foundArea) / targetTable[i][j];
-      // const error = (expectedAreas[i][j] - foundArea) / foundArea;
-      rowErrors.push((error));
-    }
-    errors.push(rowErrors);
-  }
-  // if the proposed table doesn't conform to the "rules" then throw it out
-  // penalty is always 0 or infinity
-  const penal = buildPenalties(newTable);
-  // TODO could include another penalty to try to force convexity
-  // return findMaxForTable(errors) + penal;
-  // return findSumForTable(errors) + penal;
-  // const concavePenalty = rects.reduce((acc, row) =>
-  //     acc + row.reduce((mem, rect) => mem + (checkForConcaveAngles(rect) ? 1 : 0), 0), 0)
-  return findSumForTable(errors) / (errors.length * errors[0].length) + penal;
-}
-
 function continuousMax(x, y) {
   return 0.5 * (x + y + Math.abs(x - y));
 }
@@ -50,7 +12,9 @@ function expPenalty(x) {
 
 export function continuousBuildPenalties(newTable) {
   let penalties = 0;
-  const rects = getRectsFromTable(newTable).reduce((acc, row) => acc.concat(row));
+  const rects = getRectsFromTable(newTable)
+    .reduce((acc, row) => acc.concat(row))
+    .map(row => row.map(({x, y}) => [x, y]));
   for (let i = 0; i < newTable.length; i++) {
     for (let j = 0; j < newTable[0].length; j++) {
       const inFirstRow = i === 0;
@@ -94,7 +58,12 @@ export function continuousBuildPenalties(newTable) {
         ].forEach(evalPenalites);
       }
 
-      const insideViolation = rects.every(rect => pointInPolygon(rect, [cell.x, cell.y]));
+      const insideViolation = rects.some(points => {
+        if (points.some(d => d[0] === cell.x && d[1] === cell.y)) {
+          return false;
+        }
+        return pointInPolygon([cell.x, cell.y], points);
+      });
       if (insideViolation) {
         penalties += 1000;
       }
@@ -106,7 +75,10 @@ export function continuousBuildPenalties(newTable) {
 
 export function buildPenalties(newTable) {
   let penalties = 0;
-  const rects = getRectsFromTable(newTable).reduce((acc, row) => acc.concat(row));
+  const rects = getRectsFromTable(newTable)
+    .reduce((acc, row) => acc.concat(row))
+    .map(row => row.map(({x, y}) => [x, y]));
+  let insideCount = 0;
   for (let i = 0; i < newTable.length; i++) {
     for (let j = 0; j < newTable[0].length; j++) {
       const inFirstRow = i === 0;
@@ -119,7 +91,7 @@ export function buildPenalties(newTable) {
       const cell = newTable[i][j];
       // dont allow the values to move outside of the box
       if (cell.x > 1 || cell.x < 0 || cell.y > 1 || cell.y < 0) {
-        penalties += 1000;
+        penalties += 2000;
       }
       // don't allow values to move out of correct order
       let violates = false;
@@ -150,12 +122,58 @@ export function buildPenalties(newTable) {
         penalties += 1000;
       }
 
-      const insideViolation = rects.every(rect => pointInPolygon(rect, [cell.x, cell.y]));
+      const insideViolation = rects.some(points => {
+        if (points.some(d => d[0] === cell.x && d[1] === cell.y)) {
+          return false;
+        }
+        return pointInPolygon([cell.x, cell.y], points);
+      });
       if (insideViolation) {
-        penalties += 1000;
+        insideCount += 1;
+        // console.log('inside violation')
+        penalties += 500;
       }
     }
   }
-
+  // console.log(insideCount)
   return penalties;
+}
+
+export function objectiveFunction(vector, targetTable) {
+  const sumed = targetTable.reduce((acc, row) => acc + row.reduce((mem, cell) => mem + cell, 0), 0);
+  const expectedAreas = targetTable.map(row => row.map(cell => cell / sumed));
+  // PROBABLY SOME GOOD SAVINGS BY NOT TRANSLATING back and forth constantly
+  const newTable = translateVectorToTable(vector, targetTable, 1, 1);
+  const rects = getRectsFromTable(newTable);
+  // sum up the relative amount of "error"
+  // generate the areas of each of the boxes
+  const areas = rects.map(row => row.map(rect => area(rect)));
+  const sumArea = findSumForTable(areas);
+  const sumTrueArea = findSumForTable(targetTable);
+  // compare the areas and generate absolute error
+  // TODO: is using the abs error right? (like as opposed to relative error?)
+  const errors = [];
+  for (let i = 0; i < rects.length; i++) {
+    const rowErrors = [];
+    for (let j = 0; j < rects[0].length; j++) {
+      const foundArea = area(rects[i][j]);
+      // const error = targetTable[i][j] / sumTrueArea - foundArea / sumArea;
+      // const error = Math.abs(targetTable[i][j] / sumTrueArea - foundArea) / foundArea;
+      // const error = sumTrueArea * Math.abs(targetTable[i][j] / sumTrueArea - foundArea) / targetTable[i][j];
+      const error = Math.abs(targetTable[i][j] - sumTrueArea / sumArea * foundArea) / targetTable[i][j];
+      // const error = (expectedAreas[i][j] - foundArea) / foundArea;
+      rowErrors.push((error));
+    }
+    errors.push(rowErrors);
+  }
+  // if the proposed table doesn't conform to the "rules" then throw it out
+  // penalty is always 0 or infinity
+  const penal = buildPenalties(newTable);
+  // const penal = continuousBuildPenalties(newTable);
+  // TODO could include another penalty to try to force convexity
+  // return findMaxForTable(errors) + penal;
+  // return findSumForTable(errors) + penal;
+  // const concavePenalty = rects.reduce((acc, row) =>
+  //     acc + row.reduce((mem, rect) => mem + (checkForConcaveAngles(rect) ? 1 : 0), 0), 0)
+  return findSumForTable(errors) / (errors.length * errors[0].length) + penal;
 }
