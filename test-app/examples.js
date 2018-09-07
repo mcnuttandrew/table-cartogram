@@ -1,4 +1,27 @@
 import ZionVisitors from '../test/zion-visitors';
+// Source Wikipedia
+import Elements from '../test/elements';
+
+const elementLookUp = Elements.reduce((acc, row) => {
+  acc[row.Symbol] = row;
+  return acc;
+}, {});
+
+const ElementsOfInterest = [[
+  'Sc', 'Ti', 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn'
+], [
+  'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd'
+], [
+  'La', 'Hf', 'Ta', 'W', 'Re', 'Os', 'Ir', 'Pr', 'Au', 'Hg'
+]].map(row => row.map(symbol => elementLookUp[symbol]));
+const generateElementTable = key => ElementsOfInterest.map(row => row.map(cell => Number(cell[key])));
+
+const ELELMENTS_THERMAL = generateElementTable('C');
+console.log(ELELMENTS_THERMAL)
+// dont have molar volume
+const ELELMENTS_DENSITY = generateElementTable('Density');
+const ELELMENTS_BOIL = generateElementTable('Boil');
+const ELELMENTS_MASS = generateElementTable('Atomic weight');
 
 const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
 const ZION_VISITORS = ZionVisitors.map(year => MONTHS.map(month => year[month])).slice(0, 5);
@@ -71,8 +94,13 @@ export default {
   BLACK_AND_WHITE_TABLE,
   BIG_TOP,
   BIG_BOTTOM,
-  CHECKER_BOARD: checkerBoardGenerator(7, 10, 5, 1),
+  CHECKER_BOARD: checkerBoardGenerator(3, 3, 5, 1),
   CHECKER_BOARD_SMALL: checkerBoardGenerator(4, 4, 5, 1),
   PATHOLOGICAL_2_BY,
-  MULTIPLICATION_TABLE
+  MULTIPLICATION_TABLE,
+
+  ELELMENTS_THERMAL,
+  ELELMENTS_DENSITY,
+  ELELMENTS_BOIL,
+  ELELMENTS_MASS
 };

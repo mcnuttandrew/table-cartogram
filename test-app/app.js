@@ -8,7 +8,7 @@ import {
   // buildIterativeCartogramTest
 } from '../test/iterative-tests';
 //
-// import GenericTable from './components/generic-test-table';
+import GenericTable from './components/generic-test-table';
 import EXAMPLES from './examples';
 import IterativeDisplay from './components/iterative-display';
 
@@ -18,7 +18,7 @@ function App() {
     // {data: EXAMPLES.ONE_BYS, technique: 'gradient'}
     // {data: EXAMPLES.PATHOLOGICAL_2_BY, technique: 'gradient', stepSize: 100},
     // {data: EXAMPLES.EXAMPLE_TABLE, technique: 'gradient', stepSize: 1000},
-    {data: EXAMPLES.CHECKER_BOARD, technique: 'gradient', stepSize: 1000},
+    {data: EXAMPLES.ELELMENTS_THERMAL, technique: 'gradient', stepSize: 1000},
   ].map((config, idx) => (
     <IterativeDisplay
       {...config}
@@ -40,6 +40,9 @@ function App() {
           ]}/>}
         <div style={{display: 'flex'}}>
           {tables}
+        </div>
+        <div>
+          <GenericTable data={EXAMPLES.EXAMPLE_TABLE}/>
         </div>
       </div>
     </div>

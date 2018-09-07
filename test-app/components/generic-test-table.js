@@ -41,22 +41,23 @@ export default class GenericTable extends React.Component {
               style={{
                 strokeWidth: 0.5,
                 strokeOpacity: 1,
+                stroke: 'black',
                 opacity: 0.5,
                 fill: RV_COLORS[(index + 3) % RV_COLORS.length]
               }}/>);
           })}
           {
-            polygons.map((cell, index) => {
-              return (<PolygonSeries
-                key={`poly-${index}`}
-                data={cell.vertices}
-                style={{
-                  fill: 'none',
-                  strokeOpacity: 1,
-                  strokeWidth: 4,
-                  stroke: 'black'
-                }}/>);
-            })
+            // polygons.map((cell, index) => {
+            //   return (<PolygonSeries
+            //     key={`poly-${index}`}
+            //     data={cell.vertices}
+            //     style={{
+            //       fill: 'none',
+            //       strokeOpacity: 1,
+            //       strokeWidth: 4,
+            //       stroke: 'black'
+            //     }}/>);
+            // })
           }
           <LabelSeries data={triangles.map((cell, index) => {
             return {...geoCenter(cell.vertices), label: `${cell.displayValue || cell.value || ''}`};
