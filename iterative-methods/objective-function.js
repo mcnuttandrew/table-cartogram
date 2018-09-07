@@ -14,6 +14,28 @@ function dist(a, b) {
   return Math.sqrt(Math.pow(a[0] - b[0], 2) + Math.pow(a[1] - b[1], 2));
 }
 
+function norm(a) {
+  return Math.sqrt(Math.pow(a[0], 2) + Math.pow(a[1], 2));
+}
+
+function getAngle(a, b) {
+  return Math.acos((a[0] * b[0] + a[1] * b[1]) / (norm(a) * norm(b)));
+}
+
+function computeMinDist(points, cell) {
+  let minDist = Infinity;
+  for (let jdx = 0; jdx < points.length; jdx++) {
+    const d = points[jdx];
+    const r = dist([cell.x, cell.y], d);
+    const angle = getAngle([cell.x, cell.y], d);
+    const newDist = r * Math.sin(angle);
+    if (newDist < minDist) {
+      minDist = newDist;
+    }
+  }
+  return minDist;
+}
+
 export function continuousBuildPenalties(newTable) {
   let penalties = 0;
   const rects = getRectsFromTable(newTable)
@@ -62,23 +84,19 @@ export function continuousBuildPenalties(newTable) {
         ].forEach(evalPenalites);
       }
 
-      // TODO FINISH THE MATH !!!
-      // const insideViolation = rects.some(points => {
-      //   if (points.some(d => d[0] === cell.x && d[1] === cell.y)) {
-      //     return false;
-      //   }
-      //   const inside = pointInPolygon([cell.x, cell.y], points);
-      //   if (pointInPolygon([cell.x, cell.y], points)) {
-      //     points.map(d => {
-      //       const r = dist([cell.x, cell.y], d);
-      //
-      //     })
-      //     penalties += expPenalty();
-      //   }
-      // });
-      // if (insideViolation) {
-      //   penalties += 1000;
-      // }
+      // inside penalties
+      for (let idx = 0; idx < rects.length; idx++) {
+        const points = rects[idx];
+        if (
+          // dont penalize a point for being part of a rectangle
+          !points.some(d => d[0] === cell.x && d[1] === cell.y) &&
+          // do penalize it for being inside of a rectange it's not a part of
+          pointInPolygon([cell.x, cell.y], points)
+        ) {
+          const minDist = computeMinDist(points, cell);
+          penalties += expPenalty(-(isFinite(minDist) ? minDist : 0));
+        }
+      }
     }
   }
 

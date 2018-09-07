@@ -56,16 +56,18 @@ export default class IterativeDisplay extends React.Component {
     if (!withUpdate) {
       new Promise((resolve, reject) => {
         const startTime = (new Date()).getTime();
+        console.log(iterations)
         const gons = tableCartogram(data, iterations, technique);
         const endTime = (new Date()).getTime();
         const error = computeErrors(data, gons);
         resolve({gons, error, startTime, endTime});
-      }).then(state => this.setState({...state, loaded: true}));
+      }).then(state => this.setState({...state, loaded: true, stepsTaken: iterations}));
       return;
     }
 
     const cartogram = tableCartogramWithUpdate(data, technique);
     const startTime = (new Date()).getTime();
+    console.log(stepSize)
     const ticker = setInterval(() => {
       const gons = cartogram(this.state.stepsTaken ? stepSize : 0);
       const endTime = (new Date()).getTime();
@@ -87,11 +89,15 @@ export default class IterativeDisplay extends React.Component {
         errorLog: this.state.errorLog.concat([{x: this.state.stepsTaken, y: error}]),
         previousValueAndCount
       });
-      if (previousValueAndCount.count > CONVERGENCE_THRESHOLD) {
+      if (
+        this.state.converged ||
+        (previousValueAndCount.count > CONVERGENCE_THRESHOLD) || 
+        previousValueAndCount.value < 0.01
+      ) {
         clearInterval(ticker);
         this.setState({converged: true});
       }
-    }, 1000)
+    }, 500)
   }
   render() {
     const {technique} = this.props;
@@ -155,6 +161,7 @@ export default class IterativeDisplay extends React.Component {
             <XAxis />
             <YAxis />
           </XYPlot>}
+          <button onClick={() => this.setState({converged: true})}>STOP</button>
         </div>
       </div>
     );

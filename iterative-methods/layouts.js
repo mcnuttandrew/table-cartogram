@@ -18,6 +18,15 @@ function psuedoCartogramLayoutZigZag(numRows, numCols, colSums, rowSums, total) 
   });
 }
 
+function partialPsuedoCartogram(numRows, numCols, colSums, rowSums, total) {
+  return [...new Array(numCols + 1)].map((i, y) => {
+    return [...new Array(numRows + 1)].map((j, x) => ({
+      x: (x ? (colSums[x - 1] / total) : 0),
+      y: y / numCols
+    }));
+  });
+}
+
 function buildZigZag(xAmount, yAmount) {
   return (numRows, numCols, colSums, rowSums, total) => {
     return [...new Array(numCols + 1)].map((i, y) => {
@@ -40,7 +49,8 @@ const layouts = {
   zigZagOnY,
   zigZagOnXY,
   psuedoCartogramLayout,
-  psuedoCartogramLayoutZigZag
+  psuedoCartogramLayoutZigZag,
+  partialPsuedoCartogram
 };
 
 // use the indexes of the auto generated arrays for positioning
