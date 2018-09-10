@@ -55,6 +55,13 @@ const checkerBoardGenerator = (width, height, high, low, offset = 0) =>
   [...new Array(height)].map((_, ydx) =>
     [...new Array(width)].map((d, xdx) => (xdx + (ydx % 2) + offset) % (2) ? high : low));
 
+const nStopCheckerBoardGenerator = (width, height, vals, offset = 0) =>
+  [...new Array(height)].map((_, ydx) =>
+    [...new Array(width)].map((d, xdx) =>
+      vals[(xdx + (ydx % vals.length) + offset) % (vals.length)]
+    )
+  );
+
 const ramp = (width, height) => checkerBoardGenerator(width, height, 1, 1)
   .map((row, jdx) => row.map((d, idx) => jdx * width + idx + 1));
 
@@ -81,6 +88,7 @@ const MULTIPLICATION_TABLE = [...new Array(10)].map((d, i) =>
 );
 
 export default {
+  LONG_RAMP: checkerBoardGenerator(1, 15, 1, 10),
   SMALL_RAMP: ramp(3, 3),
   DUMB_CALENDER: ramp(7, 4),
   twoByThree: checkerBoardGenerator(3, 2, 1, 1),
@@ -94,7 +102,7 @@ export default {
   BLACK_AND_WHITE_TABLE,
   BIG_TOP,
   BIG_BOTTOM,
-  CHECKER_BOARD: checkerBoardGenerator(3, 3, 5, 1),
+  CHECKER_BOARD: checkerBoardGenerator(5, 5, 6, 1),
   CHECKER_BOARD_SMALL: checkerBoardGenerator(4, 4, 5, 1),
   PATHOLOGICAL_2_BY,
   MULTIPLICATION_TABLE,
@@ -102,5 +110,7 @@ export default {
   ELELMENTS_THERMAL,
   ELELMENTS_DENSITY,
   ELELMENTS_BOIL,
-  ELELMENTS_MASS
+  ELELMENTS_MASS,
+
+  TRI_BOARD: nStopCheckerBoardGenerator(6, 6, [10, 1, 20])
 };

@@ -1,16 +1,21 @@
 import ReactDOM from 'react-dom';
 import React from 'react';
+import {Treemap} from 'react-vis';
+import {RV_COLORS} from './colors';
 
 import {TapReactBrowser} from 'tap-react-browser';
 import {
-  translateVectorToTabletranslateTableToVector,
-  findSumForTableTest,
-  // buildIterativeCartogramTest
+  // translateVectorToTabletranslateTableToVector,
+  // findSumForTableTest,
+  // buildIterativeCartogramTest,
+  testTreeMapForError
 } from '../test/iterative-tests';
 //
 import GenericTable from './components/generic-test-table';
 import EXAMPLES from './examples';
 import IterativeDisplay from './components/iterative-display';
+import ExampleTreemap from './components/treemap-example-generator';
+import ExampleHeatmap from './components/heatmap-example';
 
 function App() {
   const tables = [
@@ -18,7 +23,7 @@ function App() {
     // {data: EXAMPLES.ONE_BYS, technique: 'gradient'}
     // {data: EXAMPLES.PATHOLOGICAL_2_BY, technique: 'gradient', stepSize: 100},
     // {data: EXAMPLES.EXAMPLE_TABLE, technique: 'gradient', stepSize: 1000},
-    {data: EXAMPLES.ELELMENTS_THERMAL, technique: 'gradient', stepSize: 1000},
+    {data: EXAMPLES.EXAMPLE_TABLE, technique: 'gradient', stepSize: 10},
   ].map((config, idx) => (
     <IterativeDisplay
       {...config}
@@ -34,16 +39,24 @@ function App() {
         {SHOW_TESTS && <TapReactBrowser
           runAsPromises
           tests={[
-            translateVectorToTabletranslateTableToVector,
-            findSumForTableTest,
-            // buildIterativeCartogramTest
+            // translateVectorToTabletranslateTableToVector,
+            // findSumForTableTest,
+            // buildIterativeCartogramTest,
+            testTreeMapForError
           ]}/>}
         <div style={{display: 'flex'}}>
-          {tables}
+          {
+            tables
+          }
         </div>
         <div>
-          <GenericTable data={EXAMPLES.EXAMPLE_TABLE}/>
+          {
+            // <GenericTable data={EXAMPLES.EXAMPLE_TABLE}/>
+          }
         </div>
+        {
+          <ExampleHeatmap data={EXAMPLES.EXAMPLE_TABLE} />
+        }
       </div>
     </div>
   );

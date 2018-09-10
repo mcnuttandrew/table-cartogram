@@ -85,6 +85,7 @@ export function continuousBuildPenalties(newTable) {
       }
 
       // inside penalties
+      // TODO THIS CAN BE SPED UP A BUNCH
       for (let idx = 0; idx < rects.length; idx++) {
         const points = rects[idx];
         if (

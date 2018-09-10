@@ -121,7 +121,7 @@ export default class IterativeDisplay extends React.Component {
       if (
         this.state.converged ||
         (previousValueAndCount.count > CONVERGENCE_THRESHOLD) ||
-        previousValueAndCount.value < 0.01
+        previousValueAndCount.value < 0.001
       ) {
         clearInterval(ticker);
         this.setState({converged: true});

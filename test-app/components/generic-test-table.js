@@ -6,6 +6,7 @@ import {
   LineSeries,
   LabelSeries
 } from 'react-vis';
+import {computeErrors} from '../test-app-utils';
 
 import {geoCenter} from '../../old-stuff/utils';
 import {RV_COLORS} from '../colors';
@@ -22,6 +23,7 @@ export default class GenericTable extends React.Component {
     const polygons = tableCartogram().mode('polygon')(data);
     const line = tableCartogram().mode('zigzag')(data);
     console.log(triangles)
+    console.log(computeErrors(data, triangles))
     return (
       <div>
         {name}

@@ -8,6 +8,9 @@ import {
   findSumForTable
 } from '../iterative-methods/utils';
 
+import EXAMPLES from '../test-app/examples';
+import {checkErrorOfTreemap} from '../test-app/test-app-utils';
+
 export function buildIterativeCartogramTest(t) {
   ['monte', 'powell'].forEach(optimizationAlgo => {
     const usingMonte = optimizationAlgo === 'monte';
@@ -86,5 +89,10 @@ export function findSumForTableTest(t) {
   const inputTable = [[1, 1, 3], [2, 3, 4]];
   t.equal(findSumForTable(inputTable), 14, 'should get correct result for basic sum');
   t.equal(findSumForTable(getNbyMTable(100, 100), 0), 0, 'should get zero for empty table');
+  t.end();
+}
+
+export function testTreeMapForError(t) {
+  t.equal(checkErrorOfTreemap(EXAMPLES.EXAMPLE_TABLE), 0, 'tree map should have zero cartographic error');
   t.end();
 }
