@@ -125,6 +125,47 @@ function continOverlapPenalty(props) {
   return 0;
 }
 
+function contOrderPenalty(props) {
+  const {
+    cell,
+    inFirstRow,
+    inLastRow,
+    inRightColumn,
+    inLeftColumn,
+    newTable,
+    inCorner,
+    i, j
+  } = props;
+
+  let evalTarget = [];
+  // don't allow values to move out of correct order
+  if (inCorner) {
+    // no penaltys for corners, they are not manipualted
+  } else if (inFirstRow || inLastRow) {
+    evalTarget = [
+      {lessThan: true, dim: 'x', val: newTable[i][j - 1].x},
+      {lessThan: false, dim: 'x', val: newTable[i][j + 1].x},
+      {lessThan: !inFirstRow, dim: 'y', val: newTable[i + (inFirstRow ? 1 : -1)][j].y}
+    ];
+  } else if (inLeftColumn || inRightColumn) {
+    evalTarget = [
+      {lessThan: true, dim: 'y', val: newTable[i - 1][j].y},
+      {lessThan: false, dim: 'y', val: newTable[i + 1][j].y},
+      {lessThan: !inLeftColumn, dim: 'x', val: newTable[i][j + (inLeftColumn ? 1 : -1)].x}
+    ];
+  } else {
+    evalTarget = [
+      {lessThan: true, dim: 'y', val: newTable[i - 1][j].y},
+      {lessThan: false, dim: 'y', val: newTable[i + 1][j].y},
+      {lessThan: true, dim: 'x', val: newTable[i][j - 1].x},
+      {lessThan: false, dim: 'x', val: newTable[i][j + 1].x}
+    ];
+  }
+  return evalTarget.reduce((acc, {val, dim, lessThan}) => {
+    return acc + expPenalty(lessThan ? cell[dim] - val : val - cell[dim]);
+  }, 0);
+}
+
 export function continuousBuildPenalties(newTable) {
   let penalties = 0;
   // const rects = getRectsFromTable(newTable)
@@ -134,44 +175,31 @@ export function continuousBuildPenalties(newTable) {
     for (let j = 0; j < newTable[0].length; j++) {
       const inFirstRow = i === 0;
       const inLeftColumn = j === 0;
-      // bounds are probably wrong
       const inRightColumn = j === (newTable[0].length - 1);
       const inLastRow = i === (newTable.length - 1);
       const inCorner = ((inFirstRow && (inLeftColumn || inRightColumn))) ||
               ((inLastRow && (inLeftColumn || inRightColumn)));
+
       const cell = newTable[i][j];
+
+      // boundary penalties
       // dont allow the values to move outside of the box
       penalties += expPenalty(1 - cell.x);
       penalties += expPenalty(cell.x);
       penalties += expPenalty(1 - cell.y);
       penalties += expPenalty(cell.y);
 
-      const evalPenalites = ({val, dim, lessThan}) => {
-        penalties += expPenalty(lessThan ? cell[dim] - val : val - cell[dim]);
-      };
-      // don't allow values to move out of correct order
-      if (inCorner) {
-        // no penaltys for corners, they are not manipualted
-      } else if (inFirstRow || inLastRow) {
-        [
-          {lessThan: true, dim: 'x', val: newTable[i][j - 1].x},
-          {lessThan: false, dim: 'x', val: newTable[i][j + 1].x},
-          {lessThan: !inFirstRow, dim: 'y', val: newTable[i + (inFirstRow ? 1 : -1)][j].y}
-        ].forEach(evalPenalites);
-      } else if (inLeftColumn || inRightColumn) {
-        [
-          {lessThan: true, dim: 'y', val: newTable[i - 1][j].y},
-          {lessThan: false, dim: 'y', val: newTable[i + 1][j].y},
-          {lessThan: !inLeftColumn, dim: 'x', val: newTable[i][j + (inLeftColumn ? 1 : -1)].x}
-        ].forEach(evalPenalites);
-      } else {
-        [
-          {lessThan: true, dim: 'y', val: newTable[i - 1][j].y},
-          {lessThan: false, dim: 'y', val: newTable[i + 1][j].y},
-          {lessThan: true, dim: 'x', val: newTable[i][j - 1].x},
-          {lessThan: false, dim: 'x', val: newTable[i][j + 1].x}
-        ].forEach(evalPenalites);
-      }
+      penalties += contOrderPenalty({
+        cell,
+        inFirstRow,
+        inLastRow,
+        inRightColumn,
+        inLeftColumn,
+        newTable,
+        inCorner,
+        i, j
+      });
+
       penalties += continOverlapPenalty({
         cell,
         newTable,

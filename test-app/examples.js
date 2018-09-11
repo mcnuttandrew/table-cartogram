@@ -116,5 +116,5 @@ export default {
   ELELMENTS_BOIL,
   ELELMENTS_MASS,
 
-  TRI_BOARD: nStopCheckerBoardGenerator(12, 12, [10, 1, 20])
+  TRI_BOARD: nStopCheckerBoardGenerator(7, 7, [10, 1, 20])
 };

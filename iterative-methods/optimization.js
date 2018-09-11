@@ -117,7 +117,8 @@ function executeOptimization(objFunc, candidateVector, technique, table, numIter
     // }, candidateVector);
     const gradientResult = gradientDescentLineSearch((currentVec, fxprime) => {
       fxprime = fxprime || candidateVector.map(d => 0);
-      const delta = finiteDiference(objFunc, currentVec, 0.0001);
+      // Magic number for finite difference size
+      const delta = finiteDiference(objFunc, currentVec, 0.01);
       for (let idx = 0; idx < delta.length; idx++) {
         fxprime[idx] = delta[idx];
       }
