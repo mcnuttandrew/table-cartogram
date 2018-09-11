@@ -11,7 +11,8 @@ import {
 
 import {
   tableCartogram,
-  tableCartogramWithUpdate
+  tableCartogramWithUpdate,
+  tableCartogramAdaptive
 } from '../../';
 
 import {
@@ -84,6 +85,22 @@ export default class IterativeDisplay extends React.Component {
 
   componentDidMount() {
     const {data, iterations, technique, withUpdate, stepSize = 100} = this.props;
+
+    if (true) {
+      const startTime = (new Date()).getTime();
+      const {gons, error, stepsTaken} = tableCartogramAdaptive({data});
+      const endTime = (new Date()).getTime();
+      this.setState({
+        gons,
+        error,
+        startTime,
+        endTime,
+        loaded: true,
+        stepsTaken
+      });
+      return;
+    }
+
     if (!withUpdate) {
       new Promise((resolve, reject) => {
         const startTime = (new Date()).getTime();

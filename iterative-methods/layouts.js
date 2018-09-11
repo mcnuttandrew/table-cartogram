@@ -54,7 +54,7 @@ const layouts = {
 };
 
 // use the indexes of the auto generated arrays for positioning
-export function generateInitialTable(tableHeight, tableWidth, table, objFunc) {
+export function generateInitialTable(tableHeight, tableWidth, table, objFunc, layout) {
   const numCols = tableHeight;
   const numRows = tableWidth;
   const rowSums = table.map(row => findSumForTable([row]));
@@ -68,7 +68,6 @@ export function generateInitialTable(tableHeight, tableWidth, table, objFunc) {
   }
   const total = findSumForTable(table);
 
-  const layout = 'pickBest';
   const layoutMethod = layouts[layout];
   if (layoutMethod) {
     return layoutMethod(numRows, numCols, colSums, rowSums, total);

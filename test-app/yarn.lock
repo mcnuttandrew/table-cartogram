@@ -3077,9 +3077,9 @@ react-motion@^0.5.2:
     prop-types "^15.5.8"
     raf "^3.1.0"
 
-react-vis@^1.11.0:
-  version "1.11.0"
-  resolved "https://registry.yarnpkg.com/react-vis/-/react-vis-1.11.0.tgz#58f61179b65a2de338911ec799f806423b5936ff"
+react-vis@^1.11.1:
+  version "1.11.1"
+  resolved "https://registry.yarnpkg.com/react-vis/-/react-vis-1.11.1.tgz#9dca99fd252aacf9a5674ed45b4c40f7c207f26f"
   dependencies:
     d3-array "^1.2.0"
     d3-collection "^1.0.3"

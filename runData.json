@@ -1,0 +1,218 @@
+[
+  {
+    "gons": [],
+    "error": 4.165567692893584e-7,
+    "stepsTaken": 2000,
+    "runTime": 234,
+    "width": 3,
+    "height": 3,
+    "layout": "gridLayout"
+  },
+  {
+    "gons": [],
+    "error": 0.3071592186882629,
+    "stepsTaken": 101000,
+    "runTime": 8049,
+    "width": 3,
+    "height": 4,
+    "layout": "gridLayout"
+  },
+  {
+    "gons": [],
+    "error": 0.30893183430484755,
+    "stepsTaken": 101000,
+    "runTime": 7827,
+    "width": 4,
+    "height": 3,
+    "layout": "gridLayout"
+  },
+  {
+    "gons": [],
+    "error": 0.2796481981502656,
+    "stepsTaken": 101000,
+    "runTime": 15977,
+    "width": 4,
+    "height": 4,
+    "layout": "gridLayout"
+  },
+  {
+    "gons": [],
+    "error": 0.3711687709430916,
+    "stepsTaken": 101000,
+    "runTime": 4045,
+    "width": 3,
+    "height": 3,
+    "layout": "zigZagOnX"
+  },
+  {
+    "gons": [],
+    "error": 0.11017255106254494,
+    "stepsTaken": 101000,
+    "runTime": 10691,
+    "width": 3,
+    "height": 4,
+    "layout": "zigZagOnX"
+  },
+  {
+    "gons": [],
+    "error": 0.16796266341008995,
+    "stepsTaken": 101000,
+    "runTime": 9504,
+    "width": 4,
+    "height": 3,
+    "layout": "zigZagOnX"
+  },
+  {
+    "gons": [],
+    "error": 0.30557338208252394,
+    "stepsTaken": 101000,
+    "runTime": 18469,
+    "width": 4,
+    "height": 4,
+    "layout": "zigZagOnX"
+  },
+  {
+    "gons": [],
+    "error": 0.36570040272350024,
+    "stepsTaken": 101000,
+    "runTime": 4123,
+    "width": 3,
+    "height": 3,
+    "layout": "zigZagOnY"
+  },
+  {
+    "gons": [],
+    "error": 0.21194442689712809,
+    "stepsTaken": 101000,
+    "runTime": 8432,
+    "width": 3,
+    "height": 4,
+    "layout": "zigZagOnY"
+  },
+  {
+    "gons": [],
+    "error": 0.37741962755142494,
+    "stepsTaken": 101000,
+    "runTime": 9087,
+    "width": 4,
+    "height": 3,
+    "layout": "zigZagOnY"
+  },
+  {
+    "gons": [],
+    "error": 0.10063099601952857,
+    "stepsTaken": 101000,
+    "runTime": 22636,
+    "width": 4,
+    "height": 4,
+    "layout": "zigZagOnY"
+  },
+  {
+    "gons": [],
+    "error": 0.005402037553529453,
+    "stepsTaken": 9000,
+    "runTime": 445,
+    "width": 3,
+    "height": 3,
+    "layout": "zigZagOnXY"
+  },
+  {
+    "gons": [],
+    "error": 0.0354682582485736,
+    "stepsTaken": 101000,
+    "runTime": 10537,
+    "width": 3,
+    "height": 4,
+    "layout": "zigZagOnXY"
+  },
+  {
+    "gons": [],
+    "error": 0.0338574159951041,
+    "stepsTaken": 101000,
+    "runTime": 10626,
+    "width": 4,
+    "height": 3,
+    "layout": "zigZagOnXY"
+  },
+  {
+    "gons": [],
+    "error": 0.029253673019054367,
+    "stepsTaken": 101000,
+    "runTime": 30605,
+    "width": 4,
+    "height": 4,
+    "layout": "zigZagOnXY"
+  },
+  {
+    "gons": [],
+    "error": 0.0007247328815587543,
+    "stepsTaken": 4000,
+    "runTime": 175,
+    "width": 3,
+    "height": 3,
+    "layout": "psuedoCartogramLayout"
+  },
+  {
+    "gons": [],
+    "error": 0.29860182666872853,
+    "stepsTaken": 101000,
+    "runTime": 7893,
+    "width": 3,
+    "height": 4,
+    "layout": "psuedoCartogramLayout"
+  },
+  {
+    "gons": [],
+    "error": 0.2990300935118178,
+    "stepsTaken": 101000,
+    "runTime": 7748,
+    "width": 4,
+    "height": 3,
+    "layout": "psuedoCartogramLayout"
+  },
+  {
+    "gons": [],
+    "error": 0.2796481981502656,
+    "stepsTaken": 101000,
+    "runTime": 18286,
+    "width": 4,
+    "height": 4,
+    "layout": "psuedoCartogramLayout"
+  },
+  {
+    "gons": [],
+    "error": 0.00799963764288833,
+    "stepsTaken": 2000,
+    "runTime": 158,
+    "width": 3,
+    "height": 3,
+    "layout": "psuedoCartogramLayoutZigZag"
+  },
+  {
+    "gons": [],
+    "error": 0.29670056375398085,
+    "stepsTaken": 101000,
+    "runTime": 8504,
+    "width": 3,
+    "height": 4,
+    "layout": "psuedoCartogramLayoutZigZag"
+  },
+  {
+    "gons": [],
+    "error": 0.29652807939251774,
+    "stepsTaken": 101000,
+    "runTime": 8215,
+    "width": 4,
+    "height": 3,
+    "layout": "psuedoCartogramLayoutZigZag"
+  },
+  {
+    "gons": [],
+    "error": 0.27529068247874033,
+    "stepsTaken": 101000,
+    "runTime": 17540,
+    "width": 4,
+    "height": 4,
+    "layout": "psuedoCartogramLayoutZigZag"
+  }
+]

@@ -5,7 +5,8 @@
   "license": "MIT",
   "scripts": {
     "test": "babel-node test/test-index.js",
-    "start": "(cd test-app && yarn && yarn start)"
+    "start": "(cd test-app && yarn && yarn start)",
+    "stats": "babel-node scripts/stat-builder.js"
   },
   "devDependencies": {
     "babel-cli": "6.18.0",

@@ -150,13 +150,13 @@ export function buildIterativeCartogram(table, numIterations = MAX_ITERATIONS, t
   return executeOptimization(objFunc, candidateVector, technique, table, numIterations);
 }
 
-export function buildIterativeCartogramWithUpdate(table) {
+export function buildIterativeCartogramWithUpdate(table, layout = 'pickBest') {
   // TODO need to add a mechanism for scaling
   const width = table[0].length;
   const height = table.length;
 
   const objFunc = vec => objectiveFunction(vec, table);
-  const newTable = generateInitialTable(height, width, table, objFunc);
+  const newTable = generateInitialTable(height, width, table, objFunc, layout);
   let candidateVector = translateTableToVector(newTable, table);
 
   return (numIterations, technique) => {

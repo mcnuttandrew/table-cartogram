@@ -17,13 +17,16 @@ import IterativeDisplay from './components/iterative-display';
 import ExampleTreemap from './components/treemap-example-generator';
 import ExampleHeatmap from './components/heatmap-example';
 
+const transpose = mat => mat[0].map((col, i) => mat.map(row => row[i]));
+
 function App() {
   const tables = [
     // {data: EXAMPLES.BLACK_AND_WHITE_TABLE, technique: 'gradient'},
     // {data: EXAMPLES.ONE_BYS, technique: 'gradient'}
     // {data: EXAMPLES.PATHOLOGICAL_2_BY, technique: 'gradient', stepSize: 100},
     // {data: EXAMPLES.EXAMPLE_TABLE, technique: 'gradient', stepSize: 1000},
-    {data: EXAMPLES.EXAMPLE_TABLE, technique: 'gradient', stepSize: 10},
+    {data: EXAMPLES.BLACK_AND_WHITE_TABLE, technique: 'gradient', stepSize: 10},
+    {data: transpose(EXAMPLES.BLACK_AND_WHITE_TABLE), technique: 'gradient', stepSize: 10},
   ].map((config, idx) => (
     <IterativeDisplay
       {...config}
@@ -55,7 +58,7 @@ function App() {
           }
         </div>
         {
-          <ExampleHeatmap data={EXAMPLES.EXAMPLE_TABLE} />
+          // <ExampleHeatmap data={EXAMPLES.EXAMPLE_TABLE} />
         }
       </div>
     </div>

@@ -43,6 +43,10 @@ const EXAMPLE_TABLE = [
   [3, 2, 2, 3]
 ];
 
+const EXAMPLE_TABLE_SLIGHT_DIFF = EXAMPLE_TABLE.map(d => d.slice());
+EXAMPLE_TABLE_SLIGHT_DIFF[1][1] = 10;
+EXAMPLE_TABLE_SLIGHT_DIFF[2][3] = 8;
+
 const BLACK_AND_WHITE_TABLE = [
   [4.5, 4.5, 16, 2.5],
   [4, 3, 4.5, 3],
@@ -97,6 +101,7 @@ export default {
   ZION_VISITORS,
   USA_USA_USA,
   EXAMPLE_TABLE,
+  EXAMPLE_TABLE_SLIGHT_DIFF,
   oneByOnesUpper2,
   oneByOnesLower2,
   BLACK_AND_WHITE_TABLE,
