@@ -17,7 +17,6 @@ const ElementsOfInterest = [[
 const generateElementTable = key => ElementsOfInterest.map(row => row.map(cell => Number(cell[key])));
 
 const ELELMENTS_THERMAL = generateElementTable('C');
-console.log(ELELMENTS_THERMAL)
 // dont have molar volume
 const ELELMENTS_DENSITY = generateElementTable('Density');
 const ELELMENTS_BOIL = generateElementTable('Boil');
@@ -107,7 +106,7 @@ export default {
   BLACK_AND_WHITE_TABLE,
   BIG_TOP,
   BIG_BOTTOM,
-  CHECKER_BOARD: checkerBoardGenerator(5, 5, 6, 1),
+  CHECKER_BOARD: checkerBoardGenerator(9, 10, 5, 1),
   CHECKER_BOARD_SMALL: checkerBoardGenerator(4, 4, 5, 1),
   PATHOLOGICAL_2_BY,
   MULTIPLICATION_TABLE,
@@ -117,5 +116,5 @@ export default {
   ELELMENTS_BOIL,
   ELELMENTS_MASS,
 
-  TRI_BOARD: nStopCheckerBoardGenerator(6, 6, [10, 1, 20])
+  TRI_BOARD: nStopCheckerBoardGenerator(12, 12, [10, 1, 20])
 };

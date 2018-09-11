@@ -36,11 +36,100 @@ function computeMinDist(points, cell) {
   return minDist;
 }
 
+function continOverlapPenalty(props) {
+  const {
+    cell,
+    newTable,
+    inCorner,
+    inFirstRow,
+    inLastRow,
+    i,
+    j,
+    inLeftColumn,
+    inRightColumn
+  } = props;
+  let neighbors = [];
+  if (inCorner) {
+    // no penaltys for corners, they are not manipualted
+  } else if (inFirstRow) {
+    neighbors = [
+      {y: -newTable[i + 1][j - 1].y, x: newTable[i + 1][j - 1].x},
+      {y: -newTable[i + 1][j].y, x: newTable[i + 1][j].x},
+      {y: -newTable[i + 1][j + 1].y, x: newTable[i + 1][j + 1].x},
+      newTable[i][j + 1],
+      newTable[i + 1][j + 1],
+      newTable[i + 1][j],
+      newTable[i + 1][j - 1],
+      newTable[i][j - 1]
+    ];
+  } else if (inLastRow) {
+    const delta = Math.max(
+      Math.abs(newTable[i - 1][j - 1].y - newTable[i][j - 1].y),
+      Math.abs(newTable[i - 1][j + 1].y - newTable[i][j + 1].y)
+    );
+    neighbors = [
+      newTable[i - 1][j - 1],
+      newTable[i - 1][j],
+      newTable[i - 1][j + 1],
+      newTable[i][j + 1],
+      {x: newTable[i][j + 1].x, y: newTable[i][j + 1].y + delta},
+      {x: newTable[i - 1][j].x, y: newTable[i - 1][j].y + 2 * delta},
+      {x: newTable[i][j - 1].x, y: newTable[i][j - 1].y + delta},
+      newTable[i][j - 1]
+    ];
+  } else if (inLeftColumn) {
+    neighbors = [
+      {x: -newTable[i - 1][j + 1].x, y: newTable[i - 1][j + 1].y},
+      newTable[i - 1][j],
+      newTable[i - 1][j + 1],
+      newTable[i][j + 1],
+      newTable[i + 1][j + 1],
+      newTable[i + 1][j],
+      {x: -newTable[i + 1][j + 1].x, y: newTable[i + 1][j + 1].y},
+      {x: -newTable[i][j + 1].x, y: newTable[i][j + 1].y}
+    ];
+  } else if (inRightColumn) {
+    const delta = Math.max(
+      Math.abs(newTable[i - 1][j - 1].x - newTable[i - 1][j].x),
+      Math.abs(newTable[i + 1][j - 1].x - newTable[i + 1][j].x)
+    );
+    neighbors = [
+      newTable[i - 1][j - 1],
+      newTable[i - 1][j],
+      {x: newTable[i - 1][j].x + delta, y: newTable[i - 1][j].y},
+      {x: newTable[i][j].x + 2 * delta, y: newTable[i][j].y},
+      {x: newTable[i + 1][j].x + delta, y: newTable[i + 1][j].y},
+      newTable[i + 1][j],
+      newTable[i + 1][j - 1],
+      newTable[i][j - 1]
+    ];
+  } else {
+    neighbors = [
+      newTable[i - 1][j - 1],
+      newTable[i - 1][j],
+      newTable[i - 1][j + 1],
+      newTable[i][j + 1],
+      newTable[i + 1][j + 1],
+      newTable[i + 1][j],
+      newTable[i + 1][j - 1],
+      newTable[i][j - 1]
+    ];
+  }
+  // console.log(neighbors)
+  const points = neighbors.map(({x, y}) => [x, y]);
+  if (neighbors.length && !pointInPolygon([cell.x, cell.y], points)) {
+    // console.log('edge')
+    const minDist = computeMinDist(points, cell);
+    return expPenalty(-(isFinite(minDist) ? minDist : 0));
+  }
+  return 0;
+}
+
 export function continuousBuildPenalties(newTable) {
   let penalties = 0;
-  const rects = getRectsFromTable(newTable)
-    .reduce((acc, row) => acc.concat(row))
-    .map(row => row.map(({x, y}) => [x, y]));
+  // const rects = getRectsFromTable(newTable)
+  //   .reduce((acc, row) => acc.concat(row))
+  //   .map(row => row.map(({x, y}) => [x, y]));
   for (let i = 0; i < newTable.length; i++) {
     for (let j = 0; j < newTable[0].length; j++) {
       const inFirstRow = i === 0;
@@ -83,21 +172,32 @@ export function continuousBuildPenalties(newTable) {
           {lessThan: false, dim: 'x', val: newTable[i][j + 1].x}
         ].forEach(evalPenalites);
       }
+      penalties += continOverlapPenalty({
+        cell,
+        newTable,
+        inCorner,
+        inFirstRow,
+        inLastRow,
+        i,
+        j,
+        inLeftColumn,
+        inRightColumn
+      });
 
       // inside penalties
       // TODO THIS CAN BE SPED UP A BUNCH
-      for (let idx = 0; idx < rects.length; idx++) {
-        const points = rects[idx];
-        if (
-          // dont penalize a point for being part of a rectangle
-          !points.some(d => d[0] === cell.x && d[1] === cell.y) &&
-          // do penalize it for being inside of a rectange it's not a part of
-          pointInPolygon([cell.x, cell.y], points)
-        ) {
-          const minDist = computeMinDist(points, cell);
-          penalties += expPenalty(-(isFinite(minDist) ? minDist : 0));
-        }
-      }
+      // for (let idx = 0; idx < rects.length; idx++) {
+      //   const points = rects[idx];
+      //   if (
+      //     // dont penalize a point for being part of a rectangle
+      //     !points.some(d => d[0] === cell.x && d[1] === cell.y) &&
+      //     // do penalize it for being inside of a rectange it's not a part of
+      //     pointInPolygon([cell.x, cell.y], points)
+      //   ) {
+          // const minDist = computeMinDist(points, cell);
+          // penalties += expPenalty(-(isFinite(minDist) ? minDist : 0));
+      //   }
+      // }
     }
   }
 

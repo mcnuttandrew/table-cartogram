@@ -84,9 +84,9 @@ export default class IterativeDisplay extends React.Component {
   }
 
   componentDidMount() {
-    const {data, iterations, technique, withUpdate, stepSize = 100} = this.props;
+    const {data, iterations, technique, withUpdate, stepSize = 100, adaptive} = this.props;
 
-    if (true) {
+    if (adaptive) {
       const startTime = (new Date()).getTime();
       const {gons, error, stepsTaken} = tableCartogramAdaptive({data});
       const endTime = (new Date()).getTime();
