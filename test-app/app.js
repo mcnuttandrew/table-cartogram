@@ -25,8 +25,8 @@ function App() {
     // {data: EXAMPLES.ONE_BYS, technique: 'gradient'}
     // {data: EXAMPLES.PATHOLOGICAL_2_BY, technique: 'gradient', stepSize: 100},
     // {data: EXAMPLES.EXAMPLE_TABLE, technique: 'gradient', stepSize: 1000},
-    {data: EXAMPLES.BLACK_AND_WHITE_TABLE, technique: 'gradient', stepSize: 1000},
-    {data: transpose(EXAMPLES.BLACK_AND_WHITE_TABLE), technique: 'gradient', stepSize: 1000},
+    {data: EXAMPLES.ONE_BYS, technique: 'gradient', stepSize: 10},
+    // {data: transpose(EXAMPLES.BLACK_AND_WHITE_TABLE), technique: 'gradient', stepSize: 1000},
   ].map((config, idx) => (
     <IterativeDisplay
       {...config}

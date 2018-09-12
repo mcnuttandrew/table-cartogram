@@ -27,6 +27,7 @@ import {RV_COLORS} from '../colors';
 const CONVERGENCE_THRESHOLD = 10;
 
 function cartogramPlot(gons) {
+  const labelsOn = true;
   return (
     <XYPlot
       animation
@@ -44,6 +45,7 @@ function cartogramPlot(gons) {
             strokeOpacity: 1,
             opacity: 0.5,
             fill: RV_COLORS[(index + 3) % RV_COLORS.length]
+            // fill: RV_COLORS[(cell.value) % RV_COLORS.length]
           }}/>);
       })}
       <PolygonSeries
@@ -54,12 +56,12 @@ function cartogramPlot(gons) {
           stroke: 'black'
         }}
         data={[{x: 0, y: 0}, {x: 0, y: 1}, {x: 1, y: 1}, {x: 1, y: 0}]} />
-      <LabelSeries data={gons.map((cell, index) => ({
+      {labelsOn && <LabelSeries data={gons.map((cell, index) => ({
         ...geoCenter(cell.vertices),
         label: `${cell.value}`
-      }))} />
+      }))} />}
 
-      <LabelSeries data={gons.map((cell, index) => {
+      {labelsOn && <LabelSeries data={gons.map((cell, index) => {
         return {
           ...geoCenter(cell.vertices),
           label: `${round(area(cell.vertices), Math.pow(10, 6))}`,
@@ -67,7 +69,7 @@ function cartogramPlot(gons) {
             transform: 'translate(0, 15)'
           }
         };
-      })} />
+      })} />}
     </XYPlot>
   );
 }

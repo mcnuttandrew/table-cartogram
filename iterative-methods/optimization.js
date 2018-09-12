@@ -1,4 +1,5 @@
-import {gradientDescentLineSearch} from 'fmin';
+import {gradientDescentLineSearch} from './imported-gradient';
+// import {gradientDescentLineSearch} from 'fmin';
 import minimizePowell from 'minimize-powell';
 
 import {objectiveFunction} from './objective-function';
@@ -115,10 +116,11 @@ function executeOptimization(objFunc, candidateVector, technique, table, numIter
     //   console.log('eval')
     //   return finiteDiference(objFunc, x.argument || x, 0.01);
     // }, candidateVector);
-    const gradientResult = gradientDescentLineSearch((currentVec, fxprime) => {
+    const gradientResult = gradientDescentLineSearch((currentVec, fxprime, learnRate) => {
       fxprime = fxprime || candidateVector.map(d => 0);
       // Magic number for finite difference size
-      const delta = finiteDiference(objFunc, currentVec, 0.01);
+      // console.log(learnRate)
+      const delta = finiteDiference(objFunc, currentVec, 100 * learnRate || 0.01);
       for (let idx = 0; idx < delta.length; idx++) {
         fxprime[idx] = delta[idx];
       }

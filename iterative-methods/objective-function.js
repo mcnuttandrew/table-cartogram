@@ -1,6 +1,10 @@
 import pointInPolygon from 'point-in-polygon';
-import {area} from '../old-stuff/utils';
-import {translateVectorToTable, getRectsFromTable, findSumForTable} from './utils';
+import {
+  area,
+  translateVectorToTable,
+  getRectsFromTable,
+  findSumForTable
+} from './utils';
 
 function continuousMax(x, y) {
   return 0.5 * (x + y + Math.abs(x - y));
@@ -296,8 +300,8 @@ export function buildPenalties(newTable) {
 }
 
 export function objectiveFunction(vector, targetTable) {
-  const sumed = targetTable.reduce((acc, row) => acc + row.reduce((mem, cell) => mem + cell, 0), 0);
-  const expectedAreas = targetTable.map(row => row.map(cell => cell / sumed));
+  // const sumed = targetTable.reduce((acc, row) => acc + row.reduce((mem, cell) => mem + cell, 0), 0);
+  // const expectedAreas = targetTable.map(row => row.map(cell => cell / sumed));
   // PROBABLY SOME GOOD SAVINGS BY NOT TRANSLATING back and forth constantly
   const newTable = translateVectorToTable(vector, targetTable, 1, 1);
   const rects = getRectsFromTable(newTable);

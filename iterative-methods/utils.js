@@ -135,3 +135,18 @@ export const matrixAdd = (matA, matB) =>
 export const transposeMatrix = mat => mat[0].map((col, i) => mat.map(row => row[i]));
 
 export const times = n => [...new Array(n)].map((d, i) => i);
+
+/** Compute the area for a polygon with no holes
+ * @param {array} points - array of objects formatted {x, y}
+ * @returns {Number} the computed area
+ */
+export function area(points) {
+  // double the signed area for the polygon
+  // TODO THIS FUNCTION IS LIABLE TO NUMERICAL DISTORTION, WATCHOUT
+  const segmentSum = points
+  .reduce((acc, row, index) => {
+    const nextRow = points[(index + 1) % points.length];
+    return acc + (row.x * nextRow.y - nextRow.x * row.y);
+  }, 0);
+  return 0.5 * Math.abs(segmentSum);
+}

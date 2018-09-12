@@ -53,6 +53,17 @@ const BLACK_AND_WHITE_TABLE = [
   [7, 9, 9, 6]
 ];
 
+const HAND_SYMMETRIC = [
+  [9, 1, 1, 1, 1, 1, 1, 9],
+  [1, 1, 1, 2, 2, 1, 1, 1],
+  [1, 1, 5, 1, 1, 5, 1, 1],
+  [1, 2, 1, 4, 4, 1, 2, 1],
+  [1, 2, 1, 4, 4, 1, 2, 1],
+  [1, 1, 5, 1, 1, 5, 1, 1],
+  [1, 1, 1, 2, 2, 1, 1, 1],
+  [9, 1, 1, 1, 1, 1, 1, 9]
+];
+
 // PROGRAMATICALLY GENERATED EXAMPLES
 const checkerBoardGenerator = (width, height, high, low, offset = 0) =>
   [...new Array(height)].map((_, ydx) =>
@@ -73,7 +84,7 @@ oneByOnesUpper2[1][1] = 2;
 const oneByOnesLower2 = checkerBoardGenerator(4, 4, 1, 1);
 oneByOnesLower2[2][2] = 2;
 const ONE_BYS = checkerBoardGenerator(4, 6, 1, 1);
-ONE_BYS[2][2] = 25;
+ONE_BYS[2][2] = 50;
 
 const BIG_TOP = checkerBoardGenerator(3, 2, 1, 1);
 BIG_TOP[0][0] = 20;
@@ -116,5 +127,7 @@ export default {
   ELELMENTS_BOIL,
   ELELMENTS_MASS,
 
-  TRI_BOARD: nStopCheckerBoardGenerator(7, 7, [10, 1, 20])
+  TRI_BOARD: nStopCheckerBoardGenerator(7, 7, [10, 1, 20]),
+
+  HAND_SYMMETRIC
 };
