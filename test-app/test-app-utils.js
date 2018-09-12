@@ -20,10 +20,9 @@ export function computeErrors(data, gons) {
       errors.push(computedErr);
     }
   }
-  let error = errors.reduce((acc, row) => acc + row, 0);
-  // console.log('sum error', error, error / errors.length)
-  error /= errors.length;
-  return error;
+  const maxError = errors.reduce((acc, row) => Math.max(acc, row), -Infinity);
+  const error = errors.reduce((acc, row) => acc + row, 0) / errors.length;
+  return {error, maxError};
 }
 
 /**

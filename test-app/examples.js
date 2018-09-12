@@ -53,15 +53,26 @@ const BLACK_AND_WHITE_TABLE = [
   [7, 9, 9, 6]
 ];
 
+// const HAND_SYMMETRIC = [
+//   [9, 1, 1, 1, 1, 1, 1, 9],
+//   [1, 1, 1, 2, 2, 1, 1, 1],
+//   [1, 1, 5, 1, 1, 5, 1, 1],
+//   [1, 2, 1, 4, 4, 1, 2, 1],
+//   [1, 2, 1, 4, 4, 1, 2, 1],
+//   [1, 1, 5, 1, 1, 5, 1, 1],
+//   [1, 1, 1, 2, 2, 1, 1, 1],
+//   [9, 1, 1, 1, 1, 1, 1, 9]
+// ];
+
 const HAND_SYMMETRIC = [
-  [9, 1, 1, 1, 1, 1, 1, 9],
-  [1, 1, 1, 2, 2, 1, 1, 1],
-  [1, 1, 5, 1, 1, 5, 1, 1],
-  [1, 2, 1, 4, 4, 1, 2, 1],
-  [1, 2, 1, 4, 4, 1, 2, 1],
-  [1, 1, 5, 1, 1, 5, 1, 1],
-  [1, 1, 1, 2, 2, 1, 1, 1],
-  [9, 1, 1, 1, 1, 1, 1, 9]
+  [5, 1, 1, 1, 1, 3, 5, 9, 1, 7, 2, 1],
+  [1, 1, 1, 1, 3, 5, 9, 5, 1, 7, 2, 1],
+  [1, 1, 1, 3, 5, 9, 5, 3, 1, 7, 2, 1],
+  [1, 1, 3, 5, 9, 5, 3, 1, 1, 7, 2, 1],
+  [1, 3, 5, 9, 5, 3, 1, 1, 1, 7, 2, 1],
+  [3, 5, 9, 5, 3, 1, 1, 1, 1, 7, 2, 1],
+  [5, 9, 5, 3, 1, 1, 1, 1, 1, 7, 2, 1],
+  [9, 5, 3, 1, 1, 1, 1, 5, 1, 7, 2, 1]
 ];
 
 // PROGRAMATICALLY GENERATED EXAMPLES
@@ -83,7 +94,7 @@ const oneByOnesUpper2 = checkerBoardGenerator(4, 4, 1, 1);
 oneByOnesUpper2[1][1] = 2;
 const oneByOnesLower2 = checkerBoardGenerator(4, 4, 1, 1);
 oneByOnesLower2[2][2] = 2;
-const ONE_BYS = checkerBoardGenerator(4, 6, 1, 1);
+const ONE_BYS = checkerBoardGenerator(3, 3, 1, 1);
 ONE_BYS[2][2] = 50;
 
 const BIG_TOP = checkerBoardGenerator(3, 2, 1, 1);
@@ -127,7 +138,7 @@ export default {
   ELELMENTS_BOIL,
   ELELMENTS_MASS,
 
-  TRI_BOARD: nStopCheckerBoardGenerator(7, 7, [10, 1, 20]),
+  TRI_BOARD: nStopCheckerBoardGenerator(10, 10, [5, 1, 9]),
 
   HAND_SYMMETRIC
 };

@@ -204,7 +204,7 @@ export function continuousBuildPenalties(newTable) {
         i, j
       });
 
-      penalties += continOverlapPenalty({
+      penalties += 4 * continOverlapPenalty({
         cell,
         newTable,
         inCorner,
@@ -226,8 +226,8 @@ export function continuousBuildPenalties(newTable) {
       //     // do penalize it for being inside of a rectange it's not a part of
       //     pointInPolygon([cell.x, cell.y], points)
       //   ) {
-          // const minDist = computeMinDist(points, cell);
-          // penalties += expPenalty(-(isFinite(minDist) ? minDist : 0));
+      //     const minDist = computeMinDist(points, cell);
+      //     penalties += expPenalty(-(isFinite(minDist) ? minDist : 0));
       //   }
       // }
     }

@@ -48,12 +48,12 @@ export function tableCartogram(table, numIterations = MAX_ITERATIONS, technique)
  * @param  {String} technique which computation technique to use
  * @return {Function}         call back to trigger additional computation, returns array of polygons
  */
-export function tableCartogramWithUpdate(table, technique) {
+export function tableCartogramWithUpdate(table, technique, layout = 'pickBest') {
   if (inputTableIsInvalid(table)) {
     console.error('INVALID INPUT TABLE')
     return [];
   }
-  const updateFunction = buildIterativeCartogramWithUpdate(table, 'pickBest');
+  const updateFunction = buildIterativeCartogramWithUpdate(table, layout);
   return (numIterations, optionalSecondTechnique = technique) =>
     prepareRects(updateFunction(numIterations, optionalSecondTechnique), table);
 }
