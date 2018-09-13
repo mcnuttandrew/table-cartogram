@@ -25,12 +25,13 @@ function App() {
     // {data: EXAMPLES.ONE_BYS, technique: 'gradient'}
     // {data: EXAMPLES.PATHOLOGICAL_2_BY, technique: 'gradient', stepSize: 100},
     // {data: EXAMPLES.EXAMPLE_TABLE, technique: 'gradient', stepSize: 1000},
-    {data: EXAMPLES.HAND_SYMMETRIC, technique: 'coordinate', stepSize: 10000},
+    {data: EXAMPLES.CHECKER_BOARD, technique: 'coordinate', stepSize: 10},
+    // {data: EXAMPLES.USA_USA_USA, technique: 'gradient', stepSize: 10000},
     // {data: transpose(EXAMPLES.BLACK_AND_WHITE_TABLE), technique: 'gradient', stepSize: 1000},
   ].map((config, idx) => (
     <IterativeDisplay
       {...config}
-      iterations={30000}
+      iterations={400}
       withUpdate={true}
       key={`${config.technique}-${idx}`}/>
   ));

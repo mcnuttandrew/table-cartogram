@@ -94,21 +94,21 @@ function stagedMonteCarlo(numIterations, candidateVector, objFunc) {
   return currentCandidate;
 }
 
-function coordinateDescent(objFunc, candidateVector, table) {
+function coordinateDescent(objFunc, candidateVector, table, numIterations) {
   const currentVec = candidateVector.slice();
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < numIterations; i++) {
     const stepSize = 0.001;
     for (let phase = 0; phase < 4; phase++) {
       const currTable = translateVectorToTable(currentVec, table, 1, 1);
       const searchIndices = getIndicesInVectorOfInterest(currTable, table, phase);
       // console.log(searchIndices)
       // const searchIndices = [phase];
-      const dx = finiteDiferenceForIndices(objFunc, currentVec, 0.001, searchIndices);
-      // const norm = Math.sqrt(dx.reduce((acc, row) => acc + row * row, 0));
+      const dx = finiteDiferenceForIndices(objFunc, currentVec, 0.0001, searchIndices);
       const norm = norm2(dx);
-      // console.log(stepSize, dx)
       for (let jdx = 0; jdx < dx.length; jdx++) {
-        currentVec[searchIndices[jdx]] += dx[jdx] && -dx[jdx] / norm * stepSize || 0;
+        if (dx[jdx]) {
+          currentVec[searchIndices[jdx]] += -dx[jdx] / norm * stepSize;
+        }
       }
     }
   }
@@ -154,7 +154,7 @@ function executeOptimization(objFunc, candidateVector, technique, table, numIter
     return translateVectorToTable(gradientResult.x, table, 1, 1);
   case 'coordinate':
     // figure out
-    const coordinateResult = coordinateDescent(objFunc, candidateVector, table);
+    const coordinateResult = coordinateDescent(objFunc, candidateVector, table, numIterations);
     return translateVectorToTable(coordinateResult, table, 1, 1);
   case 'altMonteCarlo':
     const altMonteFinalVec = altMonteCarloOptimization(objFunc, candidateVector, numIterations);
@@ -169,17 +169,20 @@ function executeOptimization(objFunc, candidateVector, technique, table, numIter
   }
 }
 
-const MAX_ITERATIONS = 3000;
+const MAX_ITERATIONS = 10;
 export function buildIterativeCartogram(table, numIterations = MAX_ITERATIONS, technique) {
-  // TODO need to add a mechanism for scaling
-  const width = table[0].length;
-  const height = table.length;
-
-  const objFunc = vec => objectiveFunction(vec, table);
-  const newTable = generateInitialTable(height, width, table, objFunc);
-  const candidateVector = translateTableToVector(newTable, table);
-
-  return executeOptimization(objFunc, candidateVector, technique, table, numIterations);
+  // // TODO need to add a mechanism for scaling
+  // const width = table[0].length;
+  // const height = table.length;
+  //
+  // const objFunc = vec => objectiveFunction(vec, table);
+  // const newTable = generateInitialTable(height, width, table, objFunc);
+  // const candidateVector = translateTableToVector(newTable, table);
+  //
+  // return executeOptimization(objFunc, candidateVector, technique, table, numIterations);
+  //
+  const update = buildIterativeCartogramWithUpdate(table);
+  return update(numIterations, technique);
 }
 
 export function buildIterativeCartogramWithUpdate(table, layout = 'pickBest') {

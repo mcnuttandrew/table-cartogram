@@ -112,6 +112,10 @@ const MULTIPLICATION_TABLE = [...new Array(10)].map((d, i) =>
   [...new Array(10)].map((_, j) => (i + 1) * (j + 1))
 );
 
+const RIBBONS = [...new Array(10)].map((d, i) =>
+  [...new Array(10)].map((_, j) => ((j + 1) * (i % 2 ? 20 : 1)))
+);
+
 export default {
   LONG_RAMP: checkerBoardGenerator(1, 15, 1, 10),
   SMALL_RAMP: ramp(3, 3),
@@ -128,7 +132,7 @@ export default {
   BLACK_AND_WHITE_TABLE,
   BIG_TOP,
   BIG_BOTTOM,
-  CHECKER_BOARD: checkerBoardGenerator(9, 15, 7, 1),
+  CHECKER_BOARD: checkerBoardGenerator(9, 9, 30, 1),
   CHECKER_BOARD_SMALL: checkerBoardGenerator(4, 4, 5, 1),
   PATHOLOGICAL_2_BY,
   MULTIPLICATION_TABLE,
@@ -140,5 +144,6 @@ export default {
 
   TRI_BOARD: nStopCheckerBoardGenerator(10, 10, [5, 1, 20]),
 
-  HAND_SYMMETRIC
+  HAND_SYMMETRIC,
+  RIBBONS
 };

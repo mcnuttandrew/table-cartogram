@@ -66,11 +66,11 @@ export function tableCartogramWithUpdate(table, technique, layout = 'pickBest') 
 export function tableCartogramAdaptive(params) {
   const {
     data,
-    technique = 'gradient',
-    maxNumberOfSteps = 100000,
+    technique = 'coordinate',
+    maxNumberOfSteps = 1000,
     targetAccuracy = 0.01,
-    iterationStepSize = 1000,
-    layout = 'psuedoCartogramLayout'
+    iterationStepSize = 10,
+    layout = 'pickBest'
   } = params;
   if (inputTableIsInvalid(data)) {
     console.error('INVALID INPUT TABLE')
@@ -93,7 +93,7 @@ export function tableCartogramAdaptive(params) {
     currentLayout = boundUpdate(iterationStepSize);
     currentScore = computeErrors(data, currentLayout);
     stepsTaken += iterationStepSize;
-    if ((stepsTaken > maxNumberOfSteps) || currentScore < targetAccuracy) {
+    if ((stepsTaken > maxNumberOfSteps) || currentScore.error < targetAccuracy) {
       stillRunning = false;
     }
   }

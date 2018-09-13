@@ -127,7 +127,8 @@ export default class IterativeDisplay extends React.Component {
         startTime,
         endTime,
         loaded: true,
-        stepsTaken
+        stepsTaken,
+        converged: true
       });
       return;
     }
@@ -143,7 +144,8 @@ export default class IterativeDisplay extends React.Component {
           error,
           startTime,
           endTime,
-          maxError
+          maxError,
+          converged: true
         });
       }).then(state => this.setState({...state, loaded: true, stepsTaken: iterations}));
       return;
@@ -226,7 +228,6 @@ export default class IterativeDisplay extends React.Component {
   }
 
   render() {
-    const {data} = this.props;
     const {gons, loaded, fillMode, showLabels} = this.state;
     return (
       <div style={{display: 'flex', alignItems: 'center'}}>
