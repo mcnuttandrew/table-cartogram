@@ -25,6 +25,29 @@ const ELELMENTS_MASS = generateElementTable('Atomic weight');
 const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
 const ZION_VISITORS = ZionVisitors.map(year => MONTHS.map(month => year[month])).slice(0, 5);
 
+import Speeding from '../test/speeding';
+function getWeekNumber(day) {
+  const thisDate = new Date(day);
+  const dayNum = ((thisDate.getUTCDay() || 7) + 0) % 7;
+  thisDate.setUTCDate(thisDate.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(thisDate.getUTCFullYear(), 0, 1));
+  return Math.ceil((((thisDate.getTime() - yearStart) / 86400000) + 0) / 7);
+}
+
+export const CAL = Object.entries(Speeding.filter(d => {
+  const day = new Date(d.date);
+  const inJuly = day.getTime() > new Date('June 30 2018').getTime();
+  const beforeSecondWeekOfAugust = day.getTime() < new Date('August 5 2018').getTime();
+  return inJuly && beforeSecondWeekOfAugust;
+}).reduce((acc, row) => {
+  const weekNum = getWeekNumber(row.date);
+  if (!acc[weekNum]) {
+    acc[weekNum] = [];
+  }
+  acc[weekNum].push(row);
+  return acc;
+}, {})).sort((a, b) => a[0] - b[0]).map(d => d[1]);
+
 // EXAMPLES FROM PAPER
 const USA_USA_USA = [
   [6.725, 0.989, 0.673, 5.304, 5.687, 19.378, 0.626, 1.328],

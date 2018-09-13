@@ -12,10 +12,11 @@ import {
 } from '../test/iterative-tests';
 //
 import GenericTable from './components/generic-test-table';
-import EXAMPLES from './examples';
+import EXAMPLES, {CAL} from './examples';
 import IterativeDisplay from './components/iterative-display';
 import ExampleTreemap from './components/treemap-example-generator';
 import ExampleHeatmap from './components/heatmap-example';
+import CalendarDisplay from './components/calendar-example';
 
 const transpose = mat => mat[0].map((col, i) => mat.map(row => row[i]));
 
@@ -25,8 +26,8 @@ function App() {
     // {data: EXAMPLES.ONE_BYS, technique: 'gradient'}
     // {data: EXAMPLES.PATHOLOGICAL_2_BY, technique: 'gradient', stepSize: 100},
     // {data: EXAMPLES.EXAMPLE_TABLE, technique: 'gradient', stepSize: 1000},
-    {data: EXAMPLES.CHECKER_BOARD, technique: 'coordinate', stepSize: 10},
-    // {data: EXAMPLES.USA_USA_USA, technique: 'gradient', stepSize: 10000},
+    // {data: EXAMPLES.CHECKER_BOARD, technique: 'coordinate', stepSize: 10},
+    {data: EXAMPLES.PATHOLOGICAL_2_BY, technique: 'coordinate', stepSize: 10},
     // {data: transpose(EXAMPLES.BLACK_AND_WHITE_TABLE), technique: 'gradient', stepSize: 1000},
   ].map((config, idx) => (
     <IterativeDisplay
@@ -60,6 +61,7 @@ function App() {
         </div>
         {
           // <ExampleHeatmap data={EXAMPLES.EXAMPLE_TABLE} />
+          // <CalendarDisplay data={CAL}/>
         }
       </div>
     </div>
