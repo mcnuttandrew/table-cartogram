@@ -54,9 +54,7 @@ function colorCell(cell, index, fillMode) {
   }
 }
 
-function cartogramPlot(gons, fillMode) {
-  const labelsOn = true;
-
+function cartogramPlot(gons, fillMode, showLabels) {
   return (
     <XYPlot
       animation
@@ -84,12 +82,12 @@ function cartogramPlot(gons, fillMode) {
           stroke: 'black'
         }}
         data={[{x: 0, y: 0}, {x: 0, y: 1}, {x: 1, y: 1}, {x: 1, y: 0}]} />
-      {labelsOn && <LabelSeries data={gons.map((cell, index) => ({
+      {showLabels && <LabelSeries data={gons.map((cell, index) => ({
         ...geoCenter(cell.vertices),
         label: `${cell.value}`
       }))} />}
 
-      {labelsOn && <LabelSeries data={gons.map((cell, index) => {
+      {showLabels && <LabelSeries data={gons.map((cell, index) => {
         return {
           ...geoCenter(cell.vertices),
           label: `${round(area(cell.vertices), Math.pow(10, 6))}`,
@@ -112,7 +110,8 @@ export default class IterativeDisplay extends React.Component {
     previousValueAndCount: {value: null, count: 0},
     converged: false,
     maxError: NaN,
-    fillMode: 'periodicColors'
+    fillMode: 'periodicColors',
+    showLabels: true
   }
 
   componentDidMount() {
@@ -180,7 +179,8 @@ export default class IterativeDisplay extends React.Component {
       if (
         this.state.converged ||
         (previousValueAndCount.count > CONVERGENCE_THRESHOLD) ||
-        previousValueAndCount.value < 0.001
+        previousValueAndCount.value < 0.001 ||
+        isNaN(error)
       ) {
         clearInterval(ticker);
         this.setState({converged: true});
@@ -219,6 +219,7 @@ export default class IterativeDisplay extends React.Component {
             fillMode: colorModes[(fillIndex + 1) % colorModes.length]
           });
         }}>{`CHANGE COLOR MODE (current ${fillMode})`}</button>
+        <button onClick={() => this.setState({showLabels: !this.state.showLabels})}>TOGGLE LABELS</button>
         <button onClick={() => this.setState({converged: true})}>STOP</button>
       </div>
     );
@@ -226,10 +227,10 @@ export default class IterativeDisplay extends React.Component {
 
   render() {
     const {data} = this.props;
-    const {gons, loaded, fillMode} = this.state;
+    const {gons, loaded, fillMode, showLabels} = this.state;
     return (
       <div style={{display: 'flex', alignItems: 'center'}}>
-        {loaded && cartogramPlot(gons, fillMode)}
+        {loaded && cartogramPlot(gons, fillMode, showLabels)}
         {loaded && this.displayReadout()}
       </div>
     );

@@ -1,13 +1,11 @@
-import {gradientDescentLineSearch} from './imported-gradient';
+import {gradientDescentLineSearch, norm2} from './imported-gradient';
 // import {gradientDescentLineSearch} from 'fmin';
 import minimizePowell from 'minimize-powell';
 
 import {objectiveFunction} from './objective-function';
 import {generateInitialTable} from './layouts';
-import {translateVectorToTable, translateTableToVector} from './utils';
+import {translateVectorToTable, translateTableToVector, getIndicesInVectorOfInterest} from './utils';
 
-// TODO im not confident in the accuracy of this function
-// NOT SURE HOW I'D WRITE A TEST FOR IT SHRUG
 function monteCarloPerturb(vector, stepSize = Math.pow(10, -2)) {
   return vector.map(cell => cell + (Math.random() - 0.5) * stepSize);
 }
@@ -30,6 +28,7 @@ function monteCarloOptimization(objFunc, candidateVector, numIterations) {
 }
 
 // monte carlo with adjustment on a single direction per pass
+// TODO staged for deletion
 function altMonteCarloOptimization(objFunc, candidateVector, numIterations) {
   let iteratVector = candidateVector.slice(0);
   let oldScore = objFunc(candidateVector);
@@ -71,6 +70,7 @@ function altMonteCarloOptimization(objFunc, candidateVector, numIterations) {
 }
 
 // monte with a genetic algo type iteration cycle
+// TODO staged for deletion
 function stagedMonteCarlo(numIterations, candidateVector, objFunc) {
   const stepSize = Math.floor(numIterations / 6);
   const generationSize = 10;
@@ -94,8 +94,37 @@ function stagedMonteCarlo(numIterations, candidateVector, objFunc) {
   return currentCandidate;
 }
 
+function coordinateDescent(objFunc, candidateVector, table) {
+  const currentVec = candidateVector.slice();
+  for (let i = 0; i < 10; i++) {
+    const stepSize = 0.001;
+    for (let phase = 0; phase < 4; phase++) {
+      const currTable = translateVectorToTable(currentVec, table, 1, 1);
+      const searchIndices = getIndicesInVectorOfInterest(currTable, table, phase);
+      // console.log(searchIndices)
+      // const searchIndices = [phase];
+      const dx = finiteDiferenceForIndices(objFunc, currentVec, 0.001, searchIndices);
+      // const norm = Math.sqrt(dx.reduce((acc, row) => acc + row * row, 0));
+      const norm = norm2(dx);
+      // console.log(stepSize, dx)
+      for (let jdx = 0; jdx < dx.length; jdx++) {
+        currentVec[searchIndices[jdx]] += dx[jdx] && -dx[jdx] / norm * stepSize || 0;
+      }
+    }
+  }
+  return currentVec;
+}
+
 function finiteDiference(obj, currentPos, stepSize) {
   return currentPos.map((d, i) => {
+    const forward = obj(currentPos.map((row, idx) => row + (idx === i ? stepSize : 0)));
+    const backward = obj(currentPos.map((row, idx) => row - (idx === i ? stepSize : 0)));
+    return (forward - backward) / (2 * stepSize);
+  });
+}
+
+function finiteDiferenceForIndices(obj, currentPos, stepSize, indices) {
+  return indices.map(i => {
     const forward = obj(currentPos.map((row, idx) => row + (idx === i ? stepSize : 0)));
     const backward = obj(currentPos.map((row, idx) => row - (idx === i ? stepSize : 0)));
     return (forward - backward) / (2 * stepSize);
@@ -108,14 +137,10 @@ function executeOptimization(objFunc, candidateVector, technique, table, numIter
   }
   switch (technique) {
   case 'powell':
+    // TODO SCHEDULED FOR DELETION
     const powellFinalVec = minimizePowell(objFunc, candidateVector, {maxIter: numIterations});
     return translateVectorToTable(powellFinalVec, table, 1, 1);
   case 'gradient':
-    // const monte = stagedMonteCarlo(objFunc, candidateVector, numIterations);
-    // const gradient = minimize_L_BFGS(objFunc, x => {
-    //   console.log('eval')
-    //   return finiteDiference(objFunc, x.argument || x, 0.01);
-    // }, candidateVector);
     const gradientResult = gradientDescentLineSearch((currentVec, fxprime, learnRate) => {
       fxprime = fxprime || candidateVector.map(d => 0);
       // Magic number for finite difference size
@@ -127,6 +152,10 @@ function executeOptimization(objFunc, candidateVector, technique, table, numIter
       return objFunc(currentVec);
     }, candidateVector, {maxIterations: numIterations});
     return translateVectorToTable(gradientResult.x, table, 1, 1);
+  case 'coordinate':
+    // figure out
+    const coordinateResult = coordinateDescent(objFunc, candidateVector, table);
+    return translateVectorToTable(coordinateResult, table, 1, 1);
   case 'altMonteCarlo':
     const altMonteFinalVec = altMonteCarloOptimization(objFunc, candidateVector, numIterations);
     return translateVectorToTable(altMonteFinalVec, table, 1, 1);

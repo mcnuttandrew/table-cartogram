@@ -310,30 +310,36 @@ export function objectiveFunction(vector, targetTable) {
   const areas = rects.map(row => row.map(rect => area(rect)));
   const sumArea = findSumForTable(areas);
   const sumTrueArea = findSumForTable(targetTable);
+  const sumRatio = sumTrueArea / sumArea;
   // compare the areas and generate absolute error
   // TODO: is using the abs error right? (like as opposed to relative error?)
-  const errors = [];
+  let errorSum = 0;
+  // const errors = [];
   for (let i = 0; i < rects.length; i++) {
-    const rowErrors = [];
+    // const rowErrors = [];
     for (let j = 0; j < rects[0].length; j++) {
-      const foundArea = area(rects[i][j]);
+      const foundArea = areas[i][j];
+      // const foundArea = area(rects[i][j]);
       // const error = targetTable[i][j] / sumTrueArea - foundArea / sumArea;
       // const error = Math.abs(targetTable[i][j] / sumTrueArea - foundArea) / foundArea;
       // const error = sumTrueArea * Math.abs(targetTable[i][j] / sumTrueArea - foundArea) / targetTable[i][j];
-      const error = Math.abs(targetTable[i][j] - sumTrueArea / sumArea * foundArea) / targetTable[i][j];
       // const error = (expectedAreas[i][j] - foundArea) / foundArea;
-      rowErrors.push((error));
+
+      // UNCLEAR?
+      // errorSum += Math.abs(targetTable[i][j] - sumRatio * foundArea) / targetTable[i][j];
+      errorSum += Math.pow(targetTable[i][j] - sumRatio * foundArea, 2) / targetTable[i][j];
+      // rowErrors.push((error));
     }
-    errors.push(rowErrors);
+    // errors.push(rowErrors);
   }
-  // if the proposed table doesn't conform to the "rules" then throw it out
-  // penalty is always 0 or infinity
+
   // const penal = buildPenalties(newTable);
   const penal = continuousBuildPenalties(newTable);
+  // const concavePenalty = rects.reduce((acc, row) =>
+  //     acc + row.reduce((mem, rect) => mem + (checkForConcaveAngles(rect) ? 1 : 0), 0), 0)
+
   // TODO could include another penalty to try to force convexity
   // return findMaxForTable(errors) + penal;
   // return findSumForTable(errors) + penal;
-  // const concavePenalty = rects.reduce((acc, row) =>
-  //     acc + row.reduce((mem, rect) => mem + (checkForConcaveAngles(rect) ? 1 : 0), 0), 0)
-  return findSumForTable(errors) / (errors.length * errors[0].length) + penal;
+  return errorSum / (rects.length * rects[0].length) + penal;
 }

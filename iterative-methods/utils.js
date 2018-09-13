@@ -37,6 +37,8 @@ export function translateTableToVector(table, targetTable) {
     for (let j = 0; j < table[0].length; j++) {
       const inFirstRow = i === 0;
       const inLeftColumn = j === 0;
+      // TODO i feel like i should be able to compute this without checking the targetTable
+      // i think its like n - 2 m - 2?
       const inRightColumn = j === targetTable[0].length;
       const inLastRow = i === targetTable.length;
       const cell = table[i][j];
@@ -51,6 +53,45 @@ export function translateTableToVector(table, targetTable) {
       } else {
         vector.push(cell.x);
         vector.push(cell.y);
+      }
+    }
+  }
+  return vector;
+}
+
+export function getIndicesInVectorOfInterest(table, targetTable, phase) {
+  const vector = [];
+  let vecIdx = 0;
+  for (let i = 0; i < table.length; i++) {
+    for (let j = 0; j < table[0].length; j++) {
+      const inFirstRow = i === 0;
+      const inLeftColumn = j === 0;
+      const inRightColumn = j === targetTable[0].length;
+      const inLastRow = i === targetTable.length;
+      const inCorner = ((inFirstRow && (inLeftColumn || inRightColumn))) ||
+              ((inLastRow && (inLeftColumn || inRightColumn)));
+
+      const evenRow = (i % 2);
+      const evenColumn = (j % 2);
+      const inPhase = ((phase < 2 && !evenRow) || (phase >= 2 && evenRow)) && (evenColumn === (phase % 2));
+      if (inCorner) {
+        // do nothing
+      } else if (inFirstRow || inLastRow) {
+        if (inPhase) {
+          vector.push(vecIdx);
+        }
+        vecIdx += 1;
+      } else if (inLeftColumn || inRightColumn) {
+        if (inPhase) {
+          vector.push(vecIdx);
+        }
+        vecIdx += 1;
+      } else {
+        if (inPhase) {
+          vector.push(vecIdx);
+          vector.push(vecIdx + 1);
+        }
+        vecIdx += 2;
       }
     }
   }

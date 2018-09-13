@@ -16,7 +16,7 @@ function dot(a, b) {
   return ret;
 }
 
-function norm2(a) {
+export function norm2(a) {
   return Math.sqrt(dot(a, a));
 }
 

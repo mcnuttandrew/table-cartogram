@@ -128,7 +128,7 @@ export default {
   BLACK_AND_WHITE_TABLE,
   BIG_TOP,
   BIG_BOTTOM,
-  CHECKER_BOARD: checkerBoardGenerator(9, 10, 5, 1),
+  CHECKER_BOARD: checkerBoardGenerator(9, 15, 7, 1),
   CHECKER_BOARD_SMALL: checkerBoardGenerator(4, 4, 5, 1),
   PATHOLOGICAL_2_BY,
   MULTIPLICATION_TABLE,
@@ -138,7 +138,7 @@ export default {
   ELELMENTS_BOIL,
   ELELMENTS_MASS,
 
-  TRI_BOARD: nStopCheckerBoardGenerator(10, 10, [5, 1, 9]),
+  TRI_BOARD: nStopCheckerBoardGenerator(10, 10, [5, 1, 20]),
 
   HAND_SYMMETRIC
 };
