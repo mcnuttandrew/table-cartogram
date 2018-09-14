@@ -1,3 +1,5 @@
+const pointAdd = (l, r) => (l.x * r.y - r.x * l.y);
+
 /**
  * Generate a number of equally spaced points along a linear path between two points
  * @param {object} left - point where interpolation is begun, of format {x: NUMBER, y: NUMBER}
@@ -109,7 +111,6 @@ export function partitionTriangle(points, {alpha, beta, gamma}) {
   };
 }
 
-const pointAdd = (l, r) => (l.x * r.y - r.x * l.y);
 function getConst(pp, targArea, print) {
   const points = pp;
   points.reverse();
@@ -291,15 +292,6 @@ function getXYforAB(A, b) {
   };
 }
 
-/** Round a value
- * @param {number} number - the number to be rounded
- * @param {number} precision - the precision of the rounding, expressed in powers of 10
- * @returns {number} the rounded value
- */
-export function round(number, precision = Math.pow(10, 12)) {
-  return Math.floor(number * precision) / precision;
-}
-
 /** Generate a polygon
  * @param {number} number - the number of sides in the polygon
  * @param {number} radius - the radius of the polygon
@@ -311,17 +303,6 @@ export function generatePolygon(numberOfSides, radius, offset) {
     const angle = Math.PI * 2 * index / numberOfSides + Math.PI / 3;
     return {x: radius * Math.cos(angle) + offset.x, y: radius * Math.sin(angle) + offset.y};
   });
-}
-
-/** Compute geometric center of a polygon
- * @param {array} points - list of points in polygon, present as {x, y}
- * @returns {object} center point of polygon
- */
-export function geoCenter(points) {
-  const sum = points.reduce((center, row) => {
-    return {x: center.x + row.x, y: center.y + row.y};
-  }, {x: 0, y: 0});
-  return {x: sum.x / points.length, y: sum.y / points.length};
 }
 
 export function deepCopyTable(table) {

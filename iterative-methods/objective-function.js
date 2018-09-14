@@ -170,6 +170,10 @@ function contOrderPenalty(props) {
   }, 0);
 }
 
+function oldOverlapPenalty() {
+
+}
+
 export function continuousBuildPenalties(newTable) {
   let penalties = 0;
   // const rects = getRectsFromTable(newTable)
@@ -217,7 +221,7 @@ export function continuousBuildPenalties(newTable) {
       });
 
       // inside penalties
-      // TODO THIS CAN BE SPED UP A BUNCH
+      // OLD OVERLAP PENALTY, NOT SURE HOW TO MAINTAIN THIS AS IT REQUIRES
       // for (let idx = 0; idx < rects.length; idx++) {
       //   const points = rects[idx];
       //   if (
@@ -299,10 +303,7 @@ export function buildPenalties(newTable) {
   return penalties;
 }
 
-export function objectiveFunction(vector, targetTable) {
-  // const sumed = targetTable.reduce((acc, row) => acc + row.reduce((mem, cell) => mem + cell, 0), 0);
-  // const expectedAreas = targetTable.map(row => row.map(cell => cell / sumed));
-  // PROBABLY SOME GOOD SAVINGS BY NOT TRANSLATING back and forth constantly
+export function objectiveFunction(vector, targetTable, technique) {
   const newTable = translateVectorToTable(vector, targetTable, 1, 1);
   const rects = getRectsFromTable(newTable);
   // sum up the relative amount of "error"
@@ -312,33 +313,20 @@ export function objectiveFunction(vector, targetTable) {
   const sumTrueArea = findSumForTable(targetTable);
   const sumRatio = sumTrueArea / sumArea;
   // compare the areas and generate absolute error
-  // TODO: is using the abs error right? (like as opposed to relative error?)
   let errorSum = 0;
-  // const errors = [];
   for (let i = 0; i < rects.length; i++) {
-    // const rowErrors = [];
     for (let j = 0; j < rects[0].length; j++) {
       const foundArea = areas[i][j];
-      // const foundArea = area(rects[i][j]);
-      // const error = targetTable[i][j] / sumTrueArea - foundArea / sumArea;
-      // const error = Math.abs(targetTable[i][j] / sumTrueArea - foundArea) / foundArea;
-      // const error = sumTrueArea * Math.abs(targetTable[i][j] / sumTrueArea - foundArea) / targetTable[i][j];
-      // const error = (expectedAreas[i][j] - foundArea) / foundArea;
-
-      // UNCLEAR?
+      // TODO STILL THINKING ABOUT WHICH OF THESE IS BEST
       // errorSum += Math.abs(targetTable[i][j] - sumRatio * foundArea) / targetTable[i][j];
       errorSum += Math.pow(targetTable[i][j] - sumRatio * foundArea, 2) / targetTable[i][j];
-      // rowErrors.push((error));
     }
-    // errors.push(rowErrors);
   }
 
-  // const penal = buildPenalties(newTable);
-  const penal = continuousBuildPenalties(newTable);
+  const penal = (technique === 'monteCarlo' ? buildPenalties : continuousBuildPenalties)(newTable);
   // const concavePenalty = rects.reduce((acc, row) =>
   //     acc + row.reduce((mem, rect) => mem + (checkForConcaveAngles(rect) ? 1 : 0), 0), 0)
 
-  // TODO could include another penalty to try to force convexity
   // return findMaxForTable(errors) + penal;
   // return findSumForTable(errors) + penal;
   return errorSum / (rects.length * rects[0].length) + penal;

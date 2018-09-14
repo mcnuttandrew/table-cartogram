@@ -44,7 +44,7 @@ const measureCheckerBoardPerformance = () => {
     // 'partialPsuedoCartogram'
   ];
   // const inputLayouts = ['pickBest', 'pickWorst'];
-  const lowerBound = 3;
+  const lowerBound = 4;
   const upperBound = 5;
   const expectedNumberOfRuns = (upperBound - lowerBound) * (upperBound - lowerBound) * inputLayouts.length;
   inputLayouts.forEach(layout => {

@@ -1,288 +1,60 @@
 [
   {
     "gons": [],
-    "error": {
-      "error": 0.000754289804509023,
-      "maxError": 0.0016583635816393473
-    },
-    "stepsTaken": 101000,
-    "runTime": 1873,
-    "width": 3,
-    "height": 3,
-    "layout": "gridLayout"
-  },
-  {
-    "gons": [],
-    "error": {
-      "error": 0.1087023263171993,
-      "maxError": 0.7389948703932191
-    },
-    "stepsTaken": 101000,
-    "runTime": 3022,
-    "width": 3,
-    "height": 4,
-    "layout": "gridLayout"
-  },
-  {
-    "gons": [],
-    "error": {
-      "error": 0.11414649912442355,
-      "maxError": 0.7716350843244661
-    },
-    "stepsTaken": 101000,
-    "runTime": 3052,
-    "width": 4,
-    "height": 3,
-    "layout": "gridLayout"
-  },
-  {
-    "gons": [],
-    "error": {
-      "error": 0.035134798137827425,
-      "maxError": 0.1519222493754149
-    },
-    "stepsTaken": 101000,
-    "runTime": 5271,
+    "error": 0.002148392608566219,
+    "maxError": 0.006578639610495373,
+    "stepsTaken": 520,
+    "runTime": 2717,
     "width": 4,
     "height": 4,
     "layout": "gridLayout"
   },
   {
     "gons": [],
-    "error": {
-      "error": 0.022828709178804682,
-      "maxError": 0.06617516185546521
-    },
-    "stepsTaken": 101000,
-    "runTime": 1673,
-    "width": 3,
-    "height": 3,
-    "layout": "zigZagOnX"
-  },
-  {
-    "gons": [],
-    "error": {
-      "error": 0.002272054284379132,
-      "maxError": 0.006772457682949235
-    },
-    "stepsTaken": 101000,
-    "runTime": 3030,
-    "width": 3,
-    "height": 4,
-    "layout": "zigZagOnX"
-  },
-  {
-    "gons": [],
-    "error": {
-      "error": 0.0019567423477483193,
-      "maxError": 0.004878170171257883
-    },
-    "stepsTaken": 101000,
-    "runTime": 2984,
-    "width": 4,
-    "height": 3,
-    "layout": "zigZagOnX"
-  },
-  {
-    "gons": [],
-    "error": {
-      "error": 0.0015617538095727876,
-      "maxError": 0.0037865078609162894
-    },
-    "stepsTaken": 101000,
-    "runTime": 5259,
+    "error": 0.006544062108700349,
+    "maxError": 0.03326858628905243,
+    "stepsTaken": 310,
+    "runTime": 1549,
     "width": 4,
     "height": 4,
     "layout": "zigZagOnX"
   },
   {
     "gons": [],
-    "error": {
-      "error": 0.3431655763591859,
-      "maxError": 0.7923503073631653
-    },
-    "stepsTaken": 101000,
-    "runTime": 1893,
-    "width": 3,
-    "height": 3,
-    "layout": "zigZagOnY"
-  },
-  {
-    "gons": [],
-    "error": {
-      "error": 0.12070868460116395,
-      "maxError": 0.4863616466958581
-    },
-    "stepsTaken": 101000,
-    "runTime": 3138,
-    "width": 3,
-    "height": 4,
-    "layout": "zigZagOnY"
-  },
-  {
-    "gons": [],
-    "error": {
-      "error": 0.32518826726630273,
-      "maxError": 0.7474612322240569
-    },
-    "stepsTaken": 101000,
-    "runTime": 3321,
-    "width": 4,
-    "height": 3,
-    "layout": "zigZagOnY"
-  },
-  {
-    "gons": [],
-    "error": {
-      "error": 0.0019271295926721374,
-      "maxError": 0.008942702734268504
-    },
-    "stepsTaken": 101000,
-    "runTime": 5424,
+    "error": 0.1493960776862227,
+    "maxError": 0.8368113197963077,
+    "stepsTaken": 1010,
+    "runTime": 5462,
     "width": 4,
     "height": 4,
     "layout": "zigZagOnY"
   },
   {
     "gons": [],
-    "error": {
-      "error": 0.04233140746567568,
-      "maxError": 0.12734917634038692
-    },
-    "stepsTaken": 101000,
-    "runTime": 1714,
-    "width": 3,
-    "height": 3,
-    "layout": "zigZagOnXY"
-  },
-  {
-    "gons": [],
-    "error": {
-      "error": 0.0021629377338247603,
-      "maxError": 0.00679022492226613
-    },
-    "stepsTaken": 101000,
-    "runTime": 2997,
-    "width": 3,
-    "height": 4,
-    "layout": "zigZagOnXY"
-  },
-  {
-    "gons": [],
-    "error": {
-      "error": 0.001672828389189393,
-      "maxError": 0.006748493807692185
-    },
-    "stepsTaken": 101000,
-    "runTime": 2981,
-    "width": 4,
-    "height": 3,
-    "layout": "zigZagOnXY"
-  },
-  {
-    "gons": [],
-    "error": {
-      "error": 0.04276321337472181,
-      "maxError": 0.3439626692801924
-    },
-    "stepsTaken": 101000,
-    "runTime": 5264,
+    "error": 0.005185970297535258,
+    "maxError": 0.02045858078540724,
+    "stepsTaken": 220,
+    "runTime": 1082,
     "width": 4,
     "height": 4,
     "layout": "zigZagOnXY"
   },
   {
     "gons": [],
-    "error": {
-      "error": 0.0009371185923116639,
-      "maxError": 0.002635207371504307
-    },
-    "stepsTaken": 101000,
-    "runTime": 1715,
-    "width": 3,
-    "height": 3,
-    "layout": "psuedoCartogramLayout"
-  },
-  {
-    "gons": [],
-    "error": {
-      "error": 0.11563151178140622,
-      "maxError": 0.7917160845993902
-    },
-    "stepsTaken": 101000,
-    "runTime": 3028,
-    "width": 3,
-    "height": 4,
-    "layout": "psuedoCartogramLayout"
-  },
-  {
-    "gons": [],
-    "error": {
-      "error": 0.10969136964731001,
-      "maxError": 0.7633241025877653
-    },
-    "stepsTaken": 101000,
-    "runTime": 2961,
-    "width": 4,
-    "height": 3,
-    "layout": "psuedoCartogramLayout"
-  },
-  {
-    "gons": [],
-    "error": {
-      "error": 0.035134798137827425,
-      "maxError": 0.1519222493754149
-    },
-    "stepsTaken": 101000,
-    "runTime": 5355,
+    "error": 0.002148392608566219,
+    "maxError": 0.006578639610495373,
+    "stepsTaken": 520,
+    "runTime": 2690,
     "width": 4,
     "height": 4,
     "layout": "psuedoCartogramLayout"
   },
   {
     "gons": [],
-    "error": {
-      "error": 0.0005177242696812564,
-      "maxError": 0.001455170809333723
-    },
-    "stepsTaken": 101000,
-    "runTime": 1736,
-    "width": 3,
-    "height": 3,
-    "layout": "psuedoCartogramLayoutZigZag"
-  },
-  {
-    "gons": [],
-    "error": {
-      "error": 0.0011943295135021469,
-      "maxError": 0.0033626436707995533
-    },
-    "stepsTaken": 101000,
-    "runTime": 2983,
-    "width": 3,
-    "height": 4,
-    "layout": "psuedoCartogramLayoutZigZag"
-  },
-  {
-    "gons": [],
-    "error": {
-      "error": 0.0014170674071055153,
-      "maxError": 0.004445835038853909
-    },
-    "stepsTaken": 101000,
-    "runTime": 3031,
-    "width": 4,
-    "height": 3,
-    "layout": "psuedoCartogramLayoutZigZag"
-  },
-  {
-    "gons": [],
-    "error": {
-      "error": 0.007777999662315435,
-      "maxError": 0.050948750751046795
-    },
-    "stepsTaken": 101000,
-    "runTime": 5285,
+    "error": 0.0048297287310521235,
+    "maxError": 0.009899011825437787,
+    "stepsTaken": 410,
+    "runTime": 2135,
     "width": 4,
     "height": 4,
     "layout": "psuedoCartogramLayoutZigZag"

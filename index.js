@@ -2,28 +2,9 @@ import {
   buildIterativeCartogram,
   buildIterativeCartogramWithUpdate
 } from './iterative-methods/optimization';
-
-import {computeErrors} from './test-app/test-app-utils';
+import {prepareRects, computeErrors} from './iterative-methods/utils';
 
 const inputTableIsInvalid = table => !table.every(row => row.every(cell => cell));
-
-function prepareRects(outputTable, table) {
-  const rects = [];
-  for (let i = 0; i < outputTable.length - 1; i++) {
-    for (let j = 0; j < outputTable[0].length - 1; j++) {
-      const newRect = [
-        outputTable[i][j],
-        outputTable[i + 1][j],
-        outputTable[i + 1][j + 1],
-        outputTable[i][j + 1]
-      ];
-      const value = table[i][j];
-
-      rects.push({vertices: newRect, value});
-    }
-  }
-  return rects;
-}
 
 const MAX_ITERATIONS = 3000;
 
@@ -53,9 +34,8 @@ export function tableCartogramWithUpdate(table, technique, layout = 'pickBest') 
     console.error('INVALID INPUT TABLE')
     return [];
   }
-  const updateFunction = buildIterativeCartogramWithUpdate(table, layout);
-  return (numIterations, optionalSecondTechnique = technique) =>
-    prepareRects(updateFunction(numIterations, optionalSecondTechnique), table);
+  const updateFunction = buildIterativeCartogramWithUpdate(table, technique, layout);
+  return numIterations => prepareRects(updateFunction(numIterations), table);
 }
 
 /**
@@ -80,10 +60,8 @@ export function tableCartogramAdaptive(params) {
       stepsTaken: 0
     };
   }
-
-  const updateFunction = buildIterativeCartogramWithUpdate(data, layout);
-  const boundUpdate = numIterations =>
-    prepareRects(updateFunction(numIterations, technique), data);
+  const updateFunction = buildIterativeCartogramWithUpdate(data, technique, layout);
+  const boundUpdate = numIterations => prepareRects(updateFunction(numIterations), data);
 
   let stillRunning = true;
   let currentLayout = null;
@@ -99,7 +77,8 @@ export function tableCartogramAdaptive(params) {
   }
   return {
     gons: currentLayout,
-    error: currentScore,
+    error: currentScore.error,
+    maxError: currentScore.maxError,
     stepsTaken
   };
 }

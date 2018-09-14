@@ -1,12 +1,14 @@
 import {
-  area,
   findEquidistantPoints,
   fractionalInterpolation,
   generatePolygon,
   partitionTriangle,
-  partitionQuadrangle,
-  round
+  partitionQuadrangle
 } from '../old-stuff/utils';
+import {
+  area,
+  round
+} from '../iterative-methods/utils';
 import tape from 'tape';
 
 /* eslint-disable max-len*/

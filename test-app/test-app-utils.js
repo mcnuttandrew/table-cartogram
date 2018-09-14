@@ -1,29 +1,5 @@
-import {area, round} from '../old-stuff/utils';
+import {round, computeErrors} from '../iterative-methods/utils';
 import {hierarchy, treemap} from 'd3-hierarchy';
-
-/**
- * Computes the average cartographic error for a particular table arrangement
- * @param  {Array of Arrays of Numbers} data The input table
- * @param  {Array of Arrays of Numbers} gons The test layout
- * @return {Number} the average error for the test layout
- */
-export function computeErrors(data, gons) {
-  const tableSum = data.reduce((acc, row) => acc + row.reduce((mem, cell) => mem + cell, 0), 0);
-  const expectedAreas = data.map(row => row.map(cell => cell / tableSum));
-  const errors = [];
-  for (let i = 0; i < data.length; i++) {
-    for (let j = 0; j < data[0].length; j++) {
-      const gonArea = area(gons[i * data[0].length + j].vertices);
-      // TODO i think this max term is correct from the quantitative cartogram paper but i am unsure
-      const computedErr = Math.abs(gonArea - expectedAreas[i][j]) / Math.max(gonArea, expectedAreas[i][j]);
-      // const computedErr = Math.abs(gonArea - expectedAreas[i][j]) / expectedAreas[i][j];
-      errors.push(computedErr);
-    }
-  }
-  const maxError = errors.reduce((acc, row) => Math.max(acc, row), -Infinity);
-  const error = errors.reduce((acc, row) => acc + row, 0) / errors.length;
-  return {error, maxError};
-}
 
 /**
  * Try constructing a treemap for a data table

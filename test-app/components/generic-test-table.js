@@ -6,9 +6,8 @@ import {
   LineSeries,
   LabelSeries
 } from 'react-vis';
-import {computeErrors} from '../test-app-utils';
 
-import {geoCenter} from '../../old-stuff/utils';
+import {geoCenter, computeErrors} from '../../iterative-methods/utils';
 import {RV_COLORS} from '../colors';
 const tableCartogram = require('../../old-stuff/first-attempt.js').default;
 

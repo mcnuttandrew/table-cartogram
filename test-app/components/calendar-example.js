@@ -12,7 +12,7 @@ import {
   tableCartogramAdaptive
 } from '../../';
 
-import {geoCenter} from '../../old-stuff/utils';
+import {geoCenter} from '../../iterative-methods/utils';
 
 function decorateGonsWithData(data, gons) {
   for (let i = 0; i < data.length; i++) {
@@ -31,15 +31,13 @@ export default class CalendarDisplay extends React.Component {
 
   componentDidMount() {
     const {data} = this.props;
-    const preppedData = data.map(row => row.map(d => d.count));
-    console.log(data, preppedData)
     Promise.resolve()
       .then(() => {
         const {gons} = tableCartogramAdaptive({
-          data: preppedData,
+          data: data.map(row => row.map(d => d.count)),
           targetAccuracy: 0.001
         });
-        //   const endTime = (new Date()).getTime();
+
         this.setState({
           gons: decorateGonsWithData(data, gons),
           loaded: true,
@@ -51,7 +49,6 @@ export default class CalendarDisplay extends React.Component {
 
   render() {
     const {gons, loaded} = this.state;
-    // const {month} = this.props;
     return (
       <div style={{display: 'flex', alignItems: 'center'}}>
         {loaded && <XYPlot

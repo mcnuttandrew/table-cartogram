@@ -1,8 +1,6 @@
 import ReactDOM from 'react-dom';
 import React from 'react';
-import {Treemap} from 'react-vis';
-import {RV_COLORS} from './colors';
-
+import {transposeMatrix} from '../iterative-methods/utils';
 import {TapReactBrowser} from 'tap-react-browser';
 import {
   // translateVectorToTabletranslateTableToVector,
@@ -10,15 +8,13 @@ import {
   // buildIterativeCartogramTest,
   testTreeMapForError
 } from '../test/iterative-tests';
-//
+
 import GenericTable from './components/generic-test-table';
 import EXAMPLES, {CAL} from './examples';
 import IterativeDisplay from './components/iterative-display';
 import ExampleTreemap from './components/treemap-example-generator';
 import ExampleHeatmap from './components/heatmap-example';
 import CalendarDisplay from './components/calendar-example';
-
-const transpose = mat => mat[0].map((col, i) => mat.map(row => row[i]));
 
 function App() {
   const tables = [
@@ -27,13 +23,14 @@ function App() {
     // {data: EXAMPLES.PATHOLOGICAL_2_BY, technique: 'gradient', stepSize: 100},
     // {data: EXAMPLES.EXAMPLE_TABLE, technique: 'gradient', stepSize: 1000},
     // {data: EXAMPLES.CHECKER_BOARD, technique: 'coordinate', stepSize: 10},
-    {data: EXAMPLES.PATHOLOGICAL_2_BY, technique: 'coordinate', stepSize: 10},
-    // {data: transpose(EXAMPLES.BLACK_AND_WHITE_TABLE), technique: 'gradient', stepSize: 1000},
+    {data: EXAMPLES.EXAMPLE_TABLE, technique: 'coordinate', stepSize: 10, computeMode: 'iterative'},
+    {data: EXAMPLES.EXAMPLE_TABLE, technique: 'coordinate', stepSize: 10, computeMode: 'direct'},
+    {data: EXAMPLES.EXAMPLE_TABLE, technique: 'coordinate', stepSize: 10, computeMode: 'adaptive'},
+    // {data: transposeMatrix(EXAMPLES.BLACK_AND_WHITE_TABLE), technique: 'gradient', stepSize: 1000},
   ].map((config, idx) => (
     <IterativeDisplay
       {...config}
       iterations={400}
-      withUpdate={true}
       key={`${config.technique}-${idx}`}/>
   ));
   const SHOW_TESTS = false;
@@ -49,7 +46,7 @@ function App() {
             // buildIterativeCartogramTest,
             testTreeMapForError
           ]}/>}
-        <div style={{display: 'flex'}}>
+        <div style={{display: 'flex', flexWrap: 'wrap'}}>
           {
             tables
           }

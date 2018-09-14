@@ -1,7 +1,4 @@
 import {gradientDescentLineSearch, norm2} from './imported-gradient';
-// import {gradientDescentLineSearch} from 'fmin';
-import minimizePowell from 'minimize-powell';
-
 import {objectiveFunction} from './objective-function';
 import {generateInitialTable} from './layouts';
 import {translateVectorToTable, translateTableToVector, getIndicesInVectorOfInterest} from './utils';
@@ -25,73 +22,6 @@ function monteCarloOptimization(objFunc, candidateVector, numIterations) {
     }
   }
   return iteratVector;
-}
-
-// monte carlo with adjustment on a single direction per pass
-// TODO staged for deletion
-function altMonteCarloOptimization(objFunc, candidateVector, numIterations) {
-  let iteratVector = candidateVector.slice(0);
-  let oldScore = objFunc(candidateVector);
-  for (let i = 0; i < numIterations; i++) {
-    const stepSize = Math.pow(10, -(i / numIterations * 4 + 2));
-    // everybody fucking loves adaptive step size
-    // const tempVector = monteCarloPerturb(iteratVector, stepSize);
-    const vals = iteratVector.reduce((acc, _, idx) => {
-      const leftVec = iteratVector.map((d, jdx) => jdx === idx ? d - stepSize : d);
-      const newScoreLeft = objFunc(leftVec);
-      const rightVec = iteratVector.map((d, jdx) => jdx === idx ? d + stepSize : d);
-      const newScoreRight = objFunc(rightVec);
-      if (newScoreLeft < acc.newScore && newScoreLeft < newScoreRight) {
-        return {
-          newScore: newScoreLeft,
-          newVector: leftVec
-        };
-      }
-      if (newScoreRight < acc.newScore && newScoreRight < newScoreLeft) {
-        return {
-          newScore: newScoreRight,
-          newVector: rightVec
-        };
-      }
-
-      return acc;
-    }, {
-      newScore: Infinity,
-      newVector: iteratVector
-    });
-    const {newScore, newVector} = vals;
-    // const newScore = objFunc(newVector);
-    if (newScore < oldScore) {
-      iteratVector = newVector;
-      oldScore = newScore;
-    }
-  }
-  return iteratVector;
-}
-
-// monte with a genetic algo type iteration cycle
-// TODO staged for deletion
-function stagedMonteCarlo(numIterations, candidateVector, objFunc) {
-  const stepSize = Math.floor(numIterations / 6);
-  const generationSize = 10;
-  let currentCandidate = candidateVector;
-  for (let i = 0; i < numIterations; i += stepSize) {
-    const passes = [...new Array(generationSize)].map(d =>
-        monteCarloOptimization(objFunc, currentCandidate, stepSize));
-    const measurements = passes.reduce((acc, pass, idx) => {
-      const newScore = objFunc(pass);
-      if (acc.bestScore > newScore) {
-        return {
-          bestIndex: idx,
-          bestScore: newScore
-        };
-      }
-      return acc;
-    }, {bestIndex: -1, bestScore: Infinity});
-    console.log(`${Math.floor(i / numIterations * 100)} % done`)
-    currentCandidate = passes[measurements.bestIndex];
-  }
-  return currentCandidate;
 }
 
 function coordinateDescent(objFunc, candidateVector, table, numIterations) {
@@ -136,10 +66,6 @@ function executeOptimization(objFunc, candidateVector, technique, table, numIter
     return translateVectorToTable(candidateVector, table, 1, 1);
   }
   switch (technique) {
-  case 'powell':
-    // TODO SCHEDULED FOR DELETION
-    const powellFinalVec = minimizePowell(objFunc, candidateVector, {maxIter: numIterations});
-    return translateVectorToTable(powellFinalVec, table, 1, 1);
   case 'gradient':
     const gradientResult = gradientDescentLineSearch((currentVec, fxprime, learnRate) => {
       fxprime = fxprime || candidateVector.map(d => 0);
@@ -152,49 +78,32 @@ function executeOptimization(objFunc, candidateVector, technique, table, numIter
       return objFunc(currentVec);
     }, candidateVector, {maxIterations: numIterations});
     return translateVectorToTable(gradientResult.x, table, 1, 1);
+  default:
   case 'coordinate':
     // figure out
     const coordinateResult = coordinateDescent(objFunc, candidateVector, table, numIterations);
     return translateVectorToTable(coordinateResult, table, 1, 1);
-  case 'altMonteCarlo':
-    const altMonteFinalVec = altMonteCarloOptimization(objFunc, candidateVector, numIterations);
-    return translateVectorToTable(altMonteFinalVec, table, 1, 1);
-  default:
   case 'monteCarlo':
     const monteFinalVec = monteCarloOptimization(objFunc, candidateVector, numIterations);
     return translateVectorToTable(monteFinalVec, table, 1, 1);
-  case 'stagedMonteCarlo':
-    const currentCandidate = stagedMonteCarlo(numIterations, candidateVector, objFunc);
-    return translateVectorToTable(currentCandidate, table, 1, 1);
   }
 }
 
 const MAX_ITERATIONS = 10;
 export function buildIterativeCartogram(table, numIterations = MAX_ITERATIONS, technique) {
-  // // TODO need to add a mechanism for scaling
-  // const width = table[0].length;
-  // const height = table.length;
-  //
-  // const objFunc = vec => objectiveFunction(vec, table);
-  // const newTable = generateInitialTable(height, width, table, objFunc);
-  // const candidateVector = translateTableToVector(newTable, table);
-  //
-  // return executeOptimization(objFunc, candidateVector, technique, table, numIterations);
-  //
-  const update = buildIterativeCartogramWithUpdate(table);
-  return update(numIterations, technique);
+  return buildIterativeCartogramWithUpdate(table, technique)(numIterations, technique);
 }
 
-export function buildIterativeCartogramWithUpdate(table, layout = 'pickBest') {
+export function buildIterativeCartogramWithUpdate(table, technique, layout = 'pickBest') {
   // TODO need to add a mechanism for scaling
   const width = table[0].length;
   const height = table.length;
 
-  const objFunc = vec => objectiveFunction(vec, table);
+  const objFunc = vec => objectiveFunction(vec, table, technique);
   const newTable = generateInitialTable(height, width, table, objFunc, layout);
   let candidateVector = translateTableToVector(newTable, table);
 
-  return (numIterations, technique) => {
+  return numIterations => {
     const resultTable = executeOptimization(objFunc, candidateVector, technique, table, numIterations);
     candidateVector = translateTableToVector(resultTable, table);
     return resultTable;

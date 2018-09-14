@@ -58,12 +58,6 @@
     }
   },
   "dependencies": {
-    "area-polygon": "^1.0.1",
-    "d3-force": "^1.1.0",
-    "d3-selection": "^1.3.0",
-    "fmin": "^0.0.2",
-    "minimize-powell": "^1.0.7",
-    "optimization-js": "^1.3.0",
     "point-in-polygon": "^1.0.1"
   }
 }

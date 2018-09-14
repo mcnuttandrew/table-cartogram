@@ -124,22 +124,6 @@ export function findMaxForTable(areas) {
   return areas.reduce((max, row) => row.reduce((acc, cell) => Math.max(acc, cell), max), -Infinity);
 }
 
-export function convertToManyPolygons(table) {
-  const rects = [];
-  for (let i = 0; i < table.length - 1; i++) {
-    for (let j = 0; j < table[0].length - 1; j++) {
-      const newRect = [
-        table[i][j],
-        table[i + 1][j],
-        table[i + 1][j + 1],
-        table[i][j + 1]
-      ];
-      rects.push(newRect);
-    }
-  }
-  return rects;
-}
-
 const diffVecs = (a, b) => ({x: a.x - b.x, y: a.y - b.y});
 const dotVecs = (a, b) => a.x * b.x + a.y * b.y;
 const normVec = a => Math.sqrt(Math.pow(a.x, 2) + Math.pow(a.y, 2));
@@ -158,24 +142,7 @@ export function checkForConcaveAngles(rect) {
   return false;
 }
 
-export function matrixIterate(width, height, cell) {
-  const output = [];
-  for (let i = 0; i < width; i++) {
-    const row = [];
-    for (let j = 0; j < height; j++) {
-      row.push(cell(j, i));
-    }
-    output.push(row);
-  }
-  return output;
-}
-
-export const matrixAdd = (matA, matB) =>
-  matrixIterate(matA[0].length, matA.length, (x, y) => matA[y][x] + matB[y][x]);
-
 export const transposeMatrix = mat => mat[0].map((col, i) => mat.map(row => row[i]));
-
-export const times = n => [...new Array(n)].map((d, i) => i);
 
 /** Compute the area for a polygon with no holes
  * @param {array} points - array of objects formatted {x, y}
@@ -190,4 +157,65 @@ export function area(points) {
     return acc + (row.x * nextRow.y - nextRow.x * row.y);
   }, 0);
   return 0.5 * Math.abs(segmentSum);
+}
+
+/** Round a value
+ * @param {number} number - the number to be rounded
+ * @param {number} precision - the precision of the rounding, expressed in powers of 10
+ * @returns {number} the rounded value
+ */
+export function round(number, precision = Math.pow(10, 12)) {
+  return Math.floor(number * precision) / precision;
+}
+
+/** Compute geometric center of a polygon
+ * @param {array} points - list of points in polygon, present as {x, y}
+ * @returns {object} center point of polygon
+ */
+export function geoCenter(points) {
+  const sum = points.reduce((center, row) => {
+    return {x: center.x + row.x, y: center.y + row.y};
+  }, {x: 0, y: 0});
+  return {x: sum.x / points.length, y: sum.y / points.length};
+}
+
+export function prepareRects(outputTable, table) {
+  const rects = [];
+  for (let i = 0; i < outputTable.length - 1; i++) {
+    for (let j = 0; j < outputTable[0].length - 1; j++) {
+      const newRect = [
+        outputTable[i][j],
+        outputTable[i + 1][j],
+        outputTable[i + 1][j + 1],
+        outputTable[i][j + 1]
+      ];
+
+      rects.push(table ? {vertices: newRect, value: table[i][j]} : newRect);
+    }
+  }
+  return rects;
+}
+
+/**
+ * Computes the average cartographic error for a particular table arrangement
+ * @param  {Array of Arrays of Numbers} data The input table
+ * @param  {Array of Arrays of Numbers} gons The test layout
+ * @return {Number} the average error for the test layout
+ */
+export function computeErrors(data, gons) {
+  const tableSum = data.reduce((acc, row) => acc + row.reduce((mem, cell) => mem + cell, 0), 0);
+  const expectedAreas = data.map(row => row.map(cell => cell / tableSum));
+  const errors = [];
+  for (let i = 0; i < data.length; i++) {
+    for (let j = 0; j < data[0].length; j++) {
+      const gonArea = area(gons[i * data[0].length + j].vertices);
+      // TODO i think this max term is correct from the quantitative cartogram paper but i am unsure
+      const computedErr = Math.abs(gonArea - expectedAreas[i][j]) / Math.max(gonArea, expectedAreas[i][j]);
+      // const computedErr = Math.abs(gonArea - expectedAreas[i][j]) / expectedAreas[i][j];
+      errors.push(computedErr);
+    }
+  }
+  const maxError = errors.reduce((acc, row) => Math.max(acc, row), -Infinity);
+  const error = errors.reduce((acc, row) => acc + row, 0) / errors.length;
+  return {error, maxError};
 }
