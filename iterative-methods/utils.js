@@ -219,11 +219,12 @@ export function geoCenter(points) {
 
 /**
  * Transform a modeled table into an array of polygons
- * @param  {Array of Array of {x: Number, y: Number}} outputTable [description]
- * @param  {Array of Array of Numbers} table input data table
+ * @param {Array of Array of {x: Number, y: Number}} outputTable [description]
+ * @param {Array of Array of Numbers} table input data table
+ * @param {Function} accessor retrive the data value from the original table
  * @return {Array of {vertices: [{x: Number, y: Number}], value: Number}}}
  */
-export function prepareRects(outputTable, table) {
+export function prepareRects(outputTable, table, accessor) {
   const rects = [];
   for (let i = 0; i < outputTable.length - 1; i++) {
     for (let j = 0; j < outputTable[0].length - 1; j++) {
@@ -234,7 +235,11 @@ export function prepareRects(outputTable, table) {
         outputTable[i][j + 1]
       ];
 
-      rects.push(table ? {vertices: newRect, value: table[i][j]} : newRect);
+      rects.push(table ? {
+        vertices: newRect,
+        value: accessor(table[i][j]),
+        data: table[i][j]
+      } : newRect);
     }
   }
   return rects;
@@ -244,11 +249,12 @@ export function prepareRects(outputTable, table) {
  * Computes the average cartographic error for a particular table arrangement
  * @param  {Array of Arrays of Numbers} data The input table
  * @param  {Array of Arrays of Numbers} gons The test layout
+ * @param  {Function} accessor get the value
  * @return {Number} the average error for the test layout
  */
-export function computeErrors(data, gons) {
-  const tableSum = data.reduce((acc, row) => acc + row.reduce((mem, cell) => mem + cell, 0), 0);
-  const expectedAreas = data.map(row => row.map(cell => cell / tableSum));
+export function computeErrors(data, gons, accessor) {
+  const tableSum = data.reduce((acc, row) => acc + row.reduce((mem, cell) => accessor(cell) + mem, 0), 0);
+  const expectedAreas = data.map(row => row.map(cell => accessor(cell) / tableSum));
   const errors = [];
   for (let i = 0; i < data.length; i++) {
     for (let j = 0; j < data[0].length; j++) {

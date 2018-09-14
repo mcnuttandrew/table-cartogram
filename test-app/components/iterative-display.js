@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {interpolateInferno} from 'd3-scale-chromatic';
+import {interpolateInferno, interpolateReds} from 'd3-scale-chromatic';
 
 import {
   XYPlot,
@@ -29,9 +29,9 @@ import {RV_COLORS} from '../colors';
 
 const CONVERGENCE_THRESHOLD = 10;
 
-function decorateGonsWithErrors(data, gons) {
-  const tableSum = data.reduce((acc, row) => acc + row.reduce((mem, cell) => mem + cell, 0), 0);
-  const expectedAreas = data.map(row => row.map(cell => cell / tableSum));
+function decorateGonsWithErrors(data, gons, accessor) {
+  const tableSum = data.reduce((acc, row) => acc + row.reduce((mem, cell) => mem + accessor(cell), 0), 0);
+  const expectedAreas = data.map(row => row.map(cell => accessor(cell) / tableSum));
   for (let i = 0; i < data.length; i++) {
     for (let j = 0; j < data[0].length; j++) {
       const gonArea = area(gons[i * data[0].length + j].vertices);
@@ -64,7 +64,7 @@ function cartogramPlot(gons, fillMode, showLabels) {
       height={600}>
       {gons.map((cell, index) => {
         return (<PolygonSeries
-          key={`triangle-${index}`}
+          key={`quad-${index}`}
           data={cell.vertices}
           style={{
             strokeWidth: 1,
@@ -84,7 +84,11 @@ function cartogramPlot(gons, fillMode, showLabels) {
         data={[{x: 0, y: 0}, {x: 0, y: 1}, {x: 1, y: 1}, {x: 1, y: 0}]} />
       {showLabels && <LabelSeries data={gons.map((cell, index) => ({
         ...geoCenter(cell.vertices),
-        label: `${cell.value}`
+        label: `${cell.value}`,
+        style: {
+          textAnchor: 'middle',
+          alignmentBaseline: 'middle'
+        }
       }))} />}
 
       {showLabels && <LabelSeries data={gons.map((cell, index) => {
@@ -92,7 +96,9 @@ function cartogramPlot(gons, fillMode, showLabels) {
           ...geoCenter(cell.vertices),
           label: `${round(area(cell.vertices), Math.pow(10, 6))}`,
           style: {
-            transform: 'translate(0, 15)'
+            transform: 'translate(0, 15)',
+            textAnchor: 'middle',
+            alignmentBaseline: 'middle'
           }
         };
       })} />}
@@ -130,12 +136,12 @@ export default class IterativeDisplay extends React.Component {
   }
 
   adaptiveBuild() {
-    const {data} = this.props;
+    const {data, accessor = d => d} = this.props;
     const startTime = (new Date()).getTime();
     const {gons, error, stepsTaken, maxError} = tableCartogramAdaptive({data});
     const endTime = (new Date()).getTime();
     this.setState({
-      gons: decorateGonsWithErrors(data, gons),
+      gons: decorateGonsWithErrors(data, gons, accessor),
       error,
       startTime,
       endTime,
@@ -147,13 +153,13 @@ export default class IterativeDisplay extends React.Component {
   }
 
   iterativeBuild() {
-    const {data, technique, stepSize} = this.props;
-    const cartogram = tableCartogramWithUpdate(data, technique, 'pickBest');
+    const {data, technique, stepSize, accessor = d => d} = this.props;
+    const cartogram = tableCartogramWithUpdate(data, technique, accessor, 'pickBest');
     const startTime = (new Date()).getTime();
     const ticker = setInterval(() => {
       const gons = cartogram(this.state.stepsTaken ? stepSize : 0);
       const endTime = (new Date()).getTime();
-      const {error, maxError} = computeErrors(data, gons);
+      const {error, maxError} = computeErrors(data, gons, accessor);
       const previousValueAndCount = this.state.previousValueAndCount;
       if (previousValueAndCount.value !== error) {
         previousValueAndCount.count = 0;
@@ -162,7 +168,7 @@ export default class IterativeDisplay extends React.Component {
         previousValueAndCount.count += 1;
       }
       this.setState({
-        gons: decorateGonsWithErrors(data, gons),
+        gons: decorateGonsWithErrors(data, gons, accessor),
         error,
         maxError,
         startTime,
@@ -186,15 +192,15 @@ export default class IterativeDisplay extends React.Component {
   }
 
   directBuild() {
-    const {data, iterations, technique} = this.props;
+    const {data, iterations, technique, accessor = d => d} = this.props;
     Promise.resolve()
       .then(() => {
         const startTime = (new Date()).getTime();
         const gons = tableCartogram(data, technique, 'pickBest', iterations);
         const endTime = (new Date()).getTime();
-        const {error, maxError} = computeErrors(data, gons);
+        const {error, maxError} = computeErrors(data, gons, accessor);
         this.setState({
-          gons: decorateGonsWithErrors(data, gons),
+          gons: decorateGonsWithErrors(data, gons, accessor),
           error,
           startTime,
           endTime,

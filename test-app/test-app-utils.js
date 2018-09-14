@@ -23,7 +23,7 @@ export function checkErrorOfTreemap(data) {
   }));
 
   return round(
-    computeErrors(data, gons.filter(({value}) => typeof value === 'number')),
+    computeErrors(data, gons.filter(({value}) => typeof value === 'number'), d => d),
     Math.pow(10, 12)
   );
 }

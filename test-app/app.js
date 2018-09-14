@@ -23,14 +23,20 @@ function App() {
     // {data: EXAMPLES.PATHOLOGICAL_2_BY, technique: 'gradient', stepSize: 100},
     // {data: EXAMPLES.EXAMPLE_TABLE, technique: 'gradient', stepSize: 1000},
     // {data: EXAMPLES.CHECKER_BOARD, technique: 'coordinate', stepSize: 10},
-    {data: EXAMPLES.PATHOLOGICAL_2_BY, technique: 'coordinate', stepSize: 10, computeMode: 'iterative'},
-    {data: EXAMPLES.PATHOLOGICAL_2_BY, technique: 'coordinate', stepSize: 10, computeMode: 'direct'},
-    {data: EXAMPLES.PATHOLOGICAL_2_BY, technique: 'coordinate', stepSize: 10, computeMode: 'adaptive'},
+    // {
+    //   data: EXAMPLES.USA_USA_USA_LABELS,
+    //   technique: 'coordinate',
+    //   stepSize: 10,
+    //   computeMode: 'iterative',
+    //   accessor: d => d[1]
+    // },
+    {data: EXAMPLES.MULTIPLICATION_TABLE, technique: 'coordinate', stepSize: 10, computeMode: 'iterative'},
+    // {data: EXAMPLES.BLACK_AND_WHITE_TABLE, technique: 'coordinate', stepSize: 10, computeMode: 'adaptive'},
     // {data: transposeMatrix(EXAMPLES.BLACK_AND_WHITE_TABLE), technique: 'gradient', stepSize: 1000},
   ].map((config, idx) => (
     <IterativeDisplay
       {...config}
-      iterations={150}
+      iterations={400}
       key={`${config.technique}-${idx}`}/>
   ));
   const SHOW_TESTS = true;
