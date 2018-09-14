@@ -40,6 +40,31 @@ function computeMinDist(points, cell) {
   return minDist;
 }
 
+/**
+ * Determine where an index (j, i) is in a table
+ * @param  {Array of Arrays} table - table in question
+ * @param  {Number} i     - the y or vertical index
+ * @param  {Number} j     - the x or horizontal index
+ * @return {Object}
+ */
+function computeEdges(table, i, j) {
+  const inFirstRow = i === 0;
+  const inLeftColumn = j === 0;
+
+  const inRightColumn = j === (table[0].length - 1);
+  const inLastRow = i === (table.length - 1);
+  const inCorner = ((inFirstRow && (inLeftColumn || inRightColumn))) ||
+          ((inLastRow && (inLeftColumn || inRightColumn)));
+
+  return {
+    inFirstRow,
+    inLeftColumn,
+    inRightColumn,
+    inLastRow,
+    inCorner
+  };
+}
+
 function continOverlapPenalty(props) {
   const {
     cell,
@@ -119,10 +144,8 @@ function continOverlapPenalty(props) {
       newTable[i][j - 1]
     ];
   }
-  // console.log(neighbors)
   const points = neighbors.map(({x, y}) => [x, y]);
   if (neighbors.length && !pointInPolygon([cell.x, cell.y], points)) {
-    // console.log('edge')
     const minDist = computeMinDist(points, cell);
     return expPenalty(-(isFinite(minDist) ? minDist : 0));
   }
@@ -170,10 +193,11 @@ function contOrderPenalty(props) {
   }, 0);
 }
 
-function oldOverlapPenalty() {
-
-}
-
+/**
+ * Construct penalities for a evaluations requiring continuity
+ * @param  {Array of Array of {x: Number, y: Number}} newTable - the table to be evaluaated
+ * @return {Number} The evaluated penalties
+ */
 export function continuousBuildPenalties(newTable) {
   let penalties = 0;
   // const rects = getRectsFromTable(newTable)
@@ -181,13 +205,13 @@ export function continuousBuildPenalties(newTable) {
   //   .map(row => row.map(({x, y}) => [x, y]));
   for (let i = 0; i < newTable.length; i++) {
     for (let j = 0; j < newTable[0].length; j++) {
-      const inFirstRow = i === 0;
-      const inLeftColumn = j === 0;
-      const inRightColumn = j === (newTable[0].length - 1);
-      const inLastRow = i === (newTable.length - 1);
-      const inCorner = ((inFirstRow && (inLeftColumn || inRightColumn))) ||
-              ((inLastRow && (inLeftColumn || inRightColumn)));
-
+      const {
+        inFirstRow,
+        inLeftColumn,
+        inRightColumn,
+        inLastRow,
+        inCorner
+      } = computeEdges(newTable, i, j);
       const cell = newTable[i][j];
 
       // boundary penalties
@@ -240,6 +264,57 @@ export function continuousBuildPenalties(newTable) {
   return penalties;
 }
 
+function discreteOverlapPenalty(rects, cell) {
+  const insideViolation = rects.some(points => {
+    if (points.some(d => d[0] === cell.x && d[1] === cell.y)) {
+      return false;
+    }
+    return pointInPolygon([cell.x, cell.y], points);
+  });
+  return (insideViolation) ? 500 : 0;
+}
+
+function discreteOrderPenalty(newTable, cell, i, j) {
+  const {
+    inFirstRow,
+    inLeftColumn,
+    inRightColumn,
+    inLastRow,
+    inCorner
+  } = computeEdges(newTable, i, j);
+  // don't allow values to move out of correct order
+  let violates = false;
+  const evalFunc = ({val, dim, lessThan}) => lessThan ? cell[dim] > val : cell[dim] < val;
+  if (inCorner) {
+    // no penaltys for corners, they are not manipualted
+  } else if (inFirstRow || inLastRow) {
+    violates = ![
+      {lessThan: true, dim: 'x', val: newTable[i][j - 1].x},
+      {lessThan: false, dim: 'x', val: newTable[i][j + 1].x},
+      {lessThan: !inFirstRow, dim: 'y', val: newTable[i + (inFirstRow ? 1 : -1)][j].y}
+    ].every(evalFunc);
+  } else if (inLeftColumn || inRightColumn) {
+    violates = ![
+      {lessThan: true, dim: 'y', val: newTable[i - 1][j].y},
+      {lessThan: false, dim: 'y', val: newTable[i + 1][j].y},
+      {lessThan: !inLeftColumn, dim: 'x', val: newTable[i][j + (inLeftColumn ? 1 : -1)].x}
+    ].every(evalFunc);
+  } else {
+    violates = ![
+      {lessThan: true, dim: 'y', val: newTable[i - 1][j].y},
+      {lessThan: false, dim: 'y', val: newTable[i + 1][j].y},
+      {lessThan: true, dim: 'x', val: newTable[i][j - 1].x},
+      {lessThan: false, dim: 'x', val: newTable[i][j + 1].x}
+    ].every(evalFunc);
+  }
+  return violates ? 1000 : 0;
+}
+
+/**
+ * Construct penalities for a evaluations not requiring
+ * @param  {Array of Array of {x: Number, y: Number}} newTable - the table to be evaluaated
+ * @return {Number} The evaluated penalties
+ */
 export function buildPenalties(newTable) {
   let penalties = 0;
   const rects = getRectsFromTable(newTable)
@@ -247,62 +322,33 @@ export function buildPenalties(newTable) {
     .map(row => row.map(({x, y}) => [x, y]));
   for (let i = 0; i < newTable.length; i++) {
     for (let j = 0; j < newTable[0].length; j++) {
-      const inFirstRow = i === 0;
-      const inLeftColumn = j === 0;
-      // bounds are probably wrong
-      const inRightColumn = j === (newTable[0].length - 1);
-      const inLastRow = i === (newTable.length - 1);
-      const inCorner = ((inFirstRow && (inLeftColumn || inRightColumn))) ||
-              ((inLastRow && (inLeftColumn || inRightColumn)));
       const cell = newTable[i][j];
       // dont allow the values to move outside of the box
       if (cell.x > 1 || cell.x < 0 || cell.y > 1 || cell.y < 0) {
         penalties += 2000;
       }
-      // don't allow values to move out of correct order
-      let violates = false;
-      const evalFunc = ({val, dim, lessThan}) => lessThan ? cell[dim] > val : cell[dim] < val;
-      if (inCorner) {
-        // no penaltys for corners, they are not manipualted
-      } else if (inFirstRow || inLastRow) {
-        violates = ![
-          {lessThan: true, dim: 'x', val: newTable[i][j - 1].x},
-          {lessThan: false, dim: 'x', val: newTable[i][j + 1].x},
-          {lessThan: !inFirstRow, dim: 'y', val: newTable[i + (inFirstRow ? 1 : -1)][j].y}
-        ].every(evalFunc);
-      } else if (inLeftColumn || inRightColumn) {
-        violates = ![
-          {lessThan: true, dim: 'y', val: newTable[i - 1][j].y},
-          {lessThan: false, dim: 'y', val: newTable[i + 1][j].y},
-          {lessThan: !inLeftColumn, dim: 'x', val: newTable[i][j + (inLeftColumn ? 1 : -1)].x}
-        ].every(evalFunc);
-      } else {
-        violates = ![
-          {lessThan: true, dim: 'y', val: newTable[i - 1][j].y},
-          {lessThan: false, dim: 'y', val: newTable[i + 1][j].y},
-          {lessThan: true, dim: 'x', val: newTable[i][j - 1].x},
-          {lessThan: false, dim: 'x', val: newTable[i][j + 1].x}
-        ].every(evalFunc);
-      }
 
-      if (violates) {
-        penalties += 1000;
-      }
-
-      const insideViolation = rects.some(points => {
-        if (points.some(d => d[0] === cell.x && d[1] === cell.y)) {
-          return false;
-        }
-        return pointInPolygon([cell.x, cell.y], points);
-      });
-      if (insideViolation) {
-        penalties += 500;
-      }
+      penalties += discreteOrderPenalty(newTable, cell, i, j);
+      penalties += discreteOverlapPenalty(rects, cell);
     }
   }
   return penalties;
 }
 
+/**
+ * Determine how table-cartogram ish a vector is
+ * Computes average relative error of computed real value
+ * Adds penalties to keep it in the form of table cartogram
+ *
+ * If using monte carlo will make use of a discrete version of the penalty system
+ * this is because monte carlo has big jumps and doesnt compute a deriviative.
+ * In contrast coordinate descent and gradient descent each optimze with fine gradients
+ * so small changes matter and require delicacy.
+ * @param  {Array of Numbers} vector - vector to be evaluated
+ * @param  {Array of Array of Numbers} targetTable - Bound input data table
+ * @param  {String} technique   Either monteCarlo or something else
+ * @return {Number} Score
+ */
 export function objectiveFunction(vector, targetTable, technique) {
   const newTable = translateVectorToTable(vector, targetTable, 1, 1);
   const rects = getRectsFromTable(newTable);

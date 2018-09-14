@@ -155,7 +155,7 @@ export default {
   BLACK_AND_WHITE_TABLE,
   BIG_TOP,
   BIG_BOTTOM,
-  CHECKER_BOARD: checkerBoardGenerator(9, 9, 30, 1),
+  CHECKER_BOARD: checkerBoardGenerator(5, 5, 10, 1),
   CHECKER_BOARD_SMALL: checkerBoardGenerator(4, 4, 5, 1),
   PATHOLOGICAL_2_BY,
   MULTIPLICATION_TABLE,

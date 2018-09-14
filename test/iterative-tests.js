@@ -70,15 +70,14 @@ export function translateVectorToTabletranslateTableToVector(t) {
   ];
   const newTable = translateVectorToTable(VEC, TABLE, 5, 5);
   t.deepEqual(newTable, expectedTable, 'should correctly transform vector to table');
-  const newVector = translateTableToVector(newTable, TABLE);
+  const newVector = translateTableToVector(newTable);
   t.equal(newVector.length, 10, 'should have the correct number of elements in it');
   t.deepEqual(newVector, VEC, 'should correctly transform table to original vector');
   // TODO WRITE SOME MORE TRESTS
 
-  const twoByThree = [[1, 1, 1], [1, 1, 1]];
   // need to add one to account for the first argument representing vertex positions
   const preppedTable = getNbyMTable(2 + 1, 3 + 1, b => ({x: 0, y: 0}));
-  const twoByNewVector = translateTableToVector(preppedTable, twoByThree);
+  const twoByNewVector = translateTableToVector(preppedTable);
   t.equal(twoByNewVector.length, 10, 'should have the correct number of elements in it');
   t.deepEqual(
     twoByNewVector, [...new Array(10)].map(x => 0),

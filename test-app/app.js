@@ -3,7 +3,7 @@ import React from 'react';
 import {transposeMatrix} from '../iterative-methods/utils';
 import {TapReactBrowser} from 'tap-react-browser';
 import {
-  // translateVectorToTabletranslateTableToVector,
+  translateVectorToTabletranslateTableToVector,
   // findSumForTableTest,
   // buildIterativeCartogramTest,
   testTreeMapForError
@@ -23,17 +23,17 @@ function App() {
     // {data: EXAMPLES.PATHOLOGICAL_2_BY, technique: 'gradient', stepSize: 100},
     // {data: EXAMPLES.EXAMPLE_TABLE, technique: 'gradient', stepSize: 1000},
     // {data: EXAMPLES.CHECKER_BOARD, technique: 'coordinate', stepSize: 10},
-    {data: EXAMPLES.EXAMPLE_TABLE, technique: 'coordinate', stepSize: 10, computeMode: 'iterative'},
-    {data: EXAMPLES.EXAMPLE_TABLE, technique: 'coordinate', stepSize: 10, computeMode: 'direct'},
-    {data: EXAMPLES.EXAMPLE_TABLE, technique: 'coordinate', stepSize: 10, computeMode: 'adaptive'},
+    {data: EXAMPLES.PATHOLOGICAL_2_BY, technique: 'coordinate', stepSize: 10, computeMode: 'iterative'},
+    {data: EXAMPLES.PATHOLOGICAL_2_BY, technique: 'coordinate', stepSize: 10, computeMode: 'direct'},
+    {data: EXAMPLES.PATHOLOGICAL_2_BY, technique: 'coordinate', stepSize: 10, computeMode: 'adaptive'},
     // {data: transposeMatrix(EXAMPLES.BLACK_AND_WHITE_TABLE), technique: 'gradient', stepSize: 1000},
   ].map((config, idx) => (
     <IterativeDisplay
       {...config}
-      iterations={400}
+      iterations={150}
       key={`${config.technique}-${idx}`}/>
   ));
-  const SHOW_TESTS = false;
+  const SHOW_TESTS = true;
   return (
     <div>
       <h1>TABLE CARTOGRAM VISUAL TEST SUITE</h1>
@@ -41,10 +41,10 @@ function App() {
         {SHOW_TESTS && <TapReactBrowser
           runAsPromises
           tests={[
-            // translateVectorToTabletranslateTableToVector,
+            translateVectorToTabletranslateTableToVector,
             // findSumForTableTest,
             // buildIterativeCartogramTest,
-            testTreeMapForError
+            // testTreeMapForError
           ]}/>}
         <div style={{display: 'flex', flexWrap: 'wrap'}}>
           {

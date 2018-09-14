@@ -1,4 +1,12 @@
 /* eslint-disable complexity */
+/**
+ * Reformat a vector representation of a layout into a table representation
+ * @param  {Array of Numbers} vector The vector to reconstruct, size 2 n m - 2
+ * @param  {Array of Array of Numbers} targetTable The input data table
+ * @param  {Number} height the coordinate space measurement of the upper edge of the table
+ * @param  {Number} width the coordinate space measurement of the right edge of the table
+ * @return {Array of Array of {x: Number, y: Number}} The (n + 1) x (m + 1) table of coordinates
+ */
 export function translateVectorToTable(vector, targetTable, height, width) {
   // vector index tracks the position in the vector as the double loop moves across
   // the form of the output table
@@ -31,19 +39,25 @@ export function translateVectorToTable(vector, targetTable, height, width) {
   return newTable;
 }
 
-export function translateTableToVector(table, targetTable) {
+/**
+ * Translate a table representation of a layout into a vector representation
+ * Vector representation is useful for numerics
+ * @param  {Array of Array of {x: Number, y: Number}} table the table representation (n + 1) x (m + 1)
+ * @return {Array of Numbers} vector representation 2 m n - 2
+ */
+export function translateTableToVector(table) {
   const vector = [];
   for (let i = 0; i < table.length; i++) {
     for (let j = 0; j < table[0].length; j++) {
       const inFirstRow = i === 0;
       const inLeftColumn = j === 0;
-      // TODO i feel like i should be able to compute this without checking the targetTable
-      // i think its like n - 2 m - 2?
-      const inRightColumn = j === targetTable[0].length;
-      const inLastRow = i === targetTable.length;
-      const cell = table[i][j];
+      const inRightColumn = j === (table[0].length - 1);
+      const inLastRow = i === (table.length - 1);
+
       const inCorner = ((inFirstRow && (inLeftColumn || inRightColumn))) ||
               ((inLastRow && (inLeftColumn || inRightColumn)));
+
+      const cell = table[i][j];
       if (inCorner) {
         // do nothing
       } else if (inFirstRow || inLastRow) {
@@ -59,15 +73,25 @@ export function translateTableToVector(table, targetTable) {
   return vector;
 }
 
-export function getIndicesInVectorOfInterest(table, targetTable, phase) {
+/**
+ * Get a list of indices that are in the current coordinate descent phase
+ * Coordinate descent executes gradient descent on four sets maximally independent sets
+ * There computation is akin to walking around the edge of a box
+ * @param  {Array of Array of {x: Number, y: Number}} table Table representation of the current phase
+ * @param  {Number in [0, 3]} phase which of the four coordinate descent phases being computed
+ * @return {Array of indices (numbers)} the indices in the numeric vector that are in phase
+ */
+export function getIndicesInVectorOfInterest(table, phase) {
+  /* eslint-disable max-depth */
   const vector = [];
   let vecIdx = 0;
   for (let i = 0; i < table.length; i++) {
     for (let j = 0; j < table[0].length; j++) {
       const inFirstRow = i === 0;
       const inLeftColumn = j === 0;
-      const inRightColumn = j === targetTable[0].length;
-      const inLastRow = i === targetTable.length;
+      const inRightColumn = j === (table[0].length - 1);
+      const inLastRow = i === (table.length - 1);
+
       const inCorner = ((inFirstRow && (inLeftColumn || inRightColumn))) ||
               ((inLastRow && (inLeftColumn || inRightColumn)));
 
@@ -95,9 +119,15 @@ export function getIndicesInVectorOfInterest(table, targetTable, phase) {
       }
     }
   }
+  /* eslint-disable max-depth */
   return vector;
 }
 
+/**
+ * Transform a table of coordinates into table of rectangles
+ * @param  {Array of Array of {x: Number, y: Number}} table The table to manipulate
+ * @return {Array of Array of [{x: Number, y: Number}]} table of rectangles
+ */
 export function getRectsFromTable(table) {
   const rects = [];
   for (let i = 0; i < table.length - 1; i++) {
@@ -127,21 +157,29 @@ export function findMaxForTable(areas) {
 const diffVecs = (a, b) => ({x: a.x - b.x, y: a.y - b.y});
 const dotVecs = (a, b) => a.x * b.x + a.y * b.y;
 const normVec = a => Math.sqrt(Math.pow(a.x, 2) + Math.pow(a.y, 2));
+/**
+ * Evaluate whether a rectange has concave angles
+ * @param  {Array of {x: Number, y: Number}} rect Rectange to check for concave angles
+ * @return {Boolean}
+ */
 export function checkForConcaveAngles(rect) {
   for (let i = 1; i < 4; i++) {
     const aVec = diffVecs(rect[i], rect[i - 1]);
     const bVec = diffVecs(rect[i], rect[(i + 1) === 4 ? 0 : (i + 1)]);
     const cosVal = dotVecs(aVec, bVec) / (normVec(aVec) * normVec(bVec));
     const angle = Math.acos(cosVal);
-    // console.log(angle)
     if (angle >= Math.PI) {
       return true;
-      // console.log(rect)
     }
   }
   return false;
 }
 
+/**
+ * Transpose a given matrix
+ * @param  {Array of Arrays} mat matrix to transpose
+ * @return {Array of Arrays}     transposed matrix
+ */
 export const transposeMatrix = mat => mat[0].map((col, i) => mat.map(row => row[i]));
 
 /** Compute the area for a polygon with no holes
@@ -179,6 +217,12 @@ export function geoCenter(points) {
   return {x: sum.x / points.length, y: sum.y / points.length};
 }
 
+/**
+ * Transform a modeled table into an array of polygons
+ * @param  {Array of Array of {x: Number, y: Number}} outputTable [description]
+ * @param  {Array of Array of Numbers} table input data table
+ * @return {Array of {vertices: [{x: Number, y: Number}], value: Number}}}
+ */
 export function prepareRects(outputTable, table) {
   const rects = [];
   for (let i = 0; i < outputTable.length - 1; i++) {

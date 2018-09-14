@@ -1,7 +1,4 @@
-import {
-  buildIterativeCartogram,
-  buildIterativeCartogramWithUpdate
-} from './iterative-methods/optimization';
+import {buildIterativeCartogram} from './iterative-methods/optimization';
 import {prepareRects, computeErrors} from './iterative-methods/utils';
 
 const inputTableIsInvalid = table => !table.every(row => row.every(cell => cell));
@@ -15,12 +12,13 @@ const MAX_ITERATIONS = 3000;
  * @param  {String} technique which computation technique to use
  * @return {Array of Array of polygons} the polygons consituting the final layout
  */
-export function tableCartogram(table, numIterations = MAX_ITERATIONS, technique) {
+export function tableCartogram(table, technique, layout = 'pickBest', numIterations = MAX_ITERATIONS) {
   if (inputTableIsInvalid(table)) {
     console.error('INVALID INPUT TABLE')
     return [];
   }
-  return prepareRects(buildIterativeCartogram(table, numIterations, technique), table);
+  const updateFunction = buildIterativeCartogram(table, technique, layout);
+  return prepareRects(updateFunction(numIterations), table);
 }
 
 /**
@@ -34,7 +32,7 @@ export function tableCartogramWithUpdate(table, technique, layout = 'pickBest') 
     console.error('INVALID INPUT TABLE')
     return [];
   }
-  const updateFunction = buildIterativeCartogramWithUpdate(table, technique, layout);
+  const updateFunction = buildIterativeCartogram(table, technique, layout);
   return numIterations => prepareRects(updateFunction(numIterations), table);
 }
 
@@ -57,10 +55,11 @@ export function tableCartogramAdaptive(params) {
     return {
       gons: [],
       error: Infinity,
+      maxError: Infinity,
       stepsTaken: 0
     };
   }
-  const updateFunction = buildIterativeCartogramWithUpdate(data, technique, layout);
+  const updateFunction = buildIterativeCartogram(data, technique, layout);
   const boundUpdate = numIterations => prepareRects(updateFunction(numIterations), data);
 
   let stillRunning = true;

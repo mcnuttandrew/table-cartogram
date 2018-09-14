@@ -190,7 +190,7 @@ export default class IterativeDisplay extends React.Component {
     Promise.resolve()
       .then(() => {
         const startTime = (new Date()).getTime();
-        const gons = tableCartogram(data, iterations, technique);
+        const gons = tableCartogram(data, technique, 'pickBest', iterations);
         const endTime = (new Date()).getTime();
         const {error, maxError} = computeErrors(data, gons);
         this.setState({

@@ -5,6 +5,7 @@
 //
 // in turn his library is a pretty exact implementation of Nocedal's line search
 
+// BLAS CONTENT
 // need some basic operations on vectors, rather than adding a dependency,
 // just define here
 
@@ -32,13 +33,22 @@ function weightedSum(ret, w1, v1, w2, v2) {
   }
 }
 
-// searches along line 'pk' for a point that satifies the wolfe conditions
-// See 'Numerical Optimization' by Nocedal and Wright p59-60
-// f : objective function
-// pk : search direction
-// current: object containing current gradient/loss
-// next: output: contains next gradient/loss
-// returns a: step size taken
+/* eslint-disable max-params */
+/**
+ * Compute the next correct learning rate use wolf line search
+ * searches along line 'pk' for a point that satifies the wolfe conditions
+ * See 'Numerical Optimization' by Nocedal and Wright p59-60
+ * @param  {Function}   f objective function
+ * @param  {Array Of Numbers}   pk search direction
+ * @param  {{x: Array Of Numbers, fx: Number, fxprime: Array Of Numbers}} current
+ *      object containing current gradient/loss
+ * @param  {{x: Array Of Numbers, fx: Number, fxprime: Array Of Numbers}} next
+ *      output: contains next gradient/loss
+ * @param  {Number}   [a=1]     Wolf parameter
+ * @param  {Number}   [c1=1e-6] Wolf parameter
+ * @param  {Number}   [c2=0.1]  Wolf parameter
+ * @return {Number}             Learn rate
+ */
 function wolfeLineSearch(f, pk, current, next, a = 1, c1 = 1e-6, c2 = 0.1) {
   const phi0 = current.fx;
   const phiPrime0 = dot(current.fxprime, pk);
@@ -101,6 +111,13 @@ function wolfeLineSearch(f, pk, current, next, a = 1, c1 = 1e-6, c2 = 0.1) {
   return a;
 }
 
+/**
+ * Compute a gradient descent step use wolf line search
+ * @param  {Function} f - objective function
+ * @param  {Array of Numbers} initial - the initialization vector for the step
+ * @param  {Object} [params={}] - optimization params
+ * @return {Array of Numbers} - The optimized vector
+ */
 export function gradientDescentLineSearch(f, initial, params = {}) {
   const {
     c1 = 1e-3,

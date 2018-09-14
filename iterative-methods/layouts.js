@@ -54,9 +54,7 @@ const layouts = {
 };
 
 // use the indexes of the auto generated arrays for positioning
-export function generateInitialTable(tableHeight, tableWidth, table, objFunc, layout) {
-  const numCols = tableHeight;
-  const numRows = tableWidth;
+export function generateInitialTable(numCols, numRows, table, objFunc, layout) {
   const rowSums = table.map(row => findSumForTable([row]));
   const tableTranspose = table[0].map((col, i) => table.map(row => row[i]));
   const colSums = tableTranspose.map(row => findSumForTable([row]));
@@ -76,7 +74,7 @@ export function generateInitialTable(tableHeight, tableWidth, table, objFunc, la
   const constructedLayouts = Object.keys(layouts).map(key =>
     layouts[key](numRows, numCols, colSums, rowSums, total));
   const measurements = constructedLayouts.reduce((acc, newTable, idx) => {
-    const newScore = objFunc(translateTableToVector(newTable, table));
+    const newScore = objFunc(translateTableToVector(newTable));
     if (layout === 'pickBest' ? (acc.bestScore > newScore) : (acc.bestScore < newScore)) {
       return {
         bestIndex: idx,
