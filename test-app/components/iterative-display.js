@@ -115,7 +115,7 @@ export default class IterativeDisplay extends React.Component {
     stepsTaken: 0,
     previousValueAndCount: {value: null, count: 0},
     maxError: NaN,
-    fillMode: 'periodicColors',
+    fillMode: 'errorHeat',
     showLabels: true,
     runningMode: 'running'
   }

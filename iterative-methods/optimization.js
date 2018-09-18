@@ -54,14 +54,15 @@ function coordinateDescent(objFunc, candidateVector, numIterations, table) {
   const currentVec = candidateVector.slice();
   /* eslint-disable max-depth */
   for (let i = 0; i < numIterations; i++) {
-    const stepSize = 0.001;
+    // janky adaptive step
+    const stepSize = Math.min(0.001, objFunc(currentVec));
     for (let phase = 0; phase < 4; phase++) {
       const currTable = translateVectorToTable(currentVec, table, 1, 1);
       const searchIndices = getIndicesInVectorOfInterest(currTable, phase);
-      const dx = finiteDiferenceForIndices(objFunc, currentVec, 0.0001, searchIndices);
+      const dx = finiteDiferenceForIndices(objFunc, currentVec, stepSize / 10, searchIndices);
       const norm = norm2(dx);
       for (let jdx = 0; jdx < dx.length; jdx++) {
-        if (dx[jdx]) {
+        if (dx[jdx] && norm) {
           currentVec[searchIndices[jdx]] += -dx[jdx] / norm * stepSize;
         }
       }
@@ -70,6 +71,8 @@ function coordinateDescent(objFunc, candidateVector, numIterations, table) {
   /* eslint-enable max-depth */
   return currentVec;
 }
+
+
 
 /**
  * Execute gradient optimization for target objective function

@@ -30,7 +30,7 @@ function App() {
     //   computeMode: 'iterative',
     //   accessor: d => d[1]
     // },
-    {data: EXAMPLES.MULTIPLICATION_TABLE, technique: 'coordinate', stepSize: 10, computeMode: 'iterative'},
+    {data: EXAMPLES.USA_USA_USA, technique: 'coordinate', stepSize: 10, computeMode: 'iterative'},
     // {data: EXAMPLES.BLACK_AND_WHITE_TABLE, technique: 'coordinate', stepSize: 10, computeMode: 'adaptive'},
     // {data: transposeMatrix(EXAMPLES.BLACK_AND_WHITE_TABLE), technique: 'gradient', stepSize: 1000},
   ].map((config, idx) => (

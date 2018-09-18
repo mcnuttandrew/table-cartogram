@@ -197,6 +197,14 @@ export function area(points) {
   return 0.5 * Math.abs(segmentSum);
 }
 
+// This might be faster than just the area computation, because it doesnt involve loops
+// that said the speed might not matter. Unclear without more tests
+export function squarea(p) {
+  const leftSum = p[0].x * p[1].y + p[1].x * p[2].y + p[2].x * p[3].y + p[3].x * p[0].y;
+  const rightSum = p[0].x * p[3].y + p[1].x * p[0].y + p[2].x * p[1].y + p[3].x * p[2].y;
+  return 0.5 * Math.abs(leftSum - rightSum);
+}
+
 /** Round a value
  * @param {number} number - the number to be rounded
  * @param {number} precision - the precision of the rounding, expressed in powers of 10
