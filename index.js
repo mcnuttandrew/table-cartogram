@@ -51,7 +51,8 @@ export function tableCartogramAdaptive(params) {
     targetAccuracy = 0.01,
     iterationStepSize = 10,
     layout = 'pickBest',
-    accessor = d => d
+    accessor = d => d,
+    logging = false
   } = params;
   if (inputTableIsInvalid(data)) {
     console.error('INVALID INPUT TABLE')
@@ -70,10 +71,17 @@ export function tableCartogramAdaptive(params) {
   let currentLayout = null;
   let stepsTaken = 0;
   let currentScore = Infinity;
+  if (logging) {
+    console.log('Entering Loop')
+  }
   while (stillRunning) {
     currentLayout = boundUpdate(iterationStepSize);
     currentScore = computeErrors(data, currentLayout, accessor);
     stepsTaken += iterationStepSize;
+    if (logging) {
+      console.log(`Current avg err ${currentScore.error}, Steps taken ${stepsTaken}`)
+    }
+
     if ((stepsTaken > maxNumberOfSteps) || currentScore.error < targetAccuracy) {
       stillRunning = false;
     }

@@ -1,11 +1,7 @@
 import React from 'react';
 
-import {interpolateInferno, interpolateReds} from 'd3-scale-chromatic';
-
 import {
   XYPlot,
-  PolygonSeries,
-  LabelSeries,
   LineSeries,
   XAxis,
   YAxis,
@@ -20,12 +16,10 @@ import {
 
 import {
   area,
-  computeErrors,
-  round,
-  geoCenter
+  computeErrors
 } from '../../iterative-methods/utils';
 
-import {RV_COLORS} from '../colors';
+import CartogramPlot from './flat-display';
 
 const CONVERGENCE_THRESHOLD = 10;
 
@@ -42,70 +36,6 @@ function decorateGonsWithErrors(data, gons, accessor) {
   return gons;
 }
 
-function colorCell(cell, index, fillMode) {
-  switch (fillMode) {
-  case 'errorHeat':
-    return interpolateInferno(Math.sqrt(cell.individualError));
-  case 'byValue':
-    return RV_COLORS[(cell.value) % RV_COLORS.length];
-  default:
-  case 'periodicColors':
-    return RV_COLORS[(index + 3) % RV_COLORS.length];
-  }
-}
-
-function cartogramPlot(gons, fillMode, showLabels) {
-  return (
-    <XYPlot
-      animation
-      colorType="linear"
-      yDomain={[1, 0]}
-      width={600}
-      height={600}>
-      {gons.map((cell, index) => {
-        return (<PolygonSeries
-          key={`quad-${index}`}
-          data={cell.vertices}
-          style={{
-            strokeWidth: 1,
-            stroke: 'black',
-            strokeOpacity: 1,
-            opacity: 0.5,
-            fill: colorCell(cell, index, fillMode)
-          }}/>);
-      })}
-      <PolygonSeries
-        style={{
-          fill: 'none',
-          strokeOpacity: 1,
-          strokeWidth: 1,
-          stroke: 'black'
-        }}
-        data={[{x: 0, y: 0}, {x: 0, y: 1}, {x: 1, y: 1}, {x: 1, y: 0}]} />
-      {showLabels && <LabelSeries data={gons.map((cell, index) => ({
-        ...geoCenter(cell.vertices),
-        label: `${cell.value}`,
-        style: {
-          textAnchor: 'middle',
-          alignmentBaseline: 'middle'
-        }
-      }))} />}
-
-      {showLabels && <LabelSeries data={gons.map((cell, index) => {
-        return {
-          ...geoCenter(cell.vertices),
-          label: `${round(area(cell.vertices), Math.pow(10, 6))}`,
-          style: {
-            transform: 'translate(0, 15)',
-            textAnchor: 'middle',
-            alignmentBaseline: 'middle'
-          }
-        };
-      })} />}
-    </XYPlot>
-  );
-}
-
 export default class IterativeDisplay extends React.Component {
   state = {
     loaded: false,
@@ -116,7 +46,7 @@ export default class IterativeDisplay extends React.Component {
     previousValueAndCount: {value: null, count: 0},
     maxError: NaN,
     fillMode: 'errorHeat',
-    showLabels: true,
+    showLabels: false,
     runningMode: 'running'
   }
 
@@ -136,9 +66,9 @@ export default class IterativeDisplay extends React.Component {
   }
 
   adaptiveBuild() {
-    const {data, accessor = d => d} = this.props;
+    const {data, accessor = d => d, layout} = this.props;
     const startTime = (new Date()).getTime();
-    const {gons, error, stepsTaken, maxError} = tableCartogramAdaptive({data});
+    const {gons, error, stepsTaken, maxError} = tableCartogramAdaptive({data, layout});
     const endTime = (new Date()).getTime();
     this.setState({
       gons: decorateGonsWithErrors(data, gons, accessor),
@@ -153,8 +83,8 @@ export default class IterativeDisplay extends React.Component {
   }
 
   iterativeBuild() {
-    const {data, technique, stepSize, accessor = d => d} = this.props;
-    const cartogram = tableCartogramWithUpdate(data, technique, accessor, 'pickBest');
+    const {data, technique, stepSize, accessor = d => d, layout} = this.props;
+    const cartogram = tableCartogramWithUpdate(data, technique, accessor, layout);
     const startTime = (new Date()).getTime();
     const ticker = setInterval(() => {
       const gons = cartogram(this.state.stepsTaken ? stepSize : 0);
@@ -192,11 +122,11 @@ export default class IterativeDisplay extends React.Component {
   }
 
   directBuild() {
-    const {data, iterations, technique, accessor = d => d} = this.props;
+    const {data, iterations, technique, accessor = d => d, layout} = this.props;
     Promise.resolve()
       .then(() => {
         const startTime = (new Date()).getTime();
-        const gons = tableCartogram(data, technique, 'pickBest', iterations);
+        const gons = tableCartogram(data, technique, layout, iterations);
         const endTime = (new Date()).getTime();
         const {error, maxError} = computeErrors(data, gons, accessor);
         this.setState({
@@ -238,7 +168,7 @@ export default class IterativeDisplay extends React.Component {
           width={300}
           items={['AVG', 'MAX']} />}
         <button onClick={() => {
-          const colorModes = ['errorHeat', 'byValue', 'periodicColors'];
+          const colorModes = ['errorHeat', 'byValue', 'periodicColors', 'valueHeat'];
           const fillIndex = colorModes.findIndex(d => d === fillMode);
           this.setState({
             fillMode: colorModes[(fillIndex + 1) % colorModes.length]
@@ -254,7 +184,7 @@ export default class IterativeDisplay extends React.Component {
     const {gons, loaded, fillMode, showLabels} = this.state;
     return (
       <div style={{display: 'flex', alignItems: 'center'}}>
-        {loaded && cartogramPlot(gons, fillMode, showLabels)}
+        {loaded && <CartogramPlot data={gons} fillMode={fillMode} showLabels={showLabels} />}
         {loaded && this.displayReadout()}
       </div>
     );

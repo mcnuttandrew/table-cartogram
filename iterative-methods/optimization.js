@@ -3,6 +3,14 @@ import {objectiveFunction} from './objective-function';
 import {generateInitialTable} from './layouts';
 import {translateVectorToTable, translateTableToVector, getIndicesInVectorOfInterest} from './utils';
 
+function diff(a, b) {
+  const arr = new Array(a.length);
+  for (let i = 0; i < a.length; i++) {
+    arr[i] = a[i] - b[i];
+  }
+  return arr;
+}
+
 /**
  * Execute a monte carlo step
  * @param  {Array of Numbers} vector - vector to modify
@@ -50,6 +58,120 @@ function monteCarloOptimization(objFunc, candidateVector, numIterations) {
  * @param  {Number} numIterations - The number of iterations in the optimization process
  * @return {Array of Numbers} The optimized vector
  */
+// junk coordinateDescent notes
+// function coordinateDescent(objFunc, candidateVector, numIterations, table) {
+//   let currentVec = candidateVector.slice();
+//   /* eslint-disable max-depth */
+//   const stepSizeMax = 0.1;
+//   const stepSizeMin = 0.00001;
+//   let stepSize = 0.01;
+//   let prevDelta = 0;
+//   for (let i = 0; i < numIterations; i++) {
+//     // let sumNorm = 0;
+//     // let energy = 0;
+//     // janky adaptive step
+//     // const stepSize = Math.min(0.01, objFunc(currentVec));
+//
+//     const oldScore = objFunc(currentVec);
+//     // const newVec = currentVec.slice();
+//     for (let phase = 0; phase < 4; phase++) {
+//       const currTable = translateVectorToTable(currentVec, table, 1, 1);
+//       const searchIndices = getIndicesInVectorOfInterest(currTable, phase);
+//       const dx = finiteDiferenceForIndices(objFunc, currentVec, stepSize / 10, searchIndices);
+//       // const dx = finiteDiferenceForIndices(objFunc, currentVec, stepSize, searchIndices);
+//       const norm = norm2(dx);
+//       // sumNorm += norm ? norm : 0;
+//
+//       for (let jdx = 0; jdx < dx.length; jdx++) {
+//         if (dx[jdx] && norm) {
+//           currentVec[searchIndices[jdx]] += -dx[jdx] / norm * (stepSize / 10);
+//         }
+//       }
+//       const baseScore = objFunc(currentVec);
+//       for (let jdx = 0; jdx < dx.length; jdx++) {
+//         if (dx[jdx] && norm) {
+//           // undo
+//           currentVec[searchIndices[jdx]] += dx[jdx] / norm * (stepSize / 10);
+//           // upScore
+//           currentVec[searchIndices[jdx]] += -dx[jdx] / norm * ((stepSize * 1.5) / 10);
+//         }
+//       }
+//       const upScore = objFunc(currentVec);
+//       for (let jdx = 0; jdx < dx.length; jdx++) {
+//         if (dx[jdx] && norm) {
+//           // undo
+//           currentVec[searchIndices[jdx]] += dx[jdx] / norm * ((stepSize * 1.5) / 10);
+//           // downScore
+//           currentVec[searchIndices[jdx]] += -dx[jdx] / norm * ((stepSize * 0.5) / 10);
+//         }
+//       }
+//       const downScore = objFunc(currentVec);
+//       if (downScore < upScore && downScore < baseScore) {
+//         stepSize *= 1 / 2;
+//       }
+//       if (upScore < downScore && upScore < baseScore) {
+//         stepSize *= 2;
+//       }
+//        // const upSizeScore
+//       // console.log(norm, stepSizeMax)
+//       // stepSize = norm ? stepSizeMax / norm : stepSize;
+//       // const deltaVec = diff(newVec, currentVec);
+//
+//
+//       // for (let jdx = 0; jdx < dx.length; jdx++) {
+//       //   if (dx[jdx] && norm) {
+//       //     energy += deltaVec[searchIndices[jdx]] * dx[jdx];
+//       //   }
+//       // }
+//       // currentVec = newVec;
+//     }
+//     // console.log(sumNorm)
+//     const newScore = objFunc(currentVec);
+//     // const newDelta = (oldScore - newScore);
+//     // // console.log(newDelta - prevDelta)
+//     // if (newDelta > 0 && prevDelta > 0) {
+//     //   stepSize *= 1.9;
+//     //   // stepSize -= stepSizeMin;
+//     // } else if (newDelta < 0 && prevDelta < 0) {
+//     //   stepSize *= 0.9;
+//     //   // stepSize += 5 * stepSizeMin;
+//     // }
+//     // if ((newDelta - prevDelta) > 5 * stepSizeMin) {
+//     //   stepSize *= 1.01;
+//     // }
+//     // if ((prevDelta - newDelta) > 5 * stepSizeMin) {
+//     //   stepSize *= 0.99;
+//     // }
+//     // else {
+//     //   stepSize -= stepSizeMin;
+//     // }
+//
+//     stepSize = Math.max(Math.min(newScore, stepSizeMax), stepSizeMin);
+//     // prevDelta = newDelta;
+//
+//     // console.log(stepSize)
+//     // const newScore = objFunc(newVec);
+//     // console.log(stepSize, newScore - oldScore, (newScore - oldScore) > (0.3 * energy))
+//     // if ((newScore - oldScore) > (0.3 * energy)) {
+//     //   // /* the backtrack and opportunistic increase parameters should
+//     //   //    also optimized, somehow */
+//     //   // backtrack
+//     //   // stepSize *= 0.5;
+//     //   // pos = posLast;
+//     // } else {
+//     //   // currentVec = newVec;
+//     //   // opportunistically increase step size
+//     //   // stepSize = Math.max(Math.min(1.05 * stepSize, stepSizeMax), stepSizeMin);
+//     // }
+//     // const delta = finiteDiference(objFunc, currentVec, stepSize / 100);
+//     // stepSize *= stepSizeMax / (10 * sumNorm);
+//     // stepSize = Math.max(Math.min(stepSize, stepSizeMax), stepSizeMin);
+//     // console.log(sumNorm, stepSize)
+//   }
+//   /* eslint-enable max-depth */
+//   return currentVec;
+// }
+
 function coordinateDescent(objFunc, candidateVector, numIterations, table) {
   const currentVec = candidateVector.slice();
   /* eslint-disable max-depth */
@@ -71,8 +193,6 @@ function coordinateDescent(objFunc, candidateVector, numIterations, table) {
   /* eslint-enable max-depth */
   return currentVec;
 }
-
-
 
 /**
  * Execute gradient optimization for target objective function

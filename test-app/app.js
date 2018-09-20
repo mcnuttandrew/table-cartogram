@@ -1,5 +1,9 @@
 import ReactDOM from 'react-dom';
 import React from 'react';
+
+// import FLAT_DATA from '../test/tenByten.json';
+// import COMPLETED_RUN_DATA from '../scripts/hundred-run-data-1010.json';
+
 import {transposeMatrix} from '../iterative-methods/utils';
 import {TapReactBrowser} from 'tap-react-browser';
 import {
@@ -15,6 +19,7 @@ import IterativeDisplay from './components/iterative-display';
 import ExampleTreemap from './components/treemap-example-generator';
 import ExampleHeatmap from './components/heatmap-example';
 import CalendarDisplay from './components/calendar-example';
+import CartogramPlot from './components/flat-display';
 
 function App() {
   const tables = [
@@ -30,16 +35,18 @@ function App() {
     //   computeMode: 'iterative',
     //   accessor: d => d[1]
     // },
-    {data: EXAMPLES.USA_USA_USA, technique: 'coordinate', stepSize: 10, computeMode: 'iterative'},
+    // {data: EXAMPLES.HAND_SYMMETRIC, technique: 'coordinate', stepSize: 10, computeMode: 'iterative'},
+    {data: EXAMPLES.PATHOLOGICAL_2_BY, technique: 'coordinate', stepSize: 10, computeMode: 'iterative'},
     // {data: EXAMPLES.BLACK_AND_WHITE_TABLE, technique: 'coordinate', stepSize: 10, computeMode: 'adaptive'},
     // {data: transposeMatrix(EXAMPLES.BLACK_AND_WHITE_TABLE), technique: 'gradient', stepSize: 1000},
   ].map((config, idx) => (
     <IterativeDisplay
       {...config}
       iterations={400}
+      layout={'pickBest'}
       key={`${config.technique}-${idx}`}/>
   ));
-  const SHOW_TESTS = true;
+  const SHOW_TESTS = false;
   return (
     <div>
       <h1>TABLE CARTOGRAM VISUAL TEST SUITE</h1>
@@ -54,7 +61,7 @@ function App() {
           ]}/>}
         <div style={{display: 'flex', flexWrap: 'wrap'}}>
           {
-            tables
+            // tables
           }
         </div>
         <div>
@@ -65,6 +72,9 @@ function App() {
         {
           // <ExampleHeatmap data={EXAMPLES.EXAMPLE_TABLE} />
           // <CalendarDisplay data={CAL}/>
+        }
+        {
+          // <CartogramPlot data={COMPLETED_RUN_DATA.gons} fillMode="valueHeat"/>
         }
       </div>
     </div>
