@@ -83,7 +83,7 @@ function continOverlapPenalty(props) {
   } else if (inFirstRow) {
     neighbors = [
       {y: -newTable[i + 1][j - 1].y, x: newTable[i + 1][j - 1].x},
-      {y: -newTable[i + 1][j].y, x: newTable[i + 1][j].x},
+      // {y: -newTable[i + 1][j].y, x: newTable[i + 1][j].x},
       {y: -newTable[i + 1][j + 1].y, x: newTable[i + 1][j + 1].x},
       newTable[i][j + 1],
       newTable[i + 1][j + 1],
@@ -102,10 +102,11 @@ function continOverlapPenalty(props) {
       newTable[i - 1][j + 1],
       newTable[i][j + 1],
       {x: newTable[i][j + 1].x, y: newTable[i][j + 1].y + delta},
-      {x: newTable[i - 1][j].x, y: newTable[i - 1][j].y + 2 * delta},
+      // {x: newTable[i - 1][j].x, y: newTable[i][j].y + 2 * delta},
       {x: newTable[i][j - 1].x, y: newTable[i][j - 1].y + delta},
       newTable[i][j - 1]
     ];
+    // console.log(JSON.stringify(cell), JSON.stringify(neighbors))
   } else if (inLeftColumn) {
     neighbors = [
       {x: -newTable[i - 1][j + 1].x, y: newTable[i - 1][j + 1].y},
@@ -115,7 +116,7 @@ function continOverlapPenalty(props) {
       newTable[i + 1][j + 1],
       newTable[i + 1][j],
       {x: -newTable[i + 1][j + 1].x, y: newTable[i + 1][j + 1].y},
-      {x: -newTable[i][j + 1].x, y: newTable[i][j + 1].y}
+      // {x: -newTable[i][j + 1].x, y: newTable[i][j + 1].y}
     ];
   } else if (inRightColumn) {
     const delta = Math.max(
@@ -126,7 +127,7 @@ function continOverlapPenalty(props) {
       newTable[i - 1][j - 1],
       newTable[i - 1][j],
       {x: newTable[i - 1][j].x + delta, y: newTable[i - 1][j].y},
-      {x: newTable[i][j].x + 2 * delta, y: newTable[i][j].y},
+      // {x: newTable[i][j].x + 2 * delta, y: newTable[i][j].y},
       {x: newTable[i + 1][j].x + delta, y: newTable[i + 1][j].y},
       newTable[i + 1][j],
       newTable[i + 1][j - 1],

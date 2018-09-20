@@ -267,7 +267,7 @@ function finiteDiferenceForIndices(objFunc, currentPos, stepSize, indices) {
  * @param  {Number} numIterations - The number of iterations to perform
  * @return {Array of Array of {x: Number, y: Number}} - The optimzed table of positions
  */
-function executeOptimization(objFunc, candidateVector, technique, table, numIterations) {
+export function executeOptimization(objFunc, candidateVector, technique, table, numIterations) {
   if (!numIterations) {
     return translateVectorToTable(candidateVector, table, 1, 1);
   }

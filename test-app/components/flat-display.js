@@ -26,6 +26,8 @@ function colorCell(cell, index, fillMode, valueDomain) {
     return interpolateInferno(Math.sqrt(cell.individualError));
   case 'byValue':
     return RV_COLORS[(cell.value) % RV_COLORS.length];
+  case 'none':
+    return 'rgba(255, 255, 255, 0)';
   default:
   case 'periodicColors':
     return RV_COLORS[(index + 3) % RV_COLORS.length];
@@ -33,7 +35,7 @@ function colorCell(cell, index, fillMode, valueDomain) {
 }
 
 export default function cartogramPlot(props) {
-  const {data, fillMode, showLabels} = props;
+  const {data, fillMode, showLabels, height = 600, width = 600} = props;
   const valueDomain = data.reduce((acc, row) => {
     return {
       min: Math.min(acc.min, row.value),
@@ -45,8 +47,9 @@ export default function cartogramPlot(props) {
       animation
       colorType="linear"
       yDomain={[1, 0]}
-      width={600}
-      height={600}>
+      width={width}
+      margin={0}
+      height={height}>
       {data.map((cell, index) => {
         return (<PolygonSeries
           key={`quad-${index}`}

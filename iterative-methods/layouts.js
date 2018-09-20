@@ -39,8 +39,8 @@ function buildZigZag(xAmount, yAmount) {
 }
 
 const gridLayout = buildZigZag(0, 0);
-const zigZagOnX = buildZigZag(1, 0);
-const zigZagOnY = buildZigZag(0, 1);
+const zigZagOnX = buildZigZag(0.5, 0);
+const zigZagOnY = buildZigZag(0, 0.5);
 const zigZagOnXY = buildZigZag(0.25, 0.25);
 
 const layouts = {

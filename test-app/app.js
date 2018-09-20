@@ -20,6 +20,7 @@ import ExampleTreemap from './components/treemap-example-generator';
 import ExampleHeatmap from './components/heatmap-example';
 import CalendarDisplay from './components/calendar-example';
 import CartogramPlot from './components/flat-display';
+import ObjectiveFunctionVisualization from './components/objective-function-visualization';
 
 function App() {
   const tables = [
@@ -36,7 +37,7 @@ function App() {
     //   accessor: d => d[1]
     // },
     // {data: EXAMPLES.HAND_SYMMETRIC, technique: 'coordinate', stepSize: 10, computeMode: 'iterative'},
-    {data: EXAMPLES.PATHOLOGICAL_2_BY, technique: 'coordinate', stepSize: 10, computeMode: 'iterative'},
+    {data: EXAMPLES.EXAMPLE_TABLE, technique: 'coordinate', stepSize: 10, computeMode: 'iterative'},
     // {data: EXAMPLES.BLACK_AND_WHITE_TABLE, technique: 'coordinate', stepSize: 10, computeMode: 'adaptive'},
     // {data: transposeMatrix(EXAMPLES.BLACK_AND_WHITE_TABLE), technique: 'gradient', stepSize: 1000},
   ].map((config, idx) => (
@@ -61,7 +62,7 @@ function App() {
           ]}/>}
         <div style={{display: 'flex', flexWrap: 'wrap'}}>
           {
-            // tables
+            tables
           }
         </div>
         <div>
@@ -75,6 +76,9 @@ function App() {
         }
         {
           // <CartogramPlot data={COMPLETED_RUN_DATA.gons} fillMode="valueHeat"/>
+        }
+        {
+          // <ObjectiveFunctionVisualization />
         }
       </div>
     </div>
