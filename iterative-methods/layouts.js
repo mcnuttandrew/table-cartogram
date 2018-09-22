@@ -1,4 +1,8 @@
 import {findSumForTable, translateTableToVector} from './utils';
+import {
+  computeHessian,
+  trace
+} from './math.js';
 
 function psuedoCartogramLayout(numRows, numCols, colSums, rowSums, total) {
   return [...new Array(numCols + 1)].map((i, y) => {
@@ -68,21 +72,35 @@ export function generateInitialTable(numCols, numRows, table, objFunc, layout) {
 
   const layoutMethod = layouts[layout];
   if (layoutMethod) {
-    return layoutMethod(numRows, numCols, colSums, rowSums, total);
+    const builtLayout = layoutMethod(numRows, numCols, colSums, rowSums, total);
+    return builtLayout;
   }
 
-  const constructedLayouts = Object.keys(layouts).map(key =>
+  const layoutKeys = Object.keys(layouts);
+  const constructedLayouts = layoutKeys.map(key =>
     layouts[key](numRows, numCols, colSums, rowSums, total));
   const measurements = constructedLayouts.reduce((acc, newTable, idx) => {
-    const newScore = objFunc(translateTableToVector(newTable));
+    const currentVec = translateTableToVector(newTable);
+
+    const hesstianTrace = layout === 'pickBestHessian' ?
+      Math.abs(trace(computeHessian(objFunc, currentVec, 0.001))) : 0;
+    if (layout === 'pickBestHessian' && acc.bestScore > hesstianTrace) {
+      return {
+        bestIndex: idx,
+        bestScore: hesstianTrace
+      };
+    }
+
+    const newScore = objFunc(currentVec);
     if (layout === 'pickBest' ? (acc.bestScore > newScore) : (acc.bestScore < newScore)) {
       return {
         bestIndex: idx,
         bestScore: newScore
       };
     }
+
     return acc;
-  }, {bestIndex: -1, bestScore: layout === 'pickBest' ? Infinity : -Infinity});
+  }, {bestIndex: -1, bestScore: layout === 'pickWorst' ? -Infinity : Infinity});
   console.log(layout, Object.keys(layouts)[measurements.bestIndex]);
   return constructedLayouts[measurements.bestIndex];
 }

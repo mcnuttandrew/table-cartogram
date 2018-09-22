@@ -9,7 +9,7 @@
 // need some basic operations on vectors, rather than adding a dependency,
 // just define here
 
-function dot(a, b) {
+export function dot(a, b) {
   let ret = 0;
   for (let i = 0; i < a.length; ++i) {
     ret += a[i] * b[i];
@@ -130,7 +130,7 @@ export function gradientDescentLineSearch(f, initial, params = {}) {
   let current = {x: initial.slice(), fx: 0, fxprime: initial.slice()};
   let next = {x: initial.slice(), fx: 0, fxprime: initial.slice()};
   const pk = initial.slice();
-  current.fx = f(current.x, current.fxprime);
+  current.fx = f(current.x, current.fxprime, 0.001);
   for (let i = 0; i < maxIterations; ++i) {
     scale(pk, current.fxprime, -1);
     learnRate = wolfeLineSearch(f, pk, current, next, learnRate, c1, c2);

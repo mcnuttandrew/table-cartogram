@@ -1,15 +1,16 @@
-import {gradientDescentLineSearch, norm2} from './imported-gradient';
+import {inv, multiply, add, norm} from 'mathjs';
+import {gradientDescentLineSearch, norm2, dot} from './imported-gradient';
 import {objectiveFunction} from './objective-function';
 import {generateInitialTable} from './layouts';
 import {translateVectorToTable, translateTableToVector, getIndicesInVectorOfInterest} from './utils';
-
-function diff(a, b) {
-  const arr = new Array(a.length);
-  for (let i = 0; i < a.length; i++) {
-    arr[i] = a[i] - b[i];
-  }
-  return arr;
-}
+import {
+  finiteDiference,
+  finiteDiferenceForIndices,
+  diff,
+  computeHessian,
+  computeHessianForIndices,
+  invDiagon
+} from './math.js';
 
 /**
  * Execute a monte carlo step
@@ -171,6 +172,122 @@ function monteCarloOptimization(objFunc, candidateVector, numIterations) {
 //   /* eslint-enable max-depth */
 //   return currentVec;
 // }
+function coordinateDescentInnerLoop(objFunc, currentVec, stepSize, table) {
+  // const stepSize = Math.min(0.001, objFunc(currentVec));
+  for (let phase = 0; phase < 4; phase++) {
+    const currTable = translateVectorToTable(currentVec, table, 1, 1);
+    const searchIndices = getIndicesInVectorOfInterest(currTable, phase);
+    const dx = finiteDiferenceForIndices(objFunc, currentVec, stepSize / 10, searchIndices);
+    const norm = norm2(dx);
+    for (let jdx = 0; jdx < dx.length; jdx++) {
+      if (dx[jdx] && norm) {
+        currentVec[searchIndices[jdx]] += -dx[jdx] / norm * stepSize;
+      }
+    }
+  }
+}
+
+function coordinateDescentWithAdaptiveStep(objFunc, candidateVector, numIterations, table) {
+  const currentVec = candidateVector.slice();
+  /* eslint-disable max-depth */
+  let prevStep = null;
+  for (let i = 0; i < numIterations; i++) {
+    // janky adaptive step
+    const phi0 = objFunc(currentVec);
+    const stepSize = Math.min(1, phi0);
+    const phiPrime0 = norm2(finiteDiference(objFunc, currentVec, (prevStep || stepSize) / 10));
+    const tempVec = currentVec.slice();
+    coordinateDescentInnerLoop(objFunc, tempVec, stepSize, table);
+    const phi1 = objFunc(tempVec);
+    const stepSize1 = -(stepSize * stepSize) / (2 * (phi1 - phi0 - stepSize * phiPrime0)) * 10;
+    coordinateDescentInnerLoop(objFunc, currentVec, Math.abs(stepSize1), table);
+    prevStep = stepSize1;
+    console.log(stepSize1)
+  }
+  /* eslint-enable max-depth */
+  return currentVec;
+}
+
+function newtonStepOld(objFunc, candidateVector, numIterations, table) {
+  const currentVec = candidateVector.slice();
+  const objVal = objFunc(currentVec);
+  const stepSize = 0.01;
+  const gradient = finiteDiference(objFunc, currentVec, stepSize);
+  const hessian = multiply(computeHessian(objFunc, currentVec, stepSize), objVal);
+  const scaleInvHessian = multiply(inv(hessian), objVal);
+  const step = multiply(multiply(scaleInvHessian, gradient), -1);
+  const stepNorm = norm(step);
+  // return add(currentVec, multiply(step, 1 / stepNorm * Math.min(stepNorm * 10, stepSize)));
+  return add(currentVec, multiply(step, 0.5));
+}
+
+function newtonStep(objFunc, candidateVector, numIterations, table) {
+  const currentVec = candidateVector.slice();
+
+  for (let i = 0; i < numIterations; i++) {
+    const stepSize = Math.min(0.001, objFunc(currentVec) * 10 );
+    for (let phase = 0; phase < 4; phase++) {
+      const objVal = objFunc(currentVec);
+      const currTable = translateVectorToTable(currentVec, table, 1, 1);
+      const searchIndices = getIndicesInVectorOfInterest(currTable, phase);
+      if (!searchIndices.length) {
+        continue;
+      }
+      const gradient = finiteDiferenceForIndices(objFunc, currentVec, stepSize, searchIndices);
+      const hessian = computeHessianForIndices(objFunc, currentVec, stepSize, searchIndices);
+      // console.log(hessian)
+      const scaleInvHessian = multiply(invDiagon(hessian), objVal);
+      let step = multiply(multiply(scaleInvHessian, gradient), 1);
+      const stepNorm = norm(step);
+      step = multiply(step, 1 / stepNorm * Math.min(stepNorm, stepSize * 10));
+      step = multiply(step, 1);
+      for (let jdx = 0; jdx < step.length; jdx++) {
+        currentVec[searchIndices[jdx]] += step[jdx] ? step[jdx] : 0;
+      }
+    }
+  }
+  return currentVec;
+}
+
+function newtonInnerLoop(objFunc, currentVec, stepSize, table) {
+  for (let phase = 0; phase < 4; phase++) {
+    const objVal = objFunc(currentVec);
+    const currTable = translateVectorToTable(currentVec, table, 1, 1);
+    const searchIndices = getIndicesInVectorOfInterest(currTable, phase);
+    if (!searchIndices.length) {
+      continue;
+    }
+    const gradient = finiteDiferenceForIndices(objFunc, currentVec, stepSize, searchIndices);
+    const hessian = computeHessianForIndices(objFunc, currentVec, stepSize, searchIndices);
+    // console.log(hessian)
+    const scaleInvHessian = multiply(invDiagon(hessian), objVal);
+    let step = multiply(multiply(scaleInvHessian, gradient), 1);
+    const stepNorm = norm(step);
+    step = multiply(step, 1 / stepNorm * Math.min(stepNorm, stepSize * 10));
+    // step = multiply(step, 1);
+    for (let jdx = 0; jdx < step.length; jdx++) {
+      currentVec[searchIndices[jdx]] += step[jdx] ? step[jdx] : 0;
+    }
+  }
+}
+
+function newtonStepBoth(objFunc, candidateVector, numIterations, table) {
+  let currentVec = candidateVector.slice();
+  for (let i = 0; i < numIterations; i++) {
+    const coordStepSize = Math.min(0.01, objFunc(currentVec));
+    const coordDescentVec = currentVec.slice();
+    coordinateDescentInnerLoop(objFunc, coordDescentVec, coordStepSize, table);
+    const coordScore = objFunc(coordDescentVec);
+
+    const newtonStepSize = Math.min(0.01, 10 * objFunc(currentVec));
+    const newtonVec = currentVec.slice();
+    newtonInnerLoop(objFunc, newtonVec, newtonStepSize, table);
+    const newtonScore = objFunc(newtonVec);
+    console.log(newtonScore < coordScore ? 'newton' : 'coord')
+    currentVec = (newtonScore < coordScore) ? newtonVec : coordDescentVec;
+  }
+  return currentVec;
+}
 
 function coordinateDescent(objFunc, candidateVector, numIterations, table) {
   const currentVec = candidateVector.slice();
@@ -182,10 +299,10 @@ function coordinateDescent(objFunc, candidateVector, numIterations, table) {
       const currTable = translateVectorToTable(currentVec, table, 1, 1);
       const searchIndices = getIndicesInVectorOfInterest(currTable, phase);
       const dx = finiteDiferenceForIndices(objFunc, currentVec, stepSize / 10, searchIndices);
-      const norm = norm2(dx);
+      const computednorm = norm2(dx);
       for (let jdx = 0; jdx < dx.length; jdx++) {
         if (dx[jdx] && norm) {
-          currentVec[searchIndices[jdx]] += -dx[jdx] / norm * stepSize;
+          currentVec[searchIndices[jdx]] += -dx[jdx] / computednorm * stepSize;
         }
       }
     }
@@ -223,40 +340,6 @@ function gradientDescent(objFunc, candidateVector, numIterations) {
 }
 
 /**
- * Compute the gradient for an objective function
- * Uses a centered finite difference for computation
- *
- * @param  {Function} objFunc The function to take the gradient of
- * @param  {Array of Numbers} currentPos - position of gradient interest
- * @param  {Number} stepSize - The size of the gradient step
- * @return {Array of Numbers} - The gradient of objFunc at currentPos
- */
-function finiteDiference(objFunc, currentPos, stepSize) {
-  return currentPos.map((d, i) => {
-    const forward = objFunc(currentPos.map((row, idx) => row + (idx === i ? stepSize : 0)));
-    const backward = objFunc(currentPos.map((row, idx) => row - (idx === i ? stepSize : 0)));
-    return (forward - backward) / (2 * stepSize);
-  });
-}
-
-/**
- * Compute the gradient for an objective function for PART of a particular position
- * This is an essential function for coordinate descent
- *
- * @param  {Function} objFunc The function to take the gradient of
- * @param  {Array of Numbers} currentPos - position of gradient interest
- * @param  {Number} stepSize - The size of the gradient step
- * @return {Array of Numbers} - The gradient of objFunc at currentPos
- */
-function finiteDiferenceForIndices(objFunc, currentPos, stepSize, indices) {
-  return indices.map(i => {
-    const forward = objFunc(currentPos.map((row, idx) => row + (idx === i ? stepSize : 0)));
-    const backward = objFunc(currentPos.map((row, idx) => row - (idx === i ? stepSize : 0)));
-    return (forward - backward) / (2 * stepSize);
-  });
-}
-
-/**
  * Router for executing optimizations
  * All optimization are executing the exact number of iterations specified,
  * adaptive control is handled at a higher level
@@ -271,7 +354,11 @@ export function executeOptimization(objFunc, candidateVector, technique, table, 
   if (!numIterations) {
     return translateVectorToTable(candidateVector, table, 1, 1);
   }
+
   switch (technique) {
+  case 'newtonStep':
+    const newtonStepResult = newtonStep(objFunc, candidateVector, numIterations, table);
+    return translateVectorToTable(newtonStepResult, table, 1, 1);
   case 'gradient':
     const gradientResult = gradientDescent(objFunc, candidateVector, numIterations);
     return translateVectorToTable(gradientResult, table, 1, 1);

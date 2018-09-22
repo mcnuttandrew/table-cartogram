@@ -36,15 +36,16 @@ function App() {
     //   computeMode: 'iterative',
     //   accessor: d => d[1]
     // },
-    // {data: EXAMPLES.HAND_SYMMETRIC, technique: 'coordinate', stepSize: 10, computeMode: 'iterative'},
-    {data: EXAMPLES.EXAMPLE_TABLE, technique: 'coordinate', stepSize: 10, computeMode: 'iterative'},
-    // {data: EXAMPLES.BLACK_AND_WHITE_TABLE, technique: 'coordinate', stepSize: 10, computeMode: 'adaptive'},
-    // {data: transposeMatrix(EXAMPLES.BLACK_AND_WHITE_TABLE), technique: 'gradient', stepSize: 1000},
+    {data: EXAMPLES.PATHOLOGICAL_2_BY, technique: 'newtonStep', stepSize: 5, computeMode: 'iterative'},
+    // {data: [[1, 1], [1, 1]], technique: 'newtonStep', stepSize: 5, computeMode: 'iterative'},
+    // {data: EXAMPLES.CHECKER_BOARD, technique: 'newtonStep', stepSize: 10, computeMode: 'iterative'},
+    // {data: EXAMPLES.BLACK_AND_WHITE_TABLE, technique: 'newtonStep', stepSize: 10, computeMode: 'iterative'},
+    // {data: transposeMatrix(EXAMPLES.BLACK_AND_WHITE_TABLE), technique: 'newtonStep', stepSize: 10, computeMode: 'iterative'},
   ].map((config, idx) => (
     <IterativeDisplay
       {...config}
       iterations={400}
-      layout={'pickBest'}
+      layout={'gridLayout'}
       key={`${config.technique}-${idx}`}/>
   ));
   const SHOW_TESTS = false;
