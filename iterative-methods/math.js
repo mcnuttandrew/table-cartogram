@@ -136,34 +136,23 @@ export function computeHessianForIndicesbackup(objFunc, currentPos, stepSize, in
 }
 
 export function computeHessianForIndices(objFunc, currentPos, stepSize, indices) {
-  const forwardEvals = indices.map(i => {
-    return objFunc(currentPos.map((row, idx) => row + (idx === i ? stepSize : 0)));
-  });
-  const backEvals = indices.map(i => {
-    return objFunc(currentPos.map((row, idx) => row - (idx === i ? stepSize : 0)));
-  });
-  const centered = objFunc(currentPos);
-
-  const hessian = indices.map((i, ydx) => {
-    return indices.map((j, xdx) => {
+  const center = objFunc(currentPos);
+  return indices.map(i => {
+    return indices.map(j => {
       if (i !== j) {
         return 0;
       }
-      const forwardBoth = objFunc(
-        currentPos.map((row, idx) => row + ((idx === i || idx === j) ? stepSize : 0)));
-      const forwardX = forwardEvals[ydx];
-      const forwardY = forwardEvals[xdx];
-      const backX = backEvals[ydx];
-      const backY = backEvals[xdx];
-      const backBoth = objFunc(
-        currentPos.map((row, idx) => row - ((idx === i || idx === j) ? stepSize : 0)));
-      const top = (forwardBoth - forwardX - forwardY + 2 * centered - backX - backY + backBoth);
-      const bottom = (2 * stepSize * stepSize);
-      return top / bottom;
+      // CAREFUL, USING MUTATIONS FOR SPEED
+      currentPos[i] += stepSize;
+      const forward = objFunc(currentPos);
+      currentPos[i] -= stepSize;
+      currentPos[i] -= stepSize;
+      const back = objFunc(currentPos);
+      currentPos[i] += stepSize;
+      // the 2 in the denom is a magic number
+      return (forward - 2 * center + back) / (2 * stepSize * stepSize);
     });
   });
-
-  return hessian;
 }
 
 export function invDiagon(diagMatrix) {

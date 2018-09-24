@@ -242,7 +242,7 @@ function newtonStep(objFunc, candidateVector, numIterations, table) {
       step = multiply(step, 1 / stepNorm * Math.min(stepNorm, stepSize * 10));
       step = multiply(step, 1);
       for (let jdx = 0; jdx < step.length; jdx++) {
-        currentVec[searchIndices[jdx]] += step[jdx] ? step[jdx] : 0;
+        currentVec[searchIndices[jdx]] -= step[jdx] ? step[jdx] : 0;
       }
     }
   }
@@ -263,10 +263,10 @@ function newtonInnerLoop(objFunc, currentVec, stepSize, table) {
     const scaleInvHessian = multiply(invDiagon(hessian), objVal);
     let step = multiply(multiply(scaleInvHessian, gradient), 1);
     const stepNorm = norm(step);
-    step = multiply(step, 1 / stepNorm * Math.min(stepNorm, stepSize * 10));
+    step = multiply(step, 1 / stepNorm * Math.min(stepNorm, stepSize * 1.5));
     // step = multiply(step, 1);
     for (let jdx = 0; jdx < step.length; jdx++) {
-      currentVec[searchIndices[jdx]] += step[jdx] ? step[jdx] : 0;
+      currentVec[searchIndices[jdx]] -= step[jdx] ? step[jdx] : 0;
     }
   }
 }
@@ -279,7 +279,9 @@ function newtonStepBoth(objFunc, candidateVector, numIterations, table) {
     coordinateDescentInnerLoop(objFunc, coordDescentVec, coordStepSize, table);
     const coordScore = objFunc(coordDescentVec);
 
-    const newtonStepSize = Math.min(0.01, 10 * objFunc(currentVec));
+    // const newtonStepSize = Math.max(Math.min(0.05, objFunc(currentVec)), 0.01);
+    const newtonStepSize = 0.01;
+    // console.log(newtonStepSize)
     const newtonVec = currentVec.slice();
     newtonInnerLoop(objFunc, newtonVec, newtonStepSize, table);
     const newtonScore = objFunc(newtonVec);
@@ -357,7 +359,7 @@ export function executeOptimization(objFunc, candidateVector, technique, table, 
 
   switch (technique) {
   case 'newtonStep':
-    const newtonStepResult = newtonStep(objFunc, candidateVector, numIterations, table);
+    const newtonStepResult = newtonStepBoth(objFunc, candidateVector, numIterations, table);
     return translateVectorToTable(newtonStepResult, table, 1, 1);
   case 'gradient':
     const gradientResult = gradientDescent(objFunc, candidateVector, numIterations);

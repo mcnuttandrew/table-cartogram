@@ -1,6 +1,7 @@
 import ReactDOM from 'react-dom';
 import React from 'react';
 
+import OHARE_TEMP_DATA from '../test/ohare-temp-data.json';
 // import FLAT_DATA from '../test/tenByten.json';
 // import COMPLETED_RUN_DATA from '../scripts/hundred-run-data-1010.json';
 
@@ -19,8 +20,11 @@ import IterativeDisplay from './components/iterative-display';
 import ExampleTreemap from './components/treemap-example-generator';
 import ExampleHeatmap from './components/heatmap-example';
 import CalendarDisplay from './components/calendar-example';
+import HourCalendar from './components/hour-calendar';
 import CartogramPlot from './components/flat-display';
 import ObjectiveFunctionVisualization from './components/objective-function-visualization';
+
+const scaleMatrix = (matrix, factor = 1) => matrix.map(row => row.map(cell => cell * factor));
 
 function App() {
   const tables = [
@@ -36,16 +40,17 @@ function App() {
     //   computeMode: 'iterative',
     //   accessor: d => d[1]
     // },
-    {data: EXAMPLES.PATHOLOGICAL_2_BY, technique: 'newtonStep', stepSize: 5, computeMode: 'iterative'},
+    // {data: EXAMPLES.EXAMPLE_TABLE, technique: 'newtonStep', stepSize: 5, computeMode: 'iterative'},
+    // {data: scaleMatrix(EXAMPLES.PATHOLOGICAL_2_BY), technique: 'newtonStep', stepSize: 5, computeMode: 'iterative'},
     // {data: [[1, 1], [1, 1]], technique: 'newtonStep', stepSize: 5, computeMode: 'iterative'},
-    // {data: EXAMPLES.CHECKER_BOARD, technique: 'newtonStep', stepSize: 10, computeMode: 'iterative'},
+    {data: EXAMPLES.PATHOLOGICAL_2_BY, technique: 'newtonStep', stepSize: 10, computeMode: 'iterative'},
     // {data: EXAMPLES.BLACK_AND_WHITE_TABLE, technique: 'newtonStep', stepSize: 10, computeMode: 'iterative'},
     // {data: transposeMatrix(EXAMPLES.BLACK_AND_WHITE_TABLE), technique: 'newtonStep', stepSize: 10, computeMode: 'iterative'},
   ].map((config, idx) => (
     <IterativeDisplay
       {...config}
       iterations={400}
-      layout={'gridLayout'}
+      layout={'pickBest'}
       key={`${config.technique}-${idx}`}/>
   ));
   const SHOW_TESTS = false;
@@ -80,6 +85,12 @@ function App() {
         }
         {
           // <ObjectiveFunctionVisualization />
+        }
+        {
+          // <HourCalendar data={OHARE_TEMP_DATA}/>
+        }
+        {
+          // <HourCalendar data={OHARE_TEMP_DATA} celius/>
         }
       </div>
     </div>

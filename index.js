@@ -64,8 +64,9 @@ export function tableCartogramAdaptive(params) {
     };
   }
   const localTable = data.map(row => row.map(cell => accessor(cell)));
+  console.log(localTable)
   const updateFunction = buildIterativeCartogram(localTable, technique, layout);
-  const boundUpdate = numIterations => prepareRects(updateFunction(numIterations), localTable, accessor);
+  const boundUpdate = numIterations => prepareRects(updateFunction(numIterations), data, accessor);
 
   let stillRunning = true;
   let currentLayout = null;
