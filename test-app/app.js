@@ -68,7 +68,7 @@ function App() {
           ]}/>}
         <div style={{display: 'flex', flexWrap: 'wrap'}}>
           {
-            tables
+            // tables
           }
         </div>
         <div>
@@ -78,7 +78,7 @@ function App() {
         </div>
         {
           // <ExampleHeatmap data={EXAMPLES.EXAMPLE_TABLE} />
-          // <CalendarDisplay data={CAL}/>
+          <CalendarDisplay />
         }
         {
           // <CartogramPlot data={COMPLETED_RUN_DATA.gons} fillMode="valueHeat"/>

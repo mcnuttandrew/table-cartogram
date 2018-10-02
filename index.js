@@ -1,7 +1,13 @@
 import {buildIterativeCartogram} from './iterative-methods/optimization';
 import {prepareRects, computeErrors} from './iterative-methods/utils';
 
-const inputTableIsInvalid = table => !table.every(row => row.every(cell => cell));
+const inputTableIsInvalid = table => {
+  const someValuesAreBad = !table.every(row => row && row.every(cell => cell));
+
+  const width = table[0].length;
+  const irregularShape = !table.every(row => row.length === width);
+  return someValuesAreBad || irregularShape;
+};
 
 const MAX_ITERATIONS = 3000;
 
@@ -15,7 +21,7 @@ const MAX_ITERATIONS = 3000;
 export function tableCartogram(
   table, technique, layout = 'pickBest', numIterations = MAX_ITERATIONS, accessor = d => d) {
   if (inputTableIsInvalid(table)) {
-    console.error('INVALID INPUT TABLE')
+    console.error('INVALID INPUT TABLE', table)
     return [];
   }
   const updateFunction = buildIterativeCartogram(table, technique, layout);
@@ -31,7 +37,7 @@ export function tableCartogram(
 export function tableCartogramWithUpdate(table, technique, accessor = d => d, layout = 'pickBest') {
   const localTable = table.map(row => row.map(cell => accessor(cell)));
   if (inputTableIsInvalid(table)) {
-    console.error('INVALID INPUT TABLE')
+    console.error('INVALID INPUT TABLE', table)
     return [];
   }
   const updateFunction = buildIterativeCartogram(localTable, technique, layout);
@@ -46,7 +52,7 @@ export function tableCartogramWithUpdate(table, technique, accessor = d => d, la
 export function tableCartogramAdaptive(params) {
   const {
     data,
-    technique = 'coordinate',
+    technique = 'newtonStep',
     maxNumberOfSteps = 1000,
     targetAccuracy = 0.01,
     iterationStepSize = 10,
@@ -55,7 +61,7 @@ export function tableCartogramAdaptive(params) {
     logging = false
   } = params;
   if (inputTableIsInvalid(data)) {
-    console.error('INVALID INPUT TABLE')
+    console.error('INVALID INPUT TABLE', data)
     return {
       gons: [],
       error: Infinity,
@@ -64,7 +70,6 @@ export function tableCartogramAdaptive(params) {
     };
   }
   const localTable = data.map(row => row.map(cell => accessor(cell)));
-  console.log(localTable)
   const updateFunction = buildIterativeCartogram(localTable, technique, layout);
   const boundUpdate = numIterations => prepareRects(updateFunction(numIterations), data, accessor);
 
@@ -86,6 +91,9 @@ export function tableCartogramAdaptive(params) {
     if ((stepsTaken > maxNumberOfSteps) || currentScore.error < targetAccuracy) {
       stillRunning = false;
     }
+  }
+  if (logging) {
+    console.log('Exiting loop')
   }
   return {
     gons: currentLayout,
