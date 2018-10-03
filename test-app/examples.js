@@ -128,7 +128,15 @@ const RIBBONS = [...new Array(10)].map((d, i) =>
   [...new Array(10)].map((_, j) => ((j + 1) * (i % 2 ? 20 : 1)))
 );
 
+const BLOCKS = [
+  [10, 10, 1, 1],
+  [10, 10, 1, 1],
+  [50, 50, 100, 100],
+  [50, 50, 100, 100]
+];
+
 export default {
+  BLOCKS,
   LONG_RAMP: checkerBoardGenerator(1, 15, 1, 10),
   SMALL_RAMP: ramp(3, 3),
   DUMB_CALENDER: ramp(7, 4),

@@ -2,7 +2,12 @@ import {inv, multiply, add, norm} from 'mathjs';
 import {gradientDescentLineSearch, norm2, dot} from './imported-gradient';
 import {objectiveFunction} from './objective-function';
 import {generateInitialTable} from './layouts';
-import {translateVectorToTable, translateTableToVector, getIndicesInVectorOfInterest} from './utils';
+import {
+  translateVectorToTable,
+  translateTableToVector,
+  getIndicesInVectorOfInterest,
+  phaseShuffle
+} from './utils';
 import {
   finiteDiference,
   finiteDiferenceForIndices,
@@ -59,129 +64,41 @@ function monteCarloOptimization(objFunc, candidateVector, numIterations) {
  * @param  {Number} numIterations - The number of iterations in the optimization process
  * @return {Array of Numbers} The optimized vector
  */
-// junk coordinateDescent notes
-// function coordinateDescent(objFunc, candidateVector, numIterations, table) {
-//   let currentVec = candidateVector.slice();
-//   /* eslint-disable max-depth */
-//   const stepSizeMax = 0.1;
-//   const stepSizeMin = 0.00001;
-//   let stepSize = 0.01;
-//   let prevDelta = 0;
-//   for (let i = 0; i < numIterations; i++) {
-//     // let sumNorm = 0;
-//     // let energy = 0;
-//     // janky adaptive step
-//     // const stepSize = Math.min(0.01, objFunc(currentVec));
-//
-//     const oldScore = objFunc(currentVec);
-//     // const newVec = currentVec.slice();
-//     for (let phase = 0; phase < 4; phase++) {
-//       const currTable = translateVectorToTable(currentVec, table, 1, 1);
-//       const searchIndices = getIndicesInVectorOfInterest(currTable, phase);
-//       const dx = finiteDiferenceForIndices(objFunc, currentVec, stepSize / 10, searchIndices);
-//       // const dx = finiteDiferenceForIndices(objFunc, currentVec, stepSize, searchIndices);
-//       const norm = norm2(dx);
-//       // sumNorm += norm ? norm : 0;
-//
-//       for (let jdx = 0; jdx < dx.length; jdx++) {
-//         if (dx[jdx] && norm) {
-//           currentVec[searchIndices[jdx]] += -dx[jdx] / norm * (stepSize / 10);
-//         }
-//       }
-//       const baseScore = objFunc(currentVec);
-//       for (let jdx = 0; jdx < dx.length; jdx++) {
-//         if (dx[jdx] && norm) {
-//           // undo
-//           currentVec[searchIndices[jdx]] += dx[jdx] / norm * (stepSize / 10);
-//           // upScore
-//           currentVec[searchIndices[jdx]] += -dx[jdx] / norm * ((stepSize * 1.5) / 10);
-//         }
-//       }
-//       const upScore = objFunc(currentVec);
-//       for (let jdx = 0; jdx < dx.length; jdx++) {
-//         if (dx[jdx] && norm) {
-//           // undo
-//           currentVec[searchIndices[jdx]] += dx[jdx] / norm * ((stepSize * 1.5) / 10);
-//           // downScore
-//           currentVec[searchIndices[jdx]] += -dx[jdx] / norm * ((stepSize * 0.5) / 10);
-//         }
-//       }
-//       const downScore = objFunc(currentVec);
-//       if (downScore < upScore && downScore < baseScore) {
-//         stepSize *= 1 / 2;
-//       }
-//       if (upScore < downScore && upScore < baseScore) {
-//         stepSize *= 2;
-//       }
-//        // const upSizeScore
-//       // console.log(norm, stepSizeMax)
-//       // stepSize = norm ? stepSizeMax / norm : stepSize;
-//       // const deltaVec = diff(newVec, currentVec);
-//
-//
-//       // for (let jdx = 0; jdx < dx.length; jdx++) {
-//       //   if (dx[jdx] && norm) {
-//       //     energy += deltaVec[searchIndices[jdx]] * dx[jdx];
-//       //   }
-//       // }
-//       // currentVec = newVec;
-//     }
-//     // console.log(sumNorm)
-//     const newScore = objFunc(currentVec);
-//     // const newDelta = (oldScore - newScore);
-//     // // console.log(newDelta - prevDelta)
-//     // if (newDelta > 0 && prevDelta > 0) {
-//     //   stepSize *= 1.9;
-//     //   // stepSize -= stepSizeMin;
-//     // } else if (newDelta < 0 && prevDelta < 0) {
-//     //   stepSize *= 0.9;
-//     //   // stepSize += 5 * stepSizeMin;
-//     // }
-//     // if ((newDelta - prevDelta) > 5 * stepSizeMin) {
-//     //   stepSize *= 1.01;
-//     // }
-//     // if ((prevDelta - newDelta) > 5 * stepSizeMin) {
-//     //   stepSize *= 0.99;
-//     // }
-//     // else {
-//     //   stepSize -= stepSizeMin;
-//     // }
-//
-//     stepSize = Math.max(Math.min(newScore, stepSizeMax), stepSizeMin);
-//     // prevDelta = newDelta;
-//
-//     // console.log(stepSize)
-//     // const newScore = objFunc(newVec);
-//     // console.log(stepSize, newScore - oldScore, (newScore - oldScore) > (0.3 * energy))
-//     // if ((newScore - oldScore) > (0.3 * energy)) {
-//     //   // /* the backtrack and opportunistic increase parameters should
-//     //   //    also optimized, somehow */
-//     //   // backtrack
-//     //   // stepSize *= 0.5;
-//     //   // pos = posLast;
-//     // } else {
-//     //   // currentVec = newVec;
-//     //   // opportunistically increase step size
-//     //   // stepSize = Math.max(Math.min(1.05 * stepSize, stepSizeMax), stepSizeMin);
-//     // }
-//     // const delta = finiteDiference(objFunc, currentVec, stepSize / 100);
-//     // stepSize *= stepSizeMax / (10 * sumNorm);
-//     // stepSize = Math.max(Math.min(stepSize, stepSizeMax), stepSizeMin);
-//     // console.log(sumNorm, stepSize)
-//   }
-//   /* eslint-enable max-depth */
-//   return currentVec;
-// }
+function coordinateDescent(objFunc, candidateVector, numIterations, table) {
+  const currentVec = candidateVector.slice();
+  /* eslint-disable max-depth */
+  for (let i = 0; i < numIterations; i++) {
+    const phases = phaseShuffle();
+    // janky adaptive step
+    const stepSize = Math.min(0.001, objFunc(currentVec));
+    for (let phase = 0; phase < 4; phase++) {
+      const currTable = translateVectorToTable(currentVec, table, 1, 1);
+      const searchIndices = getIndicesInVectorOfInterest(currTable, phases[phase]);
+      const dx = finiteDiferenceForIndices(objFunc, currentVec, stepSize / 10, searchIndices);
+      const computednorm = norm2(dx);
+      for (let jdx = 0; jdx < dx.length; jdx++) {
+        if (dx[jdx] && norm) {
+          currentVec[searchIndices[jdx]] += -dx[jdx] / computednorm * stepSize;
+        }
+      }
+    }
+  }
+  /* eslint-enable max-depth */
+  return currentVec;
+}
+
+
 function coordinateDescentInnerLoop(objFunc, currentVec, stepSize, table) {
   // const stepSize = Math.min(0.001, objFunc(currentVec));
+  const phases = phaseShuffle();
   for (let phase = 0; phase < 4; phase++) {
     const currTable = translateVectorToTable(currentVec, table, 1, 1);
-    const searchIndices = getIndicesInVectorOfInterest(currTable, phase);
+    const searchIndices = getIndicesInVectorOfInterest(currTable, phases[phase]);
     const dx = finiteDiferenceForIndices(objFunc, currentVec, stepSize / 10, searchIndices);
-    const norm = norm2(dx);
+    const localNorm = norm2(dx);
     for (let jdx = 0; jdx < dx.length; jdx++) {
-      if (dx[jdx] && norm) {
-        currentVec[searchIndices[jdx]] += -dx[jdx] / norm * stepSize;
+      if (dx[jdx] && localNorm) {
+        currentVec[searchIndices[jdx]] += -dx[jdx] / localNorm * stepSize;
       }
     }
   }
@@ -202,7 +119,6 @@ function coordinateDescentWithAdaptiveStep(objFunc, candidateVector, numIteratio
     const stepSize1 = -(stepSize * stepSize) / (2 * (phi1 - phi0 - stepSize * phiPrime0)) * 10;
     coordinateDescentInnerLoop(objFunc, currentVec, Math.abs(stepSize1), table);
     prevStep = stepSize1;
-    console.log(stepSize1)
   }
   /* eslint-enable max-depth */
   return currentVec;
@@ -235,7 +151,6 @@ function newtonStep(objFunc, candidateVector, numIterations, table) {
       }
       const gradient = finiteDiferenceForIndices(objFunc, currentVec, stepSize, searchIndices);
       const hessian = computeHessianForIndices(objFunc, currentVec, stepSize, searchIndices);
-      // console.log(hessian)
       const scaleInvHessian = multiply(invDiagon(hessian), objVal);
       let step = multiply(multiply(scaleInvHessian, gradient), 1);
       const stepNorm = norm(step);
@@ -250,16 +165,16 @@ function newtonStep(objFunc, candidateVector, numIterations, table) {
 }
 
 function newtonInnerLoop(objFunc, currentVec, stepSize, table) {
+  const phases = phaseShuffle();
   for (let phase = 0; phase < 4; phase++) {
     const objVal = objFunc(currentVec);
     const currTable = translateVectorToTable(currentVec, table, 1, 1);
-    const searchIndices = getIndicesInVectorOfInterest(currTable, phase);
+    const searchIndices = getIndicesInVectorOfInterest(currTable, phases[phase]);
     if (!searchIndices.length) {
       continue;
     }
     const gradient = finiteDiferenceForIndices(objFunc, currentVec, stepSize, searchIndices);
     const hessian = computeHessianForIndices(objFunc, currentVec, stepSize, searchIndices);
-    // console.log(hessian)
     const scaleInvHessian = multiply(invDiagon(hessian), objVal);
     let step = multiply(multiply(scaleInvHessian, gradient), 1);
     const stepNorm = norm(step);
@@ -281,35 +196,12 @@ function newtonStepBoth(objFunc, candidateVector, numIterations, table) {
 
     // const newtonStepSize = Math.max(Math.min(0.05, objFunc(currentVec)), 0.01);
     const newtonStepSize = 0.01;
-    // console.log(newtonStepSize)
     const newtonVec = currentVec.slice();
     newtonInnerLoop(objFunc, newtonVec, newtonStepSize, table);
     const newtonScore = objFunc(newtonVec);
     console.log(newtonScore < coordScore ? 'newton' : 'coord')
     currentVec = (newtonScore < coordScore) ? newtonVec : coordDescentVec;
   }
-  return currentVec;
-}
-
-function coordinateDescent(objFunc, candidateVector, numIterations, table) {
-  const currentVec = candidateVector.slice();
-  /* eslint-disable max-depth */
-  for (let i = 0; i < numIterations; i++) {
-    // janky adaptive step
-    const stepSize = Math.min(0.001, objFunc(currentVec));
-    for (let phase = 0; phase < 4; phase++) {
-      const currTable = translateVectorToTable(currentVec, table, 1, 1);
-      const searchIndices = getIndicesInVectorOfInterest(currTable, phase);
-      const dx = finiteDiferenceForIndices(objFunc, currentVec, stepSize / 10, searchIndices);
-      const computednorm = norm2(dx);
-      for (let jdx = 0; jdx < dx.length; jdx++) {
-        if (dx[jdx] && norm) {
-          currentVec[searchIndices[jdx]] += -dx[jdx] / computednorm * stepSize;
-        }
-      }
-    }
-  }
-  /* eslint-enable max-depth */
   return currentVec;
 }
 
@@ -329,7 +221,6 @@ function gradientDescent(objFunc, candidateVector, numIterations) {
     const gradientResult = gradientDescentLineSearch((currentVec, fxprime, learnRate) => {
       fxprime = fxprime || candidateVector.map(d => 0);
       // Magic number for finite difference size
-      // console.log(learnRate)
       const delta = finiteDiference(objFunc, currentVec, 100 * learnRate || 0.01);
       for (let idx = 0; idx < delta.length; idx++) {
         fxprime[idx] = delta[idx];
@@ -340,6 +231,49 @@ function gradientDescent(objFunc, candidateVector, numIterations) {
   }
   return result;
 }
+// //
+// // 0 - 1
+// // |   |
+// // 3 - 2
+// //
+// function generateSizeFromBounds(coords, table) {
+//   const xOffset = coords[0].x;
+//   const yOffset = coords[0].y;
+//   const movesLeft = coords[1].x - coords[0].x;
+//   const movesUp = coords[3].y - coords[0].y;
+//   let ret = 0;
+//   for (let i = 0; i < movesUp; i++) {
+//     for (let j = 0; j < movesLeft; j++) {
+//       ret += table[i + yOffset][j + xOffset];
+//     }
+//   }
+//   return ret;
+// }
+//
+// function divideTable(table) {
+//   const height = table.length;
+//   const width = table[0].length;
+//   const lowerLeftCorner = {x: 0, y: 0};
+//   const bottom = {x: Math.floor(width / 2), y: 0};
+//   const lowerRightCorner = {x: 0, y: 0};
+//   const left = {x: 0, y: Math.floor(height / 2)};
+//   const center = {x: Math.floor(width / 2), y: Math.floor(height / 2)};
+//   const right = {x: width, y: Math.floor(height / 2)};
+//   const upperLeftCorner = {x: 0, y: height};
+//   const top = {x: Math.floor(width / 2), y: height};
+//   const upperRightCorner = {x: 0, y: height};
+//
+//
+//   const lowerLeftBox = [lowerLeftCorner, bottom, center, left];
+//   const lowerRightBox = [bottom, lowerRightCorner, right, center];
+//   const upperLeftBox = [left, center, top, upperLeftCorner];
+//   const upperRightBox = [center, right, upperRightCorner, center];
+//
+// }
+//
+// function multiScale(objFunc, candidateVector, numIterations, table) {
+//
+// }
 
 /**
  * Router for executing optimizations
