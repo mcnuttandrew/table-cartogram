@@ -15,7 +15,7 @@ import {
 } from '../test/iterative-tests';
 
 import GenericTable from './components/generic-test-table';
-import EXAMPLES, {CAL} from './examples';
+import EXAMPLES, {stateMigration} from './examples';
 import IterativeDisplay from './components/iterative-display';
 import ExampleTreemap from './components/treemap-example-generator';
 import ExampleHeatmap from './components/heatmap-example';
@@ -43,6 +43,7 @@ function App() {
     // {data: EXAMPLES.EXAMPLE_TABLE, technique: 'newtonStep', stepSize: 5, computeMode: 'iterative'},
     // {data: scaleMatrix(EXAMPLES.PATHOLOGICAL_2_BY), technique: 'newtonStep', stepSize: 5, computeMode: 'iterative'},
     // {data: [[1, 1], [1, 1]], technique: 'newtonStep', stepSize: 5, computeMode: 'iterative'},
+    // {data: stateMigration.slice(0, 10).map(row => row.slice(0, 10)), technique: 'newtonStep', stepSize: 10, computeMode: 'iterative'},
     {data: EXAMPLES.PATHOLOGICAL_2_BY, technique: 'newtonStep', stepSize: 10, computeMode: 'iterative'},
     // {data: EXAMPLES.BLACK_AND_WHITE_TABLE, technique: 'newtonStep', stepSize: 10, computeMode: 'iterative'},
     // {data: transposeMatrix(EXAMPLES.BLACK_AND_WHITE_TABLE), technique: 'newtonStep', stepSize: 10, computeMode: 'iterative'},
@@ -50,7 +51,7 @@ function App() {
     <IterativeDisplay
       {...config}
       iterations={400}
-      layout={'pickBest'}
+      layout={'gridLayout'}
       key={`${config.technique}-${idx}`}/>
   ));
   const SHOW_TESTS = false;
@@ -68,7 +69,7 @@ function App() {
           ]}/>}
         <div style={{display: 'flex', flexWrap: 'wrap'}}>
           {
-            // tables
+            tables
           }
         </div>
         <div>
@@ -78,7 +79,7 @@ function App() {
         </div>
         {
           // <ExampleHeatmap data={EXAMPLES.EXAMPLE_TABLE} />
-          <CalendarDisplay />
+          // <CalendarDisplay />
         }
         {
           // <CartogramPlot data={COMPLETED_RUN_DATA.gons} fillMode="valueHeat"/>

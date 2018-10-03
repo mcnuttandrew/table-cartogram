@@ -2,6 +2,13 @@ import ZionVisitors from '../test/zion-visitors';
 // Source Wikipedia
 import Elements from '../test/elements';
 
+import StateMigration from '../state-migration-data.json';
+
+const StatesNames = StateMigration.map(d => d['State of residence']);
+export const stateMigration = StateMigration.reverse().map(row => {
+  return StatesNames.map(state => row[state]);
+});
+
 const elementLookUp = Elements.reduce((acc, row) => {
   acc[row.Symbol] = row;
   return acc;

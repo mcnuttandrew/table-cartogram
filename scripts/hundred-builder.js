@@ -1,6 +1,7 @@
 const fs = require('fs');
 import {tableCartogramAdaptive} from '../';
-import data from '../test/tenByten.json';
+import {stateMigration as data} from '../test-app/examples';
+// import data from '../test/tenByten.json';
 // import data from '../test/hundredByHundred.json';
 
 /* eslint-disable no-console */
@@ -8,7 +9,7 @@ const log = msg => console.log(msg);
 /* eslint-enable no-console */
 
 const writeToFile = results => {
-  fs.writeFile('./scripts/hundred-run-data.json', JSON.stringify(results, null, 2), err => {
+  fs.writeFile('./scripts/state-migration-run.json', JSON.stringify(results, null, 2), err => {
     if (err) {
       log('There was an error!');
       log(err);
@@ -29,10 +30,10 @@ const timer = toCall => {
 const measureCheckerBoardPerformance = () => {
   const result = timer(() => tableCartogramAdaptive({
     data,
-    maxNumberOfSteps: Infinity,
+    maxNumberOfSteps: 2,
     targetAccuracy: 0.1,
     iterationStepSize: 2,
-    technique: 'coordinate',
+    technique: 'newtonStep',
     logging: true
   }));
   writeToFile(result);
