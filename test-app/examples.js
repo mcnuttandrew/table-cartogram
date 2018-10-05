@@ -135,8 +135,14 @@ const BLOCKS = [
   [50, 50, 100, 100]
 ];
 
+const SUB_BLOCKS = [
+  [40, 4],
+  [100, 400]
+];
+
 export default {
   BLOCKS,
+  SUB_BLOCKS,
   LONG_RAMP: checkerBoardGenerator(1, 15, 1, 10),
   SMALL_RAMP: ramp(3, 3),
   DUMB_CALENDER: ramp(7, 4),

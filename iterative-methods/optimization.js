@@ -104,6 +104,7 @@ function coordinateDescentInnerLoop(objFunc, currentVec, stepSize, table) {
   }
 }
 
+// not very good, often fails
 function coordinateDescentWithAdaptiveStep(objFunc, candidateVector, numIterations, table) {
   const currentVec = candidateVector.slice();
   /* eslint-disable max-depth */
@@ -124,44 +125,22 @@ function coordinateDescentWithAdaptiveStep(objFunc, candidateVector, numIteratio
   return currentVec;
 }
 
-function newtonStepOld(objFunc, candidateVector, numIterations, table) {
-  const currentVec = candidateVector.slice();
-  const objVal = objFunc(currentVec);
-  const stepSize = 0.01;
-  const gradient = finiteDiference(objFunc, currentVec, stepSize);
-  const hessian = multiply(computeHessian(objFunc, currentVec, stepSize), objVal);
-  const scaleInvHessian = multiply(inv(hessian), objVal);
-  const step = multiply(multiply(scaleInvHessian, gradient), -1);
-  const stepNorm = norm(step);
-  // return add(currentVec, multiply(step, 1 / stepNorm * Math.min(stepNorm * 10, stepSize)));
-  return add(currentVec, multiply(step, 0.5));
-}
-
 function newtonStep(objFunc, candidateVector, numIterations, table) {
   const currentVec = candidateVector.slice();
 
   for (let i = 0; i < numIterations; i++) {
-    const stepSize = Math.min(0.001, objFunc(currentVec) * 10 );
-    for (let phase = 0; phase < 4; phase++) {
-      const objVal = objFunc(currentVec);
-      const currTable = translateVectorToTable(currentVec, table, 1, 1);
-      const searchIndices = getIndicesInVectorOfInterest(currTable, phase);
-      if (!searchIndices.length) {
-        continue;
-      }
-      const gradient = finiteDiferenceForIndices(objFunc, currentVec, stepSize, searchIndices);
-      const hessian = computeHessianForIndices(objFunc, currentVec, stepSize, searchIndices);
-      const scaleInvHessian = multiply(invDiagon(hessian), objVal);
-      let step = multiply(multiply(scaleInvHessian, gradient), 1);
-      const stepNorm = norm(step);
-      step = multiply(step, 1 / stepNorm * Math.min(stepNorm, stepSize * 10));
-      step = multiply(step, 1);
-      for (let jdx = 0; jdx < step.length; jdx++) {
-        currentVec[searchIndices[jdx]] -= step[jdx] ? step[jdx] : 0;
-      }
-    }
+    const stepSize = Math.min(0.001, objFunc(currentVec) * 10);
+    newtonInnerLoop(objFunc, currentVec, stepSize, table);
   }
   return currentVec;
+}
+
+function trace(mat) {
+  let ret = 0;
+  for (let i = 0; i < mat.length; i++) {
+    ret += Math.abs(mat[i][i]);
+  }
+  return ret;
 }
 
 function newtonInnerLoop(objFunc, currentVec, stepSize, table) {
@@ -175,11 +154,15 @@ function newtonInnerLoop(objFunc, currentVec, stepSize, table) {
     }
     const gradient = finiteDiferenceForIndices(objFunc, currentVec, stepSize, searchIndices);
     const hessian = computeHessianForIndices(objFunc, currentVec, stepSize, searchIndices);
-    const scaleInvHessian = multiply(invDiagon(hessian), objVal);
-    let step = multiply(multiply(scaleInvHessian, gradient), 1);
+    const invHessian = invDiagon(hessian);
+    const scaleInvHessian = multiply(invHessian, objVal);
+    let step = multiply(scaleInvHessian, gradient);
     const stepNorm = norm(step);
+    // const tr = trace(invHessian);
+    // console.log(tr / norm(gradient))
+    // const derivStep = tr / norm(gradient);
     step = multiply(step, 1 / stepNorm * Math.min(stepNorm, stepSize * 1.5));
-    // step = multiply(step, 1);
+    // step = multiply(step, 1 / stepNorm * derivStep);
     for (let jdx = 0; jdx < step.length; jdx++) {
       currentVec[searchIndices[jdx]] -= step[jdx] ? step[jdx] : 0;
     }
@@ -326,6 +309,9 @@ export function buildIterativeCartogram(table, technique, layout = 'pickBest') {
   let candidateVector = translateTableToVector(newTable);
 
   return (numIterations = MAX_ITERATIONS) => {
+    if (!numIterations) {
+      return translateVectorToTable(candidateVector, table, 1, 1);
+    }
     const resultTable = executeOptimization(objFunc, candidateVector, technique, table, numIterations);
     candidateVector = translateTableToVector(resultTable);
     return resultTable;

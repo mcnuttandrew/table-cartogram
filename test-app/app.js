@@ -35,7 +35,7 @@ function App() {
     // {data: EXAMPLES.CHECKER_BOARD, technique: 'coordinate', stepSize: 10},
     // {
     //   data: EXAMPLES.USA_USA_USA_LABELS,
-    //   technique: 'coordinate',
+    //   technique: 'newtonStep',
     //   stepSize: 10,
     //   computeMode: 'iterative',
     //   accessor: d => d[1]
@@ -43,15 +43,15 @@ function App() {
     // {data: EXAMPLES.EXAMPLE_TABLE, technique: 'newtonStep', stepSize: 5, computeMode: 'iterative'},
     // {data: scaleMatrix(EXAMPLES.PATHOLOGICAL_2_BY), technique: 'newtonStep', stepSize: 5, computeMode: 'iterative'},
     // {data: [[1, 1], [1, 1]], technique: 'newtonStep', stepSize: 5, computeMode: 'iterative'},
-    {data: stateMigration.slice(0, 10).map(row => row.slice(0, 10)), technique: 'newtonStep', stepSize: 10, computeMode: 'iterative'},
-    // {data: EXAMPLES.BLOCKS, technique: 'newtonStep', stepSize: 10, computeMode: 'iterative'},
-    // {data: EXAMPLES.BLACK_AND_WHITE_TABLE, technique: 'newtonStep', stepSize: 10, computeMode: 'iterative'},
+    // {data: stateMigration.slice(0, 10).map(row => row.slice(0, 10)), technique: 'newtonStep', stepSize: 10, computeMode: 'iterative'},
+    // {data: EXAMPLES.USA_USA_USA, technique: 'newtonStep', stepSize: 10, computeMode: 'direct'},
+    {data: EXAMPLES.PATHOLOGICAL_2_BY, technique: 'newtonStep', stepSize: 10, computeMode: 'iterative'},
     // {data: transposeMatrix(EXAMPLES.BLACK_AND_WHITE_TABLE), technique: 'newtonStep', stepSize: 10, computeMode: 'iterative'},
   ].map((config, idx) => (
     <IterativeDisplay
       {...config}
       iterations={400}
-      layout={'pickWorst'}
+      layout={'pickBest'}
       key={`${config.technique}-${idx}`}/>
   ));
   const SHOW_TESTS = false;

@@ -262,20 +262,24 @@ export function prepareRects(outputTable, table, accessor) {
  */
 export function computeErrors(data, gons, accessor) {
   const tableSum = data.reduce((acc, row) => acc + row.reduce((mem, cell) => accessor(cell) + mem, 0), 0);
-  const expectedAreas = data.map(row => row.map(cell => accessor(cell) / tableSum));
-  const errors = [];
+  let maxError = -Infinity;
+  let sumError = 0;
   for (let i = 0; i < data.length; i++) {
     for (let j = 0; j < data[0].length; j++) {
       const gonArea = area(gons[i * data[0].length + j].vertices);
-      // TODO i think this max term is correct from the quantitative cartogram paper but i am unsure
-      const computedErr = Math.abs(gonArea - expectedAreas[i][j]) / Math.max(gonArea, expectedAreas[i][j]);
-      // const computedErr = Math.abs(gonArea - expectedAreas[i][j]) / expectedAreas[i][j];
-      errors.push(computedErr);
+      const expectedArea = accessor(data[i][j]) / tableSum;
+      const computedErr = Math.abs(gonArea - expectedArea) / Math.max(gonArea, expectedArea);
+      sumError += computedErr;
+      if (maxError < computedErr) {
+        maxError = computedErr;
+      }
     }
   }
-  const maxError = errors.reduce((acc, row) => Math.max(acc, row), -Infinity);
-  const error = errors.reduce((acc, row) => acc + row, 0) / errors.length;
-  return {error, maxError};
+
+  return {
+    error: sumError / (data.length * data[0].length),
+    maxError
+  };
 }
 
 /**
@@ -283,12 +287,11 @@ export function computeErrors(data, gons, accessor) {
  * @param {Array} a items An array containing the items.
  */
 function shuffle(a) {
-  var j, x, i;
-  for (i = a.length - 1; i > 0; i--) {
-      j = Math.floor(Math.random() * (i + 1));
-      x = a[i];
-      a[i] = a[j];
-      a[j] = x;
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const x = a[i];
+    a[i] = a[j];
+    a[j] = x;
   }
   return a;
 }

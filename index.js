@@ -20,11 +20,12 @@ const MAX_ITERATIONS = 3000;
  */
 export function tableCartogram(
   table, technique, layout = 'pickBest', numIterations = MAX_ITERATIONS, accessor = d => d) {
-  if (inputTableIsInvalid(table)) {
+  const localTable = table.map(row => row.map(cell => accessor(cell)));
+  if (inputTableIsInvalid(localTable)) {
     console.error('INVALID INPUT TABLE', table)
     return [];
   }
-  const updateFunction = buildIterativeCartogram(table, technique, layout);
+  const updateFunction = buildIterativeCartogram(localTable, technique, layout);
   return prepareRects(updateFunction(numIterations), table, accessor);
 }
 
