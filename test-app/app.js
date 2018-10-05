@@ -15,7 +15,7 @@ import {
 } from '../test/iterative-tests';
 
 import GenericTable from './components/generic-test-table';
-import EXAMPLES, {stateMigration} from './examples';
+import EXAMPLES, {BIRD_STRIKES, stateMigration} from './examples';
 import IterativeDisplay from './components/iterative-display';
 import ExampleTreemap from './components/treemap-example-generator';
 import ExampleHeatmap from './components/heatmap-example';
@@ -29,11 +29,13 @@ const scaleMatrix = (matrix, factor = 1) => matrix.map(row => row.map(cell => ce
 
 function App() {
   const tables = [
-    // {data: EXAMPLES.BLACK_AND_WHITE_TABLE, technique: 'gradient'},
-    // {data: EXAMPLES.ONE_BYS, technique: 'gradient'}
-    // {data: EXAMPLES.PATHOLOGICAL_2_BY, technique: 'gradient', stepSize: 100},
-    // {data: EXAMPLES.EXAMPLE_TABLE, technique: 'gradient', stepSize: 1000},
-    // {data: EXAMPLES.CHECKER_BOARD, technique: 'coordinate', stepSize: 10},
+    {
+      data: BIRD_STRIKES,
+      technique: 'newtonStep',
+      stepSize: 10,
+      computeMode: 'iterative',
+      accessor: d => d.size
+    },
     // {
     //   data: EXAMPLES.USA_USA_USA_LABELS,
     //   technique: 'newtonStep',
@@ -46,7 +48,7 @@ function App() {
     // {data: [[1, 1], [1, 1]], technique: 'newtonStep', stepSize: 5, computeMode: 'iterative'},
     // {data: stateMigration.slice(0, 10).map(row => row.slice(0, 10)), technique: 'newtonStep', stepSize: 10, computeMode: 'iterative'},
     // {data: EXAMPLES.USA_USA_USA, technique: 'newtonStep', stepSize: 10, computeMode: 'direct'},
-    {data: EXAMPLES.ZION_VISITORS, technique: 'newtonStep', stepSize: 10, computeMode: 'iterative'},
+    // {data: EXAMPLES.ZION_VISITORS, technique: 'newtonStep', stepSize: 10, computeMode: 'iterative'},
     // {data: transposeMatrix(EXAMPLES.BLACK_AND_WHITE_TABLE), technique: 'newtonStep', stepSize: 10, computeMode: 'iterative'},
   ].map((config, idx) => (
     <IterativeDisplay
@@ -70,7 +72,7 @@ function App() {
           ]}/>}
         <div style={{display: 'flex', flexWrap: 'wrap'}}>
           {
-            // tables
+            tables
           }
         </div>
         <div>
@@ -83,7 +85,7 @@ function App() {
           // <CalendarDisplay />
         }
         {
-          <CartogramPlot data={ZION_RUN.gons} fillMode="valueHeat"/>
+          // <CartogramPlot data={ZION_RUN.gons} fillMode="valueHeat"/>
         }
         {
           // <ObjectiveFunctionVisualization />

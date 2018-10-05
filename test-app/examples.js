@@ -1,3 +1,4 @@
+import {transposeMatrix} from '../iterative-methods/utils';
 import ZionVisitors from '../test/zion-visitors';
 // Source Wikipedia
 import Elements from '../test/elements';
@@ -8,6 +9,37 @@ const StatesNames = StateMigration.map(d => d['State of residence']);
 export const stateMigration = StateMigration.reverse().map(row => {
   return StatesNames.map(state => row[state]);
 });
+
+// MAKE DICT INTO WAFFLE PLOT
+// https://en.wikipedia.org/wiki/List_of_regions_of_the_United_States
+const WAFFLE_WIDTH = 20;
+const WAFFLE_HEIGHT = 5;
+const WAFFLE_CELLS = WAFFLE_WIDTH * WAFFLE_HEIGHT;
+const BIRD_STRIKES_BY_REGION = {
+  Midwest: 12869,
+  Canada: 237,
+  South: 21423,
+  West: 13593,
+  Northeast: 9550,
+  'US Islands': 1491
+};
+const BIRD_SUM = Object.values(BIRD_STRIKES_BY_REGION)
+  .reduce((acc, row) => acc + row, 0);
+const BIRDS = Object.entries(BIRD_STRIKES_BY_REGION)
+  .map((row) => {
+    return {
+      name: row[0],
+      size: Math.ceil(row[1] / BIRD_SUM * WAFFLE_CELLS)
+    };
+  });
+// console.log(BIRDS, BIRDS.reduce((acc, row) => row.size + acc, 0))
+const BIRD_CELLS = BIRDS.reduce((acc, {name, size}) => {
+  return acc.concat([...new Array(size)].map(_ => ({size, name})));
+}, []);
+
+export const BIRD_STRIKES = transposeMatrix([...new Array(WAFFLE_WIDTH)].map((_, idx) => {
+  return BIRD_CELLS.slice(idx * WAFFLE_HEIGHT, (idx + 1) * WAFFLE_HEIGHT);
+}));
 
 const elementLookUp = Elements.reduce((acc, row) => {
   acc[row.Symbol] = row;
