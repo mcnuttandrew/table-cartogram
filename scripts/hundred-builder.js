@@ -1,6 +1,6 @@
 const fs = require('fs');
 import {tableCartogramAdaptive} from '../';
-import {stateMigration as data} from '../test-app/examples';
+import {stateMigration as data, ZION_VISITORS_WITH_ANNOTATION} from '../test-app/examples';
 // import data from '../test/tenByten.json';
 // import data from '../test/hundredByHundred.json';
 
@@ -9,7 +9,7 @@ const log = msg => console.log(msg);
 /* eslint-enable no-console */
 
 const writeToFile = results => {
-  fs.writeFile('./scripts/state-migration-run.json', JSON.stringify(results, null, 2), err => {
+  fs.writeFile('./scripts/zion-run.json', JSON.stringify(results, null, 2), err => {
     if (err) {
       log('There was an error!');
       log(err);
@@ -29,12 +29,13 @@ const timer = toCall => {
 
 const measureCheckerBoardPerformance = () => {
   const result = timer(() => tableCartogramAdaptive({
-    data,
-    maxNumberOfSteps: 2,
-    targetAccuracy: 0.1,
-    iterationStepSize: 2,
-    technique: 'newtonStep',
-    logging: true
+    data: ZION_VISITORS_WITH_ANNOTATION,
+    maxNumberOfSteps: Infinity,
+    targetAccuracy: 0.001,
+    iterationStepSize: 100,
+    technique: 'coordinate',
+    logging: true,
+    accessor: d => d.value
   }));
   writeToFile(result);
 };

@@ -32,6 +32,10 @@ const ELELMENTS_MASS = generateElementTable('Atomic weight');
 const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
 const ZION_VISITORS = ZionVisitors.map(year => MONTHS.map(month => year[month])).slice(0, 5);
 
+export const ZION_VISITORS_WITH_ANNOTATION = ZionVisitors.map(year =>
+  MONTHS.map(month => ({year, month, value: year[month]}))
+).slice(0, 5);
+
 // EXAMPLES FROM PAPER
 
 // EVANS ET Et have a typo NI -> MI

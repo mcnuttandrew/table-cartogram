@@ -4,7 +4,7 @@ import React from 'react';
 import OHARE_TEMP_DATA from '../test/ohare-temp-data.json';
 // import FLAT_DATA from '../test/tenByten.json';
 // import COMPLETED_RUN_DATA from '../scripts/hundred-run-data-1010.json';
-
+import ZION_RUN from '../scripts/zion-run.json';
 import {transposeMatrix} from '../iterative-methods/utils';
 import {TapReactBrowser} from 'tap-react-browser';
 import {
@@ -23,6 +23,7 @@ import CalendarDisplay from './components/calendar-example';
 import HourCalendar from './components/hour-calendar';
 import CartogramPlot from './components/flat-display';
 import ObjectiveFunctionVisualization from './components/objective-function-visualization';
+import ContinuousLegend from './components/continuous-legend';
 
 const scaleMatrix = (matrix, factor = 1) => matrix.map(row => row.map(cell => cell * factor));
 
@@ -45,7 +46,7 @@ function App() {
     // {data: [[1, 1], [1, 1]], technique: 'newtonStep', stepSize: 5, computeMode: 'iterative'},
     // {data: stateMigration.slice(0, 10).map(row => row.slice(0, 10)), technique: 'newtonStep', stepSize: 10, computeMode: 'iterative'},
     // {data: EXAMPLES.USA_USA_USA, technique: 'newtonStep', stepSize: 10, computeMode: 'direct'},
-    {data: EXAMPLES.PATHOLOGICAL_2_BY, technique: 'newtonStep', stepSize: 10, computeMode: 'iterative'},
+    {data: EXAMPLES.ZION_VISITORS, technique: 'newtonStep', stepSize: 10, computeMode: 'iterative'},
     // {data: transposeMatrix(EXAMPLES.BLACK_AND_WHITE_TABLE), technique: 'newtonStep', stepSize: 10, computeMode: 'iterative'},
   ].map((config, idx) => (
     <IterativeDisplay
@@ -69,7 +70,7 @@ function App() {
           ]}/>}
         <div style={{display: 'flex', flexWrap: 'wrap'}}>
           {
-            tables
+            // tables
           }
         </div>
         <div>
@@ -82,7 +83,7 @@ function App() {
           // <CalendarDisplay />
         }
         {
-          // <CartogramPlot data={COMPLETED_RUN_DATA.gons} fillMode="valueHeat"/>
+          <CartogramPlot data={ZION_RUN.gons} fillMode="valueHeat"/>
         }
         {
           // <ObjectiveFunctionVisualization />

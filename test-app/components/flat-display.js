@@ -17,6 +17,7 @@ import {
 import {RV_COLORS} from '../colors';
 
 function colorCell(cell, index, fillMode, valueDomain) {
+  console.log(valueDomain)
   switch (fillMode) {
   case 'valueHeat':
     return interpolateInferno(

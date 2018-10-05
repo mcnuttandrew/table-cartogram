@@ -59,6 +59,7 @@ const monthsToWeeks = weekStarts.reduce((acc, row, idx) => {
 const CAL = Object.entries(Speeding
   .map(d => {
     const date = moment(d.date);
+    // if it is the first week of the next year do some special handling
     const nye = (
       (date.year() === 2017 && date.date() === 31 && date.month() === 11) ||
       (date.year() === 2018 && date.week() === 1)
@@ -74,6 +75,7 @@ const CAL = Object.entries(Speeding
     };
   })
   .reduce((acc, row) => {
+    // again border handling
     if (!(row.year === 2017 || (row.year === 2018 && row.week === 53))) {
       return acc;
     }
@@ -111,15 +113,17 @@ const findMinObject = (data, comparator) => {
 };
 
 const MONTHS = Object.entries(monthsToWeeks).reduce((acc, row) => {
-  const month = row[0];
+  const month = Number(row[0]);
   acc[month] = row[1].map(idx => CAL[idx]).filter(d => d);
   const firstDay = findMinObject(acc[month][0], d => d.dayOfMonth);
   if (firstDay.dayOfWeek === 6) {
     acc[month] = acc[month].slice(1);
   }
-  const monthString = `2017-${(month + 0) > 9 ? (month + 0) : `0${(month + 0)}`}`;
+  const monthString = `2017-${month > 9 ? (month + 1) : `0${(month + 1)}`}`;
   // console.log(MONTH_NAMES[month], moment(monthString, 'YYYY-MM').daysInMonth(), firstDay)
-  if (firstDay.dayOfWeek === 4 && moment(monthString, 'YYYY-MM').daysInMonth() === 30) {
+  // console.log(firstDay.dayOfWeek === 5, moment(monthString, 'YYYY-MM').daysInMonth() === 30, monthString)
+  if (firstDay.dayOfWeek === 5 && moment(monthString, 'YYYY-MM').daysInMonth() === 30) {
+    // console.log('!!')
     acc[month] = acc[month].slice(0, acc[month].length - 1);
   }
   return acc;
@@ -129,13 +133,12 @@ function renderMonth(gons, month) {
   const clipToMonth = gons.filter(d => d.data.month === month);
   return (
     <div key={month}>
-      <h3>{MONTH_NAMES[month]}</h3>
       <XYPlot
         className={MONTH_NAMES[month]}
         yDomain={[1, 0]}
-        margin={25}
-        width={400}
-        height={400}>
+        margin={60}
+        width={500}
+        height={500}>
         {clipToMonth.map((cell, index) => {
           return (<PolygonSeries
             key={`triangle-${index}`}
@@ -164,7 +167,8 @@ function renderMonth(gons, month) {
             label: `${cell.data.dayOfMonth}`,
             style: {
               textAnchor: 'middle',
-              alignmentBaseline: 'middle'
+              alignmentBaseline: 'middle',
+              fontFamily: 'GillSans'
             }
           });
         })} />
@@ -177,10 +181,24 @@ function renderMonth(gons, month) {
               label: getDayOfWeekName(cell.data.dayOfWeek),
               style: {
                 textAnchor: 'middle',
-                alignmentBaseline: 'middle'
+                alignmentBaseline: 'middle',
+                fontSize: 18,
+                fontFamily: 'GillSans'
               }
             });
           })} />
+        <LabelSeries
+          data={[{
+            x: 1,
+            y: -0.1,
+            label: MONTH_NAMES[month],
+            style: {
+              textAnchor: 'end',
+              alignmentBaseline: 'end',
+              fontFamily: 'GillSans',
+              fontSize: 24
+            }
+          }]}/>
       </XYPlot>
     </div>
   );
