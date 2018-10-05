@@ -18,15 +18,21 @@ const MAX_ITERATIONS = 3000;
  * @param  {String} technique which computation technique to use
  * @return {Array of Array of polygons} the polygons consituting the final layout
  */
-export function tableCartogram(
-  table, technique, layout = 'pickBest', numIterations = MAX_ITERATIONS, accessor = d => d) {
-  const localTable = table.map(row => row.map(cell => accessor(cell)));
+export function tableCartogram(params) {
+  const {
+    data,
+    technique,
+    layout = 'pickBest',
+    iterations = MAX_ITERATIONS,
+    accessor = d => d
+  } = params;
+  const localTable = data.map(row => row.map(cell => accessor(cell)));
   if (inputTableIsInvalid(localTable)) {
-    console.error('INVALID INPUT TABLE', table)
+    console.error('INVALID INPUT TABLE', data)
     return [];
   }
   const updateFunction = buildIterativeCartogram(localTable, technique, layout);
-  return prepareRects(updateFunction(numIterations), table, accessor);
+  return prepareRects(updateFunction(iterations), data, accessor);
 }
 
 /**
@@ -35,14 +41,20 @@ export function tableCartogram(
  * @param  {String} technique which computation technique to use
  * @return {Function}         call back to trigger additional computation, returns array of polygons
  */
-export function tableCartogramWithUpdate(table, technique, accessor = d => d, layout = 'pickBest') {
-  const localTable = table.map(row => row.map(cell => accessor(cell)));
-  if (inputTableIsInvalid(table)) {
-    console.error('INVALID INPUT TABLE', table)
+export function tableCartogramWithUpdate(params) {
+  const {
+    data,
+    technique,
+    accessor = d => d,
+    layout = 'pickBest'
+  } = params;
+  const localTable = data.map(row => row.map(cell => accessor(cell)));
+  if (inputTableIsInvalid(data)) {
+    console.error('INVALID INPUT TABLE', data)
     return [];
   }
   const updateFunction = buildIterativeCartogram(localTable, technique, layout);
-  return numIterations => prepareRects(updateFunction(numIterations), table, accessor);
+  return numIterations => prepareRects(updateFunction(numIterations), data, accessor);
 }
 
 /**

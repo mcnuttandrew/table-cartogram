@@ -84,7 +84,12 @@ export default class IterativeDisplay extends React.Component {
 
   iterativeBuild() {
     const {data, technique, stepSize, accessor = d => d, layout} = this.props;
-    const cartogram = tableCartogramWithUpdate(data, technique, accessor, layout);
+    const cartogram = tableCartogramWithUpdate({
+      data,
+      technique,
+      accessor,
+      layout
+    });
     const startTime = (new Date()).getTime();
     const ticker = setInterval(() => {
       const gons = cartogram(this.state.stepsTaken ? stepSize : 0);
@@ -126,7 +131,13 @@ export default class IterativeDisplay extends React.Component {
     Promise.resolve()
       .then(() => {
         const startTime = (new Date()).getTime();
-        const gons = tableCartogram(data, technique, layout, iterations, accessor);
+        const gons = tableCartogram({
+          data,
+          technique,
+          layout,
+          iterations,
+          accessor
+        });
         const endTime = (new Date()).getTime();
         const {error, maxError} = computeErrors(data, gons, accessor);
         this.setState({
