@@ -1,3 +1,4 @@
+import pointInPolygon from 'point-in-polygon';
 /* eslint-disable complexity */
 /**
  * Reformat a vector representation of a layout into a table representation
@@ -214,6 +215,15 @@ export function round(number, precision = Math.pow(10, 12)) {
   return Math.floor(number * precision) / precision;
 }
 
+const avgPoints = (a, b) => ({x: (a.x + b.x) / 2, y: (a.y + b.y) / 2});
+const dist = (a, b) => Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));
+
+function diagCenter(points) {
+  const diag1 = avgPoints(points[0], points[2]);
+  const diag2 = avgPoints(points[1], points[3]);
+  return dist(points[0], points[2]) < dist(points[1], points[3]) ? diag1 : diag2;
+}
+
 /** Compute geometric center of a polygon
  * @param {array} points - list of points in polygon, present as {x, y}
  * @returns {object} center point of polygon
@@ -222,7 +232,8 @@ export function geoCenter(points) {
   const sum = points.reduce((center, row) => {
     return {x: center.x + row.x, y: center.y + row.y};
   }, {x: 0, y: 0});
-  return {x: sum.x / points.length, y: sum.y / points.length};
+  const centerPoint = {x: sum.x / points.length, y: sum.y / points.length};
+  return pointInPolygon(centerPoint, points) ? centerPoint : diagCenter(points);
 }
 
 /**
