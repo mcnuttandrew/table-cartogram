@@ -19,17 +19,20 @@ import {
   computeErrors
 } from '../../iterative-methods/utils';
 
-import CartogramPlot from './flat-display';
+import CartogramPlot from './table-cartogram';
 
 const CONVERGENCE_THRESHOLD = 10;
+const CONVERGENCE_BARRIER = 0.001;
 
-function decorateGonsWithErrors(data, gons, accessor) {
+function decorateGonsWithErrors(data, gons, accessor, dims) {
   const tableSum = data.reduce((acc, row) => acc + row.reduce((mem, cell) => mem + accessor(cell), 0), 0);
   const expectedAreas = data.map(row => row.map(cell => accessor(cell) / tableSum));
   for (let i = 0; i < data.length; i++) {
     for (let j = 0; j < data[0].length; j++) {
       const gonArea = area(gons[i * data[0].length + j].vertices);
-      const computedErr = Math.abs(gonArea - expectedAreas[i][j]) / Math.max(gonArea, expectedAreas[i][j]);
+      const computedArea = gonArea / (dims.height * dims.width);
+      const expectedArea = expectedAreas[i][j];
+      const computedErr = Math.abs(computedArea - expectedArea) / Math.max(computedArea, expectedArea);
       gons[i * data[0].length + j].individualError = computedErr;
     }
   }
@@ -45,7 +48,7 @@ export default class IterativeDisplay extends React.Component {
     stepsTaken: 0,
     previousValueAndCount: {value: null, count: 0},
     maxError: NaN,
-    fillMode: 'errorHeat',
+    fillMode: 'byDataColor',
     showLabels: false,
     runningMode: 'running'
   }
@@ -66,12 +69,17 @@ export default class IterativeDisplay extends React.Component {
   }
 
   adaptiveBuild() {
-    const {data, accessor = d => d, layout} = this.props;
+    const {data, accessor = d => d, layout, dims = {height: 1, width: 1}} = this.props;
     const startTime = (new Date()).getTime();
-    const {gons, error, stepsTaken, maxError} = tableCartogramAdaptive({data, layout});
+    const {gons, error, stepsTaken, maxError} = tableCartogramAdaptive({
+      data,
+      layout,
+      targetAccuracy: CONVERGENCE_BARRIER,
+      ...dims
+    });
     const endTime = (new Date()).getTime();
     this.setState({
-      gons: decorateGonsWithErrors(data, gons, accessor),
+      gons: decorateGonsWithErrors(data, gons, accessor, dims),
       error,
       startTime,
       endTime,
@@ -83,18 +91,26 @@ export default class IterativeDisplay extends React.Component {
   }
 
   iterativeBuild() {
-    const {data, technique, stepSize, accessor = d => d, layout} = this.props;
+    const {
+      data,
+      technique,
+      stepSize,
+      accessor = d => d,
+      layout,
+      dims = {height: 1, width: 1}
+    } = this.props;
     const cartogram = tableCartogramWithUpdate({
       data,
       technique,
       accessor,
-      layout
+      layout,
+      ...dims
     });
     const startTime = (new Date()).getTime();
     const ticker = setInterval(() => {
       const gons = cartogram(this.state.stepsTaken ? stepSize : 0);
       const endTime = (new Date()).getTime();
-      const {error, maxError} = computeErrors(data, gons, accessor);
+      const {error, maxError} = computeErrors(data, gons, accessor, dims);
       const previousValueAndCount = this.state.previousValueAndCount;
       if (previousValueAndCount.value !== error) {
         previousValueAndCount.count = 0;
@@ -103,7 +119,7 @@ export default class IterativeDisplay extends React.Component {
         previousValueAndCount.count += 1;
       }
       this.setState({
-        gons: decorateGonsWithErrors(data, gons, accessor),
+        gons: decorateGonsWithErrors(data, gons, accessor, dims),
         error,
         maxError,
         startTime,
@@ -113,7 +129,7 @@ export default class IterativeDisplay extends React.Component {
         errorLog: this.state.errorLog.concat([{x: this.state.stepsTaken, y: error, z: maxError}]),
         previousValueAndCount
       });
-      const converged = previousValueAndCount.value < 0.001;
+      const converged = previousValueAndCount.value < CONVERGENCE_BARRIER;
       const halted = previousValueAndCount.count > CONVERGENCE_THRESHOLD;
       const errored = isNaN(error);
       if (this.state.runningMode !== 'running' || halted || converged || errored) {
@@ -127,7 +143,14 @@ export default class IterativeDisplay extends React.Component {
   }
 
   directBuild() {
-    const {data, iterations, technique, accessor = d => d, layout} = this.props;
+    const {
+      data,
+      iterations,
+      technique,
+      accessor = d => d,
+      layout,
+      dims = {height: 1, width: 1}
+    } = this.props;
     Promise.resolve()
       .then(() => {
         const startTime = (new Date()).getTime();
@@ -136,12 +159,13 @@ export default class IterativeDisplay extends React.Component {
           technique,
           layout,
           iterations,
-          accessor
+          accessor,
+          ...dims
         });
         const endTime = (new Date()).getTime();
-        const {error, maxError} = computeErrors(data, gons, accessor);
+        const {error, maxError} = computeErrors(data, gons, accessor, dims);
         this.setState({
-          gons: decorateGonsWithErrors(data, gons, accessor),
+          gons: decorateGonsWithErrors(data, gons, accessor, dims),
           error,
           startTime,
           endTime,
@@ -179,7 +203,7 @@ export default class IterativeDisplay extends React.Component {
           width={300}
           items={['AVG', 'MAX']} />}
         <button onClick={() => {
-          const colorModes = ['errorHeat', 'byValue', 'periodicColors', 'valueHeat'];
+          const colorModes = ['errorHeat', 'byValue', 'periodicColors', 'valueHeat', 'byDataColor'];
           const fillIndex = colorModes.findIndex(d => d === fillMode);
           this.setState({
             fillMode: colorModes[(fillIndex + 1) % colorModes.length]

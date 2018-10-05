@@ -25,7 +25,9 @@ function colorCell(cell, index, fillMode, valueDomain) {
   case 'errorHeat':
     return interpolateInferno(Math.sqrt(cell.individualError));
   case 'byValue':
-    return RV_COLORS[(cell.value) % RV_COLORS.length];
+    return RV_COLORS[cell.value % RV_COLORS.length];
+  case 'byDataColor':
+    return cell.data.color || '#fff';
   case 'none':
     return 'rgba(255, 255, 255, 0)';
   default:
@@ -56,9 +58,9 @@ export default function cartogramPlot(props) {
           data={cell.vertices}
           style={{
             strokeWidth: 1,
-            stroke: 'black',
+            stroke: colorCell(cell, index, fillMode, valueDomain),
             strokeOpacity: 1,
-            opacity: 0.5,
+            opacity: 1,
             fill: colorCell(cell, index, fillMode, valueDomain)
           }}/>);
       })}

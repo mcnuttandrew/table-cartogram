@@ -57,8 +57,14 @@ const layouts = {
   partialPsuedoCartogram
 };
 
+function scaleLayoutsToDims(layout, dims) {
+  return layout.map(row => row.map(cell => {
+    return ({x: dims.width * cell.x, y: dims.height * cell.y});
+  }));
+}
+
 // use the indexes of the auto generated arrays for positioning
-export function generateInitialTable(numCols, numRows, table, objFunc, layout) {
+export function generateInitialTable(numCols, numRows, table, objFunc, layout, dims) {
   const rowSums = table.map(row => findSumForTable([row]));
   const tableTranspose = table[0].map((col, i) => table.map(row => row[i]));
   const colSums = tableTranspose.map(row => findSumForTable([row]));
@@ -73,7 +79,7 @@ export function generateInitialTable(numCols, numRows, table, objFunc, layout) {
   const layoutMethod = layouts[layout];
   if (layoutMethod) {
     const builtLayout = layoutMethod(numRows, numCols, colSums, rowSums, total);
-    return builtLayout;
+    return scaleLayoutsToDims(builtLayout, dims);
   }
 
   const layoutKeys = Object.keys(layouts);
@@ -102,5 +108,5 @@ export function generateInitialTable(numCols, numRows, table, objFunc, layout) {
     return acc;
   }, {bestIndex: -1, bestScore: layout === 'pickWorst' ? -Infinity : Infinity});
   console.log(layout, Object.keys(layouts)[measurements.bestIndex]);
-  return constructedLayouts[measurements.bestIndex];
+  return scaleLayoutsToDims(constructedLayouts[measurements.bestIndex], dims);
 }

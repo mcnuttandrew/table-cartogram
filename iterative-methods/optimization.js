@@ -62,9 +62,10 @@ function monteCarloOptimization(objFunc, candidateVector, numIterations) {
  * @param  {Function} objFunc - The objective function for executing the optimization
  * @param  {Array of Numbers} candidateVector - The vector to optimize against the objective function
  * @param  {Number} numIterations - The number of iterations in the optimization process
+ * TODO UPDATE
  * @return {Array of Numbers} The optimized vector
  */
-function coordinateDescent(objFunc, candidateVector, numIterations, table) {
+function coordinateDescent(objFunc, candidateVector, numIterations, table, dims) {
   const currentVec = candidateVector.slice();
   /* eslint-disable max-depth */
   for (let i = 0; i < numIterations; i++) {
@@ -72,7 +73,7 @@ function coordinateDescent(objFunc, candidateVector, numIterations, table) {
     // janky adaptive step
     const stepSize = Math.min(0.001, objFunc(currentVec));
     for (let phase = 0; phase < 4; phase++) {
-      const currTable = translateVectorToTable(currentVec, table, 1, 1);
+      const currTable = translateVectorToTable(currentVec, table, dims.height, dims.width);
       const searchIndices = getIndicesInVectorOfInterest(currTable, phases[phase]);
       const dx = finiteDiferenceForIndices(objFunc, currentVec, stepSize / 10, searchIndices);
       const computednorm = norm2(dx);
@@ -88,11 +89,11 @@ function coordinateDescent(objFunc, candidateVector, numIterations, table) {
 }
 
 
-function coordinateDescentInnerLoop(objFunc, currentVec, stepSize, table) {
+function coordinateDescentInnerLoop(objFunc, currentVec, stepSize, table, dims) {
   // const stepSize = Math.min(0.001, objFunc(currentVec));
   const phases = phaseShuffle();
   for (let phase = 0; phase < 4; phase++) {
-    const currTable = translateVectorToTable(currentVec, table, 1, 1);
+    const currTable = translateVectorToTable(currentVec, table, dims.height, dims.width);
     const searchIndices = getIndicesInVectorOfInterest(currTable, phases[phase]);
     const dx = finiteDiferenceForIndices(objFunc, currentVec, stepSize / 10, searchIndices);
     const localNorm = norm2(dx);
@@ -105,7 +106,7 @@ function coordinateDescentInnerLoop(objFunc, currentVec, stepSize, table) {
 }
 
 // not very good, often fails
-function coordinateDescentWithAdaptiveStep(objFunc, candidateVector, numIterations, table) {
+function coordinateDescentWithAdaptiveStep(objFunc, candidateVector, numIterations, table, dims) {
   const currentVec = candidateVector.slice();
   /* eslint-disable max-depth */
   let prevStep = null;
@@ -115,22 +116,22 @@ function coordinateDescentWithAdaptiveStep(objFunc, candidateVector, numIteratio
     const stepSize = Math.min(1, phi0);
     const phiPrime0 = norm2(finiteDiference(objFunc, currentVec, (prevStep || stepSize) / 10));
     const tempVec = currentVec.slice();
-    coordinateDescentInnerLoop(objFunc, tempVec, stepSize, table);
+    coordinateDescentInnerLoop(objFunc, tempVec, stepSize, table, dims);
     const phi1 = objFunc(tempVec);
     const stepSize1 = -(stepSize * stepSize) / (2 * (phi1 - phi0 - stepSize * phiPrime0)) * 10;
-    coordinateDescentInnerLoop(objFunc, currentVec, Math.abs(stepSize1), table);
+    coordinateDescentInnerLoop(objFunc, currentVec, Math.abs(stepSize1), table, dims);
     prevStep = stepSize1;
   }
   /* eslint-enable max-depth */
   return currentVec;
 }
 
-function newtonStep(objFunc, candidateVector, numIterations, table) {
+function newtonStep(objFunc, candidateVector, numIterations, table, dims) {
   const currentVec = candidateVector.slice();
 
   for (let i = 0; i < numIterations; i++) {
     const stepSize = Math.min(0.001, objFunc(currentVec) * 10);
-    newtonInnerLoop(objFunc, currentVec, stepSize, table);
+    newtonInnerLoop(objFunc, currentVec, stepSize, table, dims);
   }
   return currentVec;
 }
@@ -143,11 +144,11 @@ function trace(mat) {
   return ret;
 }
 
-function newtonInnerLoop(objFunc, currentVec, stepSize, table) {
+function newtonInnerLoop(objFunc, currentVec, stepSize, table, dims) {
   const phases = phaseShuffle();
   for (let phase = 0; phase < 4; phase++) {
     const objVal = objFunc(currentVec);
-    const currTable = translateVectorToTable(currentVec, table, 1, 1);
+    const currTable = translateVectorToTable(currentVec, table, dims.height, dims.width);
     const searchIndices = getIndicesInVectorOfInterest(currTable, phases[phase]);
     if (!searchIndices.length) {
       continue;
@@ -169,18 +170,18 @@ function newtonInnerLoop(objFunc, currentVec, stepSize, table) {
   }
 }
 
-function newtonStepBoth(objFunc, candidateVector, numIterations, table) {
+function newtonStepBoth(objFunc, candidateVector, numIterations, table, dims) {
   let currentVec = candidateVector.slice();
   for (let i = 0; i < numIterations; i++) {
     const coordStepSize = Math.min(0.01, objFunc(currentVec));
     const coordDescentVec = currentVec.slice();
-    coordinateDescentInnerLoop(objFunc, coordDescentVec, coordStepSize, table);
+    coordinateDescentInnerLoop(objFunc, coordDescentVec, coordStepSize, table, dims);
     const coordScore = objFunc(coordDescentVec);
 
     // const newtonStepSize = Math.max(Math.min(0.05, objFunc(currentVec)), 0.01);
     const newtonStepSize = 0.01;
     const newtonVec = currentVec.slice();
-    newtonInnerLoop(objFunc, newtonVec, newtonStepSize, table);
+    newtonInnerLoop(objFunc, newtonVec, newtonStepSize, table, dims);
     const newtonScore = objFunc(newtonVec);
     console.log(newtonScore < coordScore ? 'newton' : 'coord')
     currentVec = (newtonScore < coordScore) ? newtonVec : coordDescentVec;
@@ -267,27 +268,29 @@ function gradientDescent(objFunc, candidateVector, numIterations) {
  * @param  {String} technique - the type of optimization to perform
  * @param  {Array of Array of Numbers} table - the input data
  * @param  {Number} numIterations - The number of iterations to perform
+ * @param  {Object: {height: Number, width: Number}} dims
+ *  - The dimensions of the table cartogram being assembled
  * @return {Array of Array of {x: Number, y: Number}} - The optimzed table of positions
  */
-export function executeOptimization(objFunc, candidateVector, technique, table, numIterations) {
+export function executeOptimization(objFunc, candidateVector, technique, table, numIterations, dims) {
   if (!numIterations) {
-    return translateVectorToTable(candidateVector, table, 1, 1);
+    return translateVectorToTable(candidateVector, table, dims.height, dims.width);
   }
 
   switch (technique) {
   case 'newtonStep':
-    const newtonStepResult = newtonStepBoth(objFunc, candidateVector, numIterations, table);
-    return translateVectorToTable(newtonStepResult, table, 1, 1);
+    const newtonStepResult = newtonStepBoth(objFunc, candidateVector, numIterations, table, dims);
+    return translateVectorToTable(newtonStepResult, table, dims.height, dims.width);
   case 'gradient':
     const gradientResult = gradientDescent(objFunc, candidateVector, numIterations);
-    return translateVectorToTable(gradientResult, table, 1, 1);
+    return translateVectorToTable(gradientResult, table, dims.height, dims.width);
   default:
   case 'coordinate':
-    const coordinateResult = coordinateDescent(objFunc, candidateVector, numIterations, table);
-    return translateVectorToTable(coordinateResult, table, 1, 1);
+    const coordinateResult = coordinateDescent(objFunc, candidateVector, numIterations, table, dims);
+    return translateVectorToTable(coordinateResult, table, dims.height, dims.width);
   case 'monteCarlo':
     const monteFinalVec = monteCarloOptimization(objFunc, candidateVector, numIterations);
-    return translateVectorToTable(monteFinalVec, table, 1, 1);
+    return translateVectorToTable(monteFinalVec, table, dims.height, dims.width);
   }
 }
 
@@ -297,22 +300,23 @@ const MAX_ITERATIONS = 10;
  * @param  {Array of Array of Numbers} table - the input data
  * @param  {String} technique - the type of optimization to perform
  * @param  {String} [layout='pickBest'] - The initialization layout technique
+ * @param  {Object: {height: Number, width: Number}} dims
+ *  - The dimensions of the table cartogram being assembled
  * @return {Function(Number)} - A function to execute optimization with
  */
-export function buildIterativeCartogram(table, technique, layout = 'pickBest') {
-  // TODO need to add a mechanism for scaling
-  const width = table[0].length;
-  const height = table.length;
+export function buildIterativeCartogram(table, technique, layout = 'pickBest', dims) {
+  const nowCols = table[0].length;
+  const numRows = table.length;
 
-  const objFunc = vec => objectiveFunction(vec, table, technique);
-  const newTable = generateInitialTable(height, width, table, objFunc, layout);
+  const objFunc = vec => objectiveFunction(vec, table, technique, dims);
+  const newTable = generateInitialTable(numRows, nowCols, table, objFunc, layout, dims);
   let candidateVector = translateTableToVector(newTable);
 
   return (numIterations = MAX_ITERATIONS) => {
     if (!numIterations) {
-      return translateVectorToTable(candidateVector, table, 1, 1);
+      return translateVectorToTable(candidateVector, table, dims.height, dims.width);
     }
-    const resultTable = executeOptimization(objFunc, candidateVector, technique, table, numIterations);
+    const resultTable = executeOptimization(objFunc, candidateVector, technique, table, numIterations, dims);
     candidateVector = translateTableToVector(resultTable);
     return resultTable;
   };

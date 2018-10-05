@@ -22,7 +22,7 @@ import {
   executeOptimization
 } from '../../iterative-methods/optimization';
 
-import CartogramPlot from './flat-display';
+import CartogramPlot from './table-cartogram';
 
 function to8bit(v) {
   const i = Math.round(256 * v - 0.5);

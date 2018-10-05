@@ -24,14 +24,16 @@ export function tableCartogram(params) {
     technique,
     layout = 'pickBest',
     iterations = MAX_ITERATIONS,
-    accessor = d => d
+    accessor = d => d,
+    height = 1,
+    width = 1
   } = params;
   const localTable = data.map(row => row.map(cell => accessor(cell)));
   if (inputTableIsInvalid(localTable)) {
     console.error('INVALID INPUT TABLE', data)
     return [];
   }
-  const updateFunction = buildIterativeCartogram(localTable, technique, layout);
+  const updateFunction = buildIterativeCartogram(localTable, technique, layout, {height, width});
   return prepareRects(updateFunction(iterations), data, accessor);
 }
 
@@ -46,14 +48,16 @@ export function tableCartogramWithUpdate(params) {
     data,
     technique,
     accessor = d => d,
-    layout = 'pickBest'
+    layout = 'pickBest',
+    height = 1,
+    width = 1
   } = params;
   const localTable = data.map(row => row.map(cell => accessor(cell)));
   if (inputTableIsInvalid(data)) {
     console.error('INVALID INPUT TABLE', data)
     return [];
   }
-  const updateFunction = buildIterativeCartogram(localTable, technique, layout);
+  const updateFunction = buildIterativeCartogram(localTable, technique, layout, {height, width});
   return numIterations => prepareRects(updateFunction(numIterations), data, accessor);
 }
 
@@ -71,7 +75,9 @@ export function tableCartogramAdaptive(params) {
     iterationStepSize = 10,
     layout = 'pickBest',
     accessor = d => d,
-    logging = false
+    logging = false,
+    height = 1,
+    width = 1
   } = params;
   if (inputTableIsInvalid(data)) {
     console.error('INVALID INPUT TABLE', data)
@@ -83,7 +89,7 @@ export function tableCartogramAdaptive(params) {
     };
   }
   const localTable = data.map(row => row.map(cell => accessor(cell)));
-  const updateFunction = buildIterativeCartogram(localTable, technique, layout);
+  const updateFunction = buildIterativeCartogram(localTable, technique, layout, {height, width});
   const boundUpdate = numIterations => prepareRects(updateFunction(numIterations), data, accessor);
 
   let stillRunning = true;
@@ -95,7 +101,7 @@ export function tableCartogramAdaptive(params) {
   }
   while (stillRunning) {
     currentLayout = boundUpdate(iterationStepSize);
-    currentScore = computeErrors(data, currentLayout, accessor);
+    currentScore = computeErrors(data, currentLayout, accessor, {height, width});
     stepsTaken += iterationStepSize;
     if (logging) {
       console.log(`Current avg err ${currentScore.error}, Steps taken ${stepsTaken}`)

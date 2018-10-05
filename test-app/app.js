@@ -21,20 +21,24 @@ import ExampleTreemap from './components/treemap-example-generator';
 import ExampleHeatmap from './components/heatmap-example';
 import CalendarDisplay from './components/calendar-example';
 import HourCalendar from './components/hour-calendar';
-import CartogramPlot from './components/flat-display';
+import CartogramPlot from './components/table-cartogram';
 import ObjectiveFunctionVisualization from './components/objective-function-visualization';
 import ContinuousLegend from './components/continuous-legend';
 
 const scaleMatrix = (matrix, factor = 1) => matrix.map(row => row.map(cell => cell * factor));
-
+console.log(BIRD_STRIKES)
 function App() {
   const tables = [
     {
       data: BIRD_STRIKES,
-      technique: 'newtonStep',
+      technique: 'coordinate',
       stepSize: 10,
       computeMode: 'iterative',
-      accessor: d => d.size
+      accessor: d => d.size,
+      dims: {
+        height: 0.3,
+        width: 1
+      }
     },
     // {
     //   data: EXAMPLES.USA_USA_USA_LABELS,
@@ -48,7 +52,16 @@ function App() {
     // {data: [[1, 1], [1, 1]], technique: 'newtonStep', stepSize: 5, computeMode: 'iterative'},
     // {data: stateMigration.slice(0, 10).map(row => row.slice(0, 10)), technique: 'newtonStep', stepSize: 10, computeMode: 'iterative'},
     // {data: EXAMPLES.USA_USA_USA, technique: 'newtonStep', stepSize: 10, computeMode: 'direct'},
-    // {data: EXAMPLES.ZION_VISITORS, technique: 'newtonStep', stepSize: 10, computeMode: 'iterative'},
+    // {
+    //   data: EXAMPLES.BLACK_AND_WHITE_TABLE,
+    //   technique: 'newtonStep',
+    //   stepSize: 10,
+    //   computeMode: 'iterative',
+    //   dims: {
+    //     height: 0.75,
+    //     width: 0.75
+    //   }
+    // },
     // {data: transposeMatrix(EXAMPLES.BLACK_AND_WHITE_TABLE), technique: 'newtonStep', stepSize: 10, computeMode: 'iterative'},
   ].map((config, idx) => (
     <IterativeDisplay

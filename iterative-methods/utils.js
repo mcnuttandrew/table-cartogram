@@ -269,9 +269,11 @@ export function prepareRects(outputTable, table, accessor) {
  * @param  {Array of Arrays of Numbers} data The input table
  * @param  {Array of Arrays of Numbers} gons The test layout
  * @param  {Function} accessor get the value
+ * @param  {Object: {height: Number, width: Number}} dims
+ *  - The dimensions of the table cartogram being assembled
  * @return {Number} the average error for the test layout
  */
-export function computeErrors(data, gons, accessor) {
+export function computeErrors(data, gons, accessor, dims) {
   const tableSum = data.reduce((acc, row) => acc + row.reduce((mem, cell) => accessor(cell) + mem, 0), 0);
   let maxError = -Infinity;
   let sumError = 0;
@@ -279,7 +281,8 @@ export function computeErrors(data, gons, accessor) {
     for (let j = 0; j < data[0].length; j++) {
       const gonArea = area(gons[i * data[0].length + j].vertices);
       const expectedArea = accessor(data[i][j]) / tableSum;
-      const computedErr = Math.abs(gonArea - expectedArea) / Math.max(gonArea, expectedArea);
+      const computedArea = gonArea / (dims.height * dims.width);
+      const computedErr = Math.abs(computedArea - expectedArea) / Math.max(computedArea, expectedArea);
       sumError += computedErr;
       if (maxError < computedErr) {
         maxError = computedErr;
@@ -306,4 +309,5 @@ function shuffle(a) {
   }
   return a;
 }
-export const phaseShuffle = () => shuffle([0, 1, 2, 3]);
+const DETERMINISTIC = true;
+export const phaseShuffle = DETERMINISTIC ? () => [0, 1, 2, 3] : () => shuffle([0, 1, 2, 3]);

@@ -1,3 +1,4 @@
+import {RV_COLORS} from './colors';
 import {transposeMatrix} from '../iterative-methods/utils';
 import ZionVisitors from '../test/zion-visitors';
 // Source Wikipedia
@@ -32,10 +33,24 @@ const BIRDS = Object.entries(BIRD_STRIKES_BY_REGION)
       size: Math.ceil(row[1] / BIRD_SUM * WAFFLE_CELLS)
     };
   });
-// console.log(BIRDS, BIRDS.reduce((acc, row) => row.size + acc, 0))
+const REGION_COLOR = Object.keys(BIRD_STRIKES_BY_REGION).reduce((acc, region, idx) => {
+  acc[region] = RV_COLORS[idx];
+  return acc;
+}, {});
+console.log(REGION_COLOR)
+
 const BIRD_CELLS = BIRDS.reduce((acc, {name, size}) => {
-  return acc.concat([...new Array(size)].map(_ => ({size, name})));
+  return acc.concat([...new Array(size)].map((_, idx) =>
+    ({
+      size: 0.5 + (
+        ((size % 2) && idx === (size - 1)) ? 0.5 :
+          (!(idx % 2) ? 1.0 : 0)
+      ),
+      name,
+      color: REGION_COLOR[name]
+    })));
 }, []);
+console.log(BIRD_CELLS, BIRD_CELLS.reduce((acc, row) => acc + row.size, 0));
 
 export const BIRD_STRIKES = transposeMatrix([...new Array(WAFFLE_WIDTH)].map((_, idx) => {
   return BIRD_CELLS.slice(idx * WAFFLE_HEIGHT, (idx + 1) * WAFFLE_HEIGHT);
@@ -183,7 +198,7 @@ export default {
   SMALL_RAMP: ramp(3, 3),
   DUMB_CALENDER: ramp(7, 4),
   twoByThree: checkerBoardGenerator(3, 2, 1, 1),
-  ONE_BY: checkerBoardGenerator(2, 2, 2, 1),
+  ONE_BY: checkerBoardGenerator(2, 2, 1, 2),
   ONE_BYS,
   ZION_VISITORS,
   USA_USA_USA,

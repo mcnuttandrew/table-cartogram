@@ -194,7 +194,7 @@ function contOrderPenalty(props) {
  * @param  {Array of Array of {x: Number, y: Number}} newTable - the table to be evaluaated
  * @return {Number} The evaluated penalties
  */
-export function continuousBuildPenalties(newTable) {
+export function continuousBuildPenalties(newTable, dims) {
   let penalties = 0;
   // const rects = getRectsFromTable(newTable)
   //   .reduce((acc, row) => acc.concat(row))
@@ -212,9 +212,9 @@ export function continuousBuildPenalties(newTable) {
 
       // boundary penalties
       // dont allow the values to move outside of the box
-      penalties += expPenalty(1 - cell.x);
+      penalties += expPenalty(dims.width - cell.x);
       penalties += expPenalty(cell.x);
-      penalties += expPenalty(1 - cell.y);
+      penalties += expPenalty(dims.height - cell.y);
       penalties += expPenalty(cell.y);
 
       penalties += contOrderPenalty({
@@ -311,7 +311,7 @@ function discreteOrderPenalty(newTable, cell, i, j) {
  * @param  {Array of Array of {x: Number, y: Number}} newTable - the table to be evaluaated
  * @return {Number} The evaluated penalties
  */
-export function buildPenalties(newTable) {
+export function buildPenalties(newTable, dims) {
   let penalties = 0;
   const rects = getRectsFromTable(newTable)
     .reduce((acc, row) => acc.concat(row))
@@ -320,7 +320,7 @@ export function buildPenalties(newTable) {
     for (let j = 0; j < newTable[0].length; j++) {
       const cell = newTable[i][j];
       // dont allow the values to move outside of the box
-      if (cell.x > 1 || cell.x < 0 || cell.y > 1 || cell.y < 0) {
+      if (cell.x > dims.width || cell.x < 0 || cell.y > dims.height || cell.y < 0) {
         penalties += 2000;
       }
 
@@ -345,8 +345,8 @@ export function buildPenalties(newTable) {
  * @param  {String} technique   Either monteCarlo or something else
  * @return {Number} Score
  */
-export function objectiveFunction(vector, targetTable, technique) {
-  const newTable = translateVectorToTable(vector, targetTable, 1, 1);
+export function objectiveFunction(vector, targetTable, technique, dims = {height: 1, width: 1}) {
+  const newTable = translateVectorToTable(vector, targetTable, dims.height, dims.width);
   const rects = getRectsFromTable(newTable);
   // sum up the relative amount of "error"
   // generate the areas of each of the boxes
@@ -362,7 +362,7 @@ export function objectiveFunction(vector, targetTable, technique) {
     }
   }
 
-  const penal = (technique === 'monteCarlo' ? buildPenalties : continuousBuildPenalties)(newTable);
+  const penal = (technique === 'monteCarlo' ? buildPenalties : continuousBuildPenalties)(newTable, dims);
   // const concavePenalty = rects.reduce((acc, row) =>
   //     acc + row.reduce((mem, rect) => mem + (checkForConcaveAngles(rect) ? 1 : 0), 0), 0)
 
