@@ -48,7 +48,7 @@ export default class IterativeDisplay extends React.Component {
     stepsTaken: 0,
     previousValueAndCount: {value: null, count: 0},
     maxError: NaN,
-    fillMode: 'byDataColor',
+    fillMode: 'errorHeat',
     showLabels: false,
     runningMode: 'running'
   }

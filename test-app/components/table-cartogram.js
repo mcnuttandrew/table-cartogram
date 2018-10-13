@@ -60,7 +60,8 @@ export default function cartogramPlot(props) {
             strokeWidth: 1,
             stroke: colorCell(cell, index, fillMode, valueDomain),
             strokeOpacity: 1,
-            opacity: 1,
+            // TODO FIGURE OUT WHAT CORRECT OPACITY IS
+            opacity: 0.5,
             fill: colorCell(cell, index, fillMode, valueDomain)
           }}/>);
       })}

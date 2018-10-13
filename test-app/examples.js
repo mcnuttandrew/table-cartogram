@@ -16,14 +16,16 @@ export const stateMigration = StateMigration.reverse().map(row => {
 const WAFFLE_WIDTH = 20;
 const WAFFLE_HEIGHT = 5;
 const WAFFLE_CELLS = WAFFLE_WIDTH * WAFFLE_HEIGHT;
+
 const BIRD_STRIKES_BY_REGION = {
-  Midwest: 12869,
-  Canada: 237,
-  South: 21423,
-  West: 13593,
-  Northeast: 9550,
-  'US Islands': 1491
+  Midwest: 38042,
+  Canada: 429,
+  South: 68307,
+  West: 39481,
+  Northeast: 30142,
+  'US Islands': 5111
 };
+
 const BIRD_SUM = Object.values(BIRD_STRIKES_BY_REGION)
   .reduce((acc, row) => acc + row, 0);
 const BIRDS = Object.entries(BIRD_STRIKES_BY_REGION)
@@ -37,7 +39,6 @@ const REGION_COLOR = Object.keys(BIRD_STRIKES_BY_REGION).reduce((acc, region, id
   acc[region] = RV_COLORS[idx];
   return acc;
 }, {});
-console.log(REGION_COLOR)
 
 const BIRD_CELLS = BIRDS.reduce((acc, {name, size}) => {
   return acc.concat([...new Array(size)].map((_, idx) =>
@@ -49,8 +50,8 @@ const BIRD_CELLS = BIRDS.reduce((acc, {name, size}) => {
       name,
       color: REGION_COLOR[name]
     })));
-}, []);
-console.log(BIRD_CELLS, BIRD_CELLS.reduce((acc, row) => acc + row.size, 0));
+}, []).slice(0, 100);
+BIRD_CELLS[99].size = 3;
 
 export const BIRD_STRIKES = transposeMatrix([...new Array(WAFFLE_WIDTH)].map((_, idx) => {
   return BIRD_CELLS.slice(idx * WAFFLE_HEIGHT, (idx + 1) * WAFFLE_HEIGHT);
@@ -198,7 +199,7 @@ export default {
   SMALL_RAMP: ramp(3, 3),
   DUMB_CALENDER: ramp(7, 4),
   twoByThree: checkerBoardGenerator(3, 2, 1, 1),
-  ONE_BY: checkerBoardGenerator(2, 2, 1, 2),
+  ONE_BY: checkerBoardGenerator(2, 2, 1, 1),
   ONE_BYS,
   ZION_VISITORS,
   USA_USA_USA,
@@ -219,7 +220,7 @@ export default {
   ELELMENTS_BOIL,
   ELELMENTS_MASS,
 
-  TRI_BOARD: nStopCheckerBoardGenerator(10, 10, [5, 1, 20]),
+  TRI_BOARD: nStopCheckerBoardGenerator(7, 7, [5, 1, 20]),
 
   HAND_SYMMETRIC,
   RIBBONS,

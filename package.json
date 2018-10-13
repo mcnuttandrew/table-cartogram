@@ -5,6 +5,7 @@
   "license": "MIT",
   "scripts": {
     "test": "babel-node test/test-index.js",
+    "scrape": "babel-node manifold-scrape/manifold-scrape.js",
     "start": "(cd test-app && yarn && yarn start)",
     "stats": "babel-node scripts/stat-builder.js",
     "circle": "babel-node scripts/make-bird-strike.js"
