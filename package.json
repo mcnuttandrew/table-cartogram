@@ -60,6 +60,7 @@
     }
   },
   "dependencies": {
+    "d3-random": "^1.1.2",
     "mathjs": "^5.1.2",
     "point-in-polygon": "^1.0.1"
   }

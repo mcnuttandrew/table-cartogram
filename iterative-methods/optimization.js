@@ -85,6 +85,7 @@ function coordinateDescent(objFunc, candidateVector, numIterations, table, dims)
     }
   }
   /* eslint-enable max-depth */
+  console.log(objFunc(currentVec))
   return currentVec;
 }
 
@@ -309,7 +310,9 @@ export function buildIterativeCartogram(table, technique, layout = 'pickBest', d
   const numRows = table.length;
 
   const objFunc = vec => objectiveFunction(vec, table, technique, dims);
-  const newTable = generateInitialTable(numRows, nowCols, table, objFunc, layout, dims);
+  const newTable = typeof layout === 'string' ?
+    generateInitialTable(numRows, nowCols, table, objFunc, layout, dims) :
+    layout;
   let candidateVector = translateTableToVector(newTable);
 
   return (numIterations = MAX_ITERATIONS) => {

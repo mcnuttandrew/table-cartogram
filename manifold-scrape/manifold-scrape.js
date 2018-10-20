@@ -1,12 +1,15 @@
 const fs = require('fs');
+import {randomNormal} from 'd3-random';
 import {
   translateVectorToTable,
+  translateTableToVector,
   computeErrors,
   prepareRects
 } from '../iterative-methods/utils';
 import {
   hasPenalties
 } from './lazy-penalties';
+import {tableCartogramAdaptive} from '../';
 
 // const TARGET_TABLE = [
 //   [1, 1, 1],
@@ -14,11 +17,11 @@ import {
 //   [1, 1, 1]
 // ];
 const TARGET_TABLE = [
-  [2, 1],
+  [1, 1],
   [1, 1]
 ];
 
-const RESOLUTION = Math.pow(10, 1);
+const RESOLUTION = Math.pow(4, 1);
 
 function checksIfLayoutIsValid(currentVec, dataTable) {
   const newTable = translateVectorToTable(currentVec, dataTable, 1, 1);
@@ -28,6 +31,7 @@ function checksIfLayoutIsValid(currentVec, dataTable) {
   }
   const rects = prepareRects(newTable, dataTable, d => d);
   const {error} = computeErrors(dataTable, rects, d => d, dims);
+  // console.log(error)
   const valid = error <= 0.001;
   if (valid) {
     console.log(`FOUND ERROR ${error}`)
@@ -70,7 +74,24 @@ function buildCounterBin(max) {
   return binCounter;
 }
 
+const rando = randomNormal(0, 0.25);
 export function buildCounter(max, numDimensions) {
+  // gaussians just for one specific 2x2
+  // const base = [0.5, 0.5, 0.5, 0.5, 0.5, 0.5];
+  // return () => {
+  //   const vec = base.map(d => {
+  //     return d + rando();
+  //   });
+  //   const {vertices} = tableCartogramAdaptive({
+  //     data: TARGET_TABLE,
+  //     technique: 'coordinate',
+  //     maxNumberOfSteps: 1000,
+  //     targetAccuracy: 0.001,
+  //     iterationStepSize: 10,
+  //     layout: translateVectorToTable(vec, TARGET_TABLE, 1, 1)
+  //   });
+  //   return translateTableToVector(vertices);
+  // };
   // random
   // const dims = [...new Array(numDimensions)].map(() => 0);
   // return () => {
@@ -88,7 +109,16 @@ export function buildCounter(max, numDimensions) {
   }
   return () => {
     bins[0].increment();
-    return bins.map(bin => bin() / max);
+    const {vertices} = tableCartogramAdaptive({
+      data: TARGET_TABLE,
+      technique: 'coordinate',
+      maxNumberOfSteps: 1000,
+      targetAccuracy: 0.001,
+      iterationStepSize: 10,
+      layout: translateVectorToTable(bins.map(bin => bin() / max), TARGET_TABLE, 1, 1)
+    });
+    return translateTableToVector(vertices);
+    // return bins.map(bin => bin() / max);
   };
 }
 

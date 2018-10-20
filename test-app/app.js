@@ -68,7 +68,7 @@ function App() {
     <IterativeDisplay
       {...config}
       iterations={400}
-      layout={'pickWorst'}
+      layout={'pickBest'}
       key={`${config.technique}-${idx}`}/>
   ));
   const SHOW_TESTS = false;
