@@ -192,6 +192,26 @@ const SUB_BLOCKS = [
   [100, 400]
 ];
 
+// DND ALIGNMENTS POPULARITY
+// https://www.reddit.com/r/DnD/comments/1ejnft/alignment_survey_results/
+const DND_ALIGNMENTS = [
+  [
+    {name: 'Lawful Good', percent: 6.99, count: 70},
+    {name: 'Neutral Good', percent: 23.88, count: 239},
+    {name: 'Chaotic Good', percent: 24.98, count: 250}
+  ],
+  [
+    {name: 'Lawful Neutral', percent: 7.69, count: 77},
+    {name: 'True Neutral', percent: 9.49, count: 95},
+    {name: 'Chaotic Neutral', percent: 16.38, count: 164}
+  ],
+  [
+    {name: 'Lawful Evil', percent: 5.00, count: 50},
+    {name: 'Neutral Evil', percent: 3.90, count: 39},
+    {name: 'Chaotic Evil', percent: 1.7, count: 17}
+  ]
+];
+
 export default {
   BLOCKS,
   SUB_BLOCKS,
@@ -224,5 +244,7 @@ export default {
 
   HAND_SYMMETRIC,
   RIBBONS,
-  USA_USA_USA_LABELS
+  USA_USA_USA_LABELS,
+
+  DND_ALIGNMENTS
 };

@@ -203,7 +203,14 @@ export default class IterativeDisplay extends React.Component {
           width={300}
           items={['AVG', 'MAX']} />}
         <button onClick={() => {
-          const colorModes = ['errorHeat', 'byValue', 'periodicColors', 'valueHeat', 'byDataColor'];
+          const colorModes = [
+            'errorHeat',
+            'byValue',
+            'periodicColors',
+            'valueHeat',
+            'valueHeatAlt',
+            'byDataColor'
+          ];
           const fillIndex = colorModes.findIndex(d => d === fillMode);
           this.setState({
             fillMode: colorModes[(fillIndex + 1) % colorModes.length]
@@ -217,9 +224,18 @@ export default class IterativeDisplay extends React.Component {
 
   render() {
     const {gons, loaded, fillMode, showLabels} = this.state;
+    const {showAxisLabels = false, xLabels = [], yLabels = [], getLabel = false} = this.props;
     return (
       <div style={{display: 'flex', alignItems: 'center'}}>
-        {loaded && <CartogramPlot data={gons} fillMode={fillMode} showLabels={showLabels} />}
+        {loaded && <CartogramPlot
+          data={gons}
+          fillMode={fillMode}
+          showLabels={showLabels}
+          xLabels={xLabels}
+          yLabels={yLabels}
+          showAxisLabels={showAxisLabels}
+          getLabel={getLabel}
+          />}
         {loaded && this.displayReadout()}
       </div>
     );

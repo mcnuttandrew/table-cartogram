@@ -69,8 +69,8 @@ function coordinateDescent(objFunc, candidateVector, numIterations, table, dims)
   const currentVec = candidateVector.slice();
   /* eslint-disable max-depth */
   for (let i = 0; i < numIterations; i++) {
-    const phases = phaseShuffle();
     // janky adaptive step
+    const phases = phaseShuffle();
     const stepSize = Math.min(0.001, objFunc(currentVec));
     for (let phase = 0; phase < 4; phase++) {
       const currTable = translateVectorToTable(currentVec, table, dims.height, dims.width);
@@ -85,12 +85,45 @@ function coordinateDescent(objFunc, candidateVector, numIterations, table, dims)
     }
   }
   /* eslint-enable max-depth */
-  console.log(objFunc(currentVec))
   return currentVec;
 }
 
+function coordinateDescentWithLineSearch(objFunc, candidateVector, numIterations, table, dims) {
+  const currentVec = candidateVector.slice();
+  /* eslint-disable max-depth */
+  for (let i = 0; i < numIterations; i++) {
+    const stepSize = Math.min(0.01);//, objFunc(currentVec));
+    coordinateDescentInnerLoop(objFunc, currentVec, stepSize, table, dims, 15);
+  }
+  /* eslint-enable max-depth */
+  return currentVec;
+}
 
-function coordinateDescentInnerLoop(objFunc, currentVec, stepSize, table, dims) {
+function lineSearch(objFunc, stepSize, currentVec, localNorm, dx, searchIndices, lineSearchSteps) {
+  if (!lineSearchSteps) {
+    return stepSize;
+  }
+  let trialStepSize = stepSize;
+  let bestStepSize = stepSize;
+  let bestScore = objFunc(currentVec);
+  for (let i = 0; i < lineSearchSteps; i++) {
+    const tempVec = currentVec.slice();
+    for (let jdx = 0; jdx < dx.length; jdx++) {
+      if (dx[jdx] && localNorm) {
+        tempVec[searchIndices[jdx]] += -dx[jdx] / localNorm * trialStepSize;
+      }
+    }
+    const newScore = objFunc(tempVec);
+    if (newScore < bestScore) {
+      bestScore = newScore;
+      bestStepSize = trialStepSize;
+    }
+    trialStepSize *= 0.4;
+  }
+  return bestStepSize;
+}
+
+function coordinateDescentInnerLoop(objFunc, currentVec, stepSize, table, dims, lineSearchSteps) {
   // const stepSize = Math.min(0.001, objFunc(currentVec));
   const phases = phaseShuffle();
   for (let phase = 0; phase < 4; phase++) {
@@ -98,33 +131,14 @@ function coordinateDescentInnerLoop(objFunc, currentVec, stepSize, table, dims) 
     const searchIndices = getIndicesInVectorOfInterest(currTable, phases[phase]);
     const dx = finiteDiferenceForIndices(objFunc, currentVec, stepSize / 10, searchIndices);
     const localNorm = norm2(dx);
+    const bestStepSize = lineSearch(
+      objFunc, stepSize, currentVec, localNorm, dx, searchIndices, lineSearchSteps);
     for (let jdx = 0; jdx < dx.length; jdx++) {
       if (dx[jdx] && localNorm) {
-        currentVec[searchIndices[jdx]] += -dx[jdx] / localNorm * stepSize;
+        currentVec[searchIndices[jdx]] += -dx[jdx] / localNorm * bestStepSize;
       }
     }
   }
-}
-
-// not very good, often fails
-function coordinateDescentWithAdaptiveStep(objFunc, candidateVector, numIterations, table, dims) {
-  const currentVec = candidateVector.slice();
-  /* eslint-disable max-depth */
-  let prevStep = null;
-  for (let i = 0; i < numIterations; i++) {
-    // janky adaptive step
-    const phi0 = objFunc(currentVec);
-    const stepSize = Math.min(1, phi0);
-    const phiPrime0 = norm2(finiteDiference(objFunc, currentVec, (prevStep || stepSize) / 10));
-    const tempVec = currentVec.slice();
-    coordinateDescentInnerLoop(objFunc, tempVec, stepSize, table, dims);
-    const phi1 = objFunc(tempVec);
-    const stepSize1 = -(stepSize * stepSize) / (2 * (phi1 - phi0 - stepSize * phiPrime0)) * 10;
-    coordinateDescentInnerLoop(objFunc, currentVec, Math.abs(stepSize1), table, dims);
-    prevStep = stepSize1;
-  }
-  /* eslint-enable max-depth */
-  return currentVec;
 }
 
 function newtonStep(objFunc, candidateVector, numIterations, table, dims) {
@@ -137,13 +151,6 @@ function newtonStep(objFunc, candidateVector, numIterations, table, dims) {
   return currentVec;
 }
 
-function trace(mat) {
-  let ret = 0;
-  for (let i = 0; i < mat.length; i++) {
-    ret += Math.abs(mat[i][i]);
-  }
-  return ret;
-}
 
 function newtonInnerLoop(objFunc, currentVec, stepSize, table, dims) {
   const phases = phaseShuffle();
@@ -176,7 +183,7 @@ function newtonStepBoth(objFunc, candidateVector, numIterations, table, dims) {
   for (let i = 0; i < numIterations; i++) {
     const coordStepSize = Math.min(0.01, objFunc(currentVec));
     const coordDescentVec = currentVec.slice();
-    coordinateDescentInnerLoop(objFunc, coordDescentVec, coordStepSize, table, dims);
+    coordinateDescentInnerLoop(objFunc, coordDescentVec, coordStepSize, table, dims, 0);
     const coordScore = objFunc(coordDescentVec);
 
     // const newtonStepSize = Math.max(Math.min(0.05, objFunc(currentVec)), 0.01);
@@ -216,49 +223,6 @@ function gradientDescent(objFunc, candidateVector, numIterations) {
   }
   return result;
 }
-// //
-// // 0 - 1
-// // |   |
-// // 3 - 2
-// //
-// function generateSizeFromBounds(coords, table) {
-//   const xOffset = coords[0].x;
-//   const yOffset = coords[0].y;
-//   const movesLeft = coords[1].x - coords[0].x;
-//   const movesUp = coords[3].y - coords[0].y;
-//   let ret = 0;
-//   for (let i = 0; i < movesUp; i++) {
-//     for (let j = 0; j < movesLeft; j++) {
-//       ret += table[i + yOffset][j + xOffset];
-//     }
-//   }
-//   return ret;
-// }
-//
-// function divideTable(table) {
-//   const height = table.length;
-//   const width = table[0].length;
-//   const lowerLeftCorner = {x: 0, y: 0};
-//   const bottom = {x: Math.floor(width / 2), y: 0};
-//   const lowerRightCorner = {x: 0, y: 0};
-//   const left = {x: 0, y: Math.floor(height / 2)};
-//   const center = {x: Math.floor(width / 2), y: Math.floor(height / 2)};
-//   const right = {x: width, y: Math.floor(height / 2)};
-//   const upperLeftCorner = {x: 0, y: height};
-//   const top = {x: Math.floor(width / 2), y: height};
-//   const upperRightCorner = {x: 0, y: height};
-//
-//
-//   const lowerLeftBox = [lowerLeftCorner, bottom, center, left];
-//   const lowerRightBox = [bottom, lowerRightCorner, right, center];
-//   const upperLeftBox = [left, center, top, upperLeftCorner];
-//   const upperRightBox = [center, right, upperRightCorner, center];
-//
-// }
-//
-// function multiScale(objFunc, candidateVector, numIterations, table) {
-//
-// }
 
 /**
  * Router for executing optimizations

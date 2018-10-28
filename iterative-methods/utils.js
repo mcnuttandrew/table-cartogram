@@ -311,3 +311,11 @@ function shuffle(a) {
 }
 const DETERMINISTIC = true;
 export const phaseShuffle = DETERMINISTIC ? () => [0, 1, 2, 3] : () => shuffle([0, 1, 2, 3]);
+
+export function trace(mat) {
+  let ret = 0;
+  for (let i = 0; i < mat.length; i++) {
+    ret += Math.abs(mat[i][i]);
+  }
+  return ret;
+}

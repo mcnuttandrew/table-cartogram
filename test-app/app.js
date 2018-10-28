@@ -47,8 +47,19 @@ function App() {
     //   computeMode: 'iterative',
     //   accessor: d => d[1]
     // },
+    {
+      data: EXAMPLES.DND_ALIGNMENTS,
+      technique: 'coordinate',
+      stepSize: 10,
+      computeMode: 'iterative',
+      accessor: d => d.percent,
+      xLabels: ['Lawful', 'Neutral', 'Chaotic'],
+      yLabels: ['Good', 'Neutral', 'Evil'],
+      showAxisLabels: true,
+      getLabel: d => `${d.data.percent}%`
+    },
 
-    {data: EXAMPLES.CHECKER_BOARD, technique: 'coordinate', stepSize: 5, computeMode: 'iterative'},
+    // {data: EXAMPLES.HAND_SYMMETRIC, technique: 'coordinate', stepSize: 5, computeMode: 'iterative'},
     // {data: scaleMatrix(EXAMPLES.PATHOLOGICAL_2_BY), technique: 'newtonStep', stepSize: 5, computeMode: 'iterative'},
     // {data: [[1, 1], [1, 1]], technique: 'newtonStep', stepSize: 5, computeMode: 'iterative'},
     // {data: stateMigration.slice(0, 10).map(row => row.slice(0, 10)), technique: 'newtonStep', stepSize: 10, computeMode: 'iterative'},
