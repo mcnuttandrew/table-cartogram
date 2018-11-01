@@ -53,6 +53,7 @@ export function coordinateDescentInnerLoop(objFunc, currentVec, stepSize, table,
     const searchIndices = getIndicesInVectorOfInterest(currTable, phases[phase]);
     const dx = finiteDiferenceForIndices(objFunc, currentVec, stepSize / 10, searchIndices);
     const localNorm = norm2(dx);
+    console.log(localNorm)
     const bestStepSize = lineSearch(
       {objFunc, stepSize, currentVec, localNorm, dx, searchIndices, lineSearchSteps});
     for (let jdx = 0; jdx < dx.length; jdx++) {

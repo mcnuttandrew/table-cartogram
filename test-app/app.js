@@ -29,17 +29,17 @@ const scaleMatrix = (matrix, factor = 1) => matrix.map(row => row.map(cell => ce
 
 function App() {
   const tables = [
-    {
-      data: BIRD_STRIKES,
-      technique: 'coordinate',
-      stepSize: 10,
-      computeMode: 'iterative',
-      accessor: d => d.size,
-      dims: {
-        height: 0.3,
-        width: 1
-      }
-    },
+    // {
+    //   data: BIRD_STRIKES,
+    //   technique: 'coordinate',
+    //   stepSize: 10,
+    //   computeMode: 'iterative',
+    //   accessor: d => d.size,
+    //   dims: {
+    //     height: 0.3,
+    //     width: 1
+    //   }
+    // },
     // {
     //   data: EXAMPLES.USA_USA_USA_LABELS,
     //   technique: 'newtonStep',
@@ -59,7 +59,7 @@ function App() {
     //   getLabel: d => `${d.data.percent}%`
     // },
 
-    // {data: EXAMPLES.EXAMPLE_TABLE, technique: 'coordinate', stepSize: 5, computeMode: 'iterative'},
+    {data: EXAMPLES.ONE_BYS, technique: 'coordinate', stepSize: 5, computeMode: 'iterative'},
     // {data: scaleMatrix(EXAMPLES.PATHOLOGICAL_2_BY), technique: 'newtonStep', stepSize: 5, computeMode: 'iterative'},
     // {data: [[1, 1], [1, 1]], technique: 'newtonStep', stepSize: 5, computeMode: 'iterative'},
     // {data: stateMigration.slice(0, 10).map(row => row.slice(0, 10)), technique: 'newtonStep', stepSize: 10, computeMode: 'iterative'},

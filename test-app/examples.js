@@ -48,6 +48,7 @@ const BIRD_CELLS = BIRDS.reduce((acc, {name, size}) => {
           (!(idx % 2) ? 1.0 : 0)
       ),
       name,
+      // size: 1,
       color: REGION_COLOR[name]
     })));
 }, []).slice(0, 100);
