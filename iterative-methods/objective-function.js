@@ -462,19 +462,34 @@ export function buildErrorGradient(vector, targetTable, dims) {
         inLastRow,
         inCorner
       } = computeEdges(newTable, i, j);
+      // LEFT OFF HERE
       if (inCorner) {
         rowGradient.push({x: 0, y: 0});
       } else if (inFirstRow || inLastRow) {
+        const associatedRects = [
+          rects[inLastRow ? (i - 1) : i][j],
+          rects[inLastRow ? (i - 1) : i][j + 1]
+        ];
         rowGradient.push({
           x: 0,
           y: 0
         });
-      } else if (ifLeftColumn || inRightColumn) {
+      } else if (inLeftColumn || inRightColumn) {
+        const associatedRects = [
+          rects[i - 1][inRightColumn ? (j - 1) : j],
+          rects[i][inRightColumn ? (j - 1) : j]
+        ];
         rowGradient.push({
           x: 0,
           y: 0
         });
       } else {
+        const associatedRects = [
+          rects[i - 1][j - 1],
+          rects[i - 1][j],
+          rects[i][j - 1],
+          rects[i][j],
+        ];
         rowGradient.push({
           x: 0,
           y: 0
