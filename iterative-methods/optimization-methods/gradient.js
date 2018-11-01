@@ -1,25 +1,15 @@
+import {
+  finiteDiference,
+  dot,
+  norm2
+} from '../math.js';
+
 // This File is a fork of @benfred's fmin library
 // The primary difference being that the learn rate is supplied to the objectiveFunction
 // (also linting and sixifying)
 // link https://github.com/benfred/fmin
 //
 // in turn his library is a pretty exact implementation of Nocedal's line search
-
-// BLAS CONTENT
-// need some basic operations on vectors, rather than adding a dependency,
-// just define here
-
-export function dot(a, b) {
-  let ret = 0;
-  for (let i = 0; i < a.length; ++i) {
-    ret += a[i] * b[i];
-  }
-  return ret;
-}
-
-export function norm2(a) {
-  return Math.sqrt(dot(a, a));
-}
 
 function scale(ret, value, c) {
   for (let i = 0; i < value.length; ++i) {
@@ -145,4 +135,31 @@ export function gradientDescentLineSearch(f, initial, params = {}) {
   }
 
   return current;
+}
+
+/**
+ * Execute gradient optimization for target objective function
+ * General technique for any vector and objective function,
+ * uses centered finite difference for gradient
+ *
+ * @param  {Function} objFunc - The objective function for executing the optimization
+ * @param  {Array of Numbers} candidateVector - The vector to optimize against the objective function
+ * @param  {Number} numIterations - The number of iterations in the optimization process
+ * @return {Array of Numbers} The optimized vector
+ */
+export function gradientDescent(objFunc, candidateVector, numIterations) {
+  let result = candidateVector.slice();
+  for (let i = 0; i < numIterations; i++) {
+    const gradientResult = gradientDescentLineSearch((currentVec, fxprime, learnRate) => {
+      fxprime = fxprime || candidateVector.map(d => 0);
+      // Magic number for finite difference size
+      const delta = finiteDiference(objFunc, currentVec, 100 * learnRate || 0.01);
+      for (let idx = 0; idx < delta.length; idx++) {
+        fxprime[idx] = delta[idx];
+      }
+      return objFunc(currentVec);
+    }, result, {maxIterations: 2});
+    result = gradientResult.x.slice();
+  }
+  return result;
 }

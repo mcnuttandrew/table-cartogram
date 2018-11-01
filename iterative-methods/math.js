@@ -162,3 +162,15 @@ export function invDiagon(diagMatrix) {
     return newRow;
   });
 }
+
+export function dot(a, b) {
+  let ret = 0;
+  for (let i = 0; i < a.length; ++i) {
+    ret += a[i] * b[i];
+  }
+  return ret;
+}
+
+export function norm2(a) {
+  return Math.sqrt(dot(a, a));
+}

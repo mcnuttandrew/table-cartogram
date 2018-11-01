@@ -188,22 +188,16 @@ export const transposeMatrix = mat => mat[0].map((col, i) => mat.map(row => row[
  * @returns {Number} the computed area
  */
 export function area(points) {
-  // double the signed area for the polygon
-  // TODO THIS FUNCTION IS LIABLE TO NUMERICAL DISTORTION, WATCHOUT
+  return Math.abs(signedArea(points));
+}
+
+export function signedArea(points) {
   const segmentSum = points
   .reduce((acc, row, index) => {
     const nextRow = points[(index + 1) % points.length];
     return acc + (row.x * nextRow.y - nextRow.x * row.y);
   }, 0);
-  return 0.5 * Math.abs(segmentSum);
-}
-
-// This might be faster than just the area computation, because it doesnt involve loops
-// that said the speed might not matter. Unclear without more tests
-export function squarea(p) {
-  const leftSum = p[0].x * p[1].y + p[1].x * p[2].y + p[2].x * p[3].y + p[3].x * p[0].y;
-  const rightSum = p[0].x * p[3].y + p[1].x * p[0].y + p[2].x * p[1].y + p[3].x * p[2].y;
-  return 0.5 * Math.abs(leftSum - rightSum);
+  return 0.5 * segmentSum;
 }
 
 /** Round a value

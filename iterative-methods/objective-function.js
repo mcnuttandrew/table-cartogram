@@ -1,9 +1,9 @@
 import pointInPolygon from 'point-in-polygon';
 import {
-  area,
   translateVectorToTable,
   getRectsFromTable,
-  findSumForTable
+  findSumForTable,
+  signedArea
 } from './utils';
 
 function continuousMax(x, y) {
@@ -350,7 +350,7 @@ export function objectiveFunction(vector, targetTable, technique, dims = {height
   const rects = getRectsFromTable(newTable);
   // sum up the relative amount of "error"
   // generate the areas of each of the boxes
-  const areas = rects.map(row => row.map(rect => area(rect)));
+  const areas = rects.map(row => row.map(rect => signedArea(rect)));
   const sumArea = findSumForTable(areas);
   const sumTrueArea = findSumForTable(targetTable);
   const sumRatio = sumTrueArea / sumArea;
