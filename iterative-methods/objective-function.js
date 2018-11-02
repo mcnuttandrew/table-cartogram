@@ -16,6 +16,11 @@ function expPenalty(x) {
 }
 
 function derivPenalty(x) {
+  if (x === 0) {
+    return 0;
+  }
+  // return expPenalty(x) *
+  // return -100 * Math.exp(-x) * (Math.sign(x) - 1) * (Math.sign(x) + x) / (Math.sign(x));
   return -(1 + Math.abs(x)) * expPenalty(x) / Math.abs(x);
 }
 
@@ -330,9 +335,11 @@ function gradOverlapPenalty(props) {
   const points = neighbors.map(({x, y}) => [x, y]);
   if (neighbors.length && !pointInPolygon([cell.x, cell.y], points)) {
     const {minPoint, minDist} = computeMinDistPoint(points, cell);
+    const xDeriv = derivPenalty(-(isFinite(minDist) ? minDist : 0)) * (cell.x - minPoint[0]);
+    const yDeriv = derivPenalty(-(isFinite(minDist) ? minDist : 0)) * (cell.y - minPoint[1]);
     return {
-      x: derivPenalty(-(isFinite(minDist) ? minDist : 0)) * (cell.x - minPoint[0]) / minDist,
-      y: derivPenalty(-(isFinite(minDist) ? minDist : 0)) * (cell.y - minPoint[1]) / minDist
+      x: xDeriv ? xDeriv / minDist : 0,
+      y: yDeriv ? yDeriv / minDist : 0
     };
     // return derivPenalty(-(isFinite(minDist) ? minDist : 0));
   }
@@ -420,10 +427,11 @@ export function gradBuildPenalties(newTable, dims) {
 
       // boundary penalties
       // dont allow the values to move outside of the box
-      grad.x += derivPenalty(dims.width - cell.x);
-      grad.x += derivPenalty(cell.x);
-      grad.y += derivPenalty(dims.height - cell.y);
-      grad.y += derivPenalty(cell.y);
+      // grad.x += derivPenalty(dims.width - cell.x);
+      // grad.x += derivPenalty(cell.x);
+      // grad.y += derivPenalty(dims.height - cell.y);
+      // grad.y += derivPenalty(cell.y);
+      // console.log(grad, dims.width - cell.x, dims.height - cell.y)
       const penalArgs = {
         ...computeEdges(newTable, i, j),
         cell,
@@ -442,7 +450,7 @@ export function gradBuildPenalties(newTable, dims) {
   return tableGradient;
 }
 
-export function buildErrorGradient(vector, targetTable, dims) {
+export function buildErrorGradient(vector, targetTable, dims, searchIndices, xdx) {
   const newTable = translateVectorToTable(vector, targetTable, dims.height, dims.width);
   const rects = getRectsFromTable(newTable);
   // sum up the relative amount of "error"
@@ -450,56 +458,86 @@ export function buildErrorGradient(vector, targetTable, dims) {
   const areas = rects.map(row => row.map(rect => signedArea(rect)));
   const sumArea = findSumForTable(areas);
   const sumTrueArea = findSumForTable(targetTable);
-  const tableGradient = [];
-  for (let i = 0; i < newTable.length; i++) {
-    const rowGradient = [];
-    for (let j = 0; j < newTable[0].length; j++) {
-      const cell = newTable[i][j];
-      const {
-        inFirstRow,
-        inLeftColumn,
-        inRightColumn,
-        inLastRow,
-        inCorner
-      } = computeEdges(newTable, i, j);
-      // LEFT OFF HERE
-      if (inCorner) {
-        rowGradient.push({x: 0, y: 0});
-      } else if (inFirstRow || inLastRow) {
-        const associatedRects = [
-          rects[inLastRow ? (i - 1) : i][j],
-          rects[inLastRow ? (i - 1) : i][j + 1]
-        ];
-        rowGradient.push({
-          x: 0,
-          y: 0
-        });
-      } else if (inLeftColumn || inRightColumn) {
-        const associatedRects = [
-          rects[i - 1][inRightColumn ? (j - 1) : j],
-          rects[i][inRightColumn ? (j - 1) : j]
-        ];
-        rowGradient.push({
-          x: 0,
-          y: 0
-        });
-      } else {
-        const associatedRects = [
-          rects[i - 1][j - 1],
-          rects[i - 1][j],
-          rects[i][j - 1],
-          rects[i][j],
-        ];
-        rowGradient.push({
-          x: 0,
-          y: 0
-        });
-      }
-    }
-  //     // errorSum += Math.pow(targetTable[i][j] - sumRatio * areas[i][j], 2) / targetTable[i][j];
-  }
+  const sumRatio = sumTrueArea / sumArea;
+  const gradientTable = newTable.map(row => row.map(() => ({x: 0, y: 0}))).reverse();
+  const checked = {};
+  for (let i = 0; i < rects.length; i++) {
+    for (let j = 0; j < rects[0].length; j++) {
+      const target = targetTable[i][j];
+      const cellArea = areas[i][j];
+      const gradPrefix = (target - cellArea * sumRatio) / target;
+      const offsets = [{x: 0, y: 0}, {x: 1, y: 0}, {x: 1, y: 1}, {x: 0, y: 1}];
+      offsets.forEach((offset, index) => {
+        const idx = i + offset.y;
+        const jdx = j + offset.x;
+        // if (checked[`${idx}-${jdx}`]) {
+        //   return;
+        // }
+        checked[`${idx}-${jdx}`] = true;
+        const nextOffset = offsets[(index + 1) % offsets.length];
+        const nextVertex = newTable[i + nextOffset.y][j + nextOffset.x];
+        const prevOffset = offsets[(index - 1) >= 0 ? (index - 1) : 3];
+        const prevVertex = newTable[i + prevOffset.y][j + prevOffset.x];
+        const {
+          inFirstRow,
+          inLeftColumn,
+          inRightColumn,
+          inLastRow,
+          inCorner
+        } = computeEdges(newTable, idx, jdx);
+        if (inCorner) {
+          // NO ACTION
+        } else if (inFirstRow || inLastRow) {
+          const prevX = newTable[idx][jdx - 1];
+          const nextX = newTable[idx][jdx + 1];
+          const xGrad = gradPrefix * (
+             -sumRatio * (nextVertex.y - prevVertex.y) +
+             cellArea * sumRatio / sumArea * (prevX.y - nextX.y)
+           );
+          gradientTable[idx][jdx].x += xGrad;
+        } else if (inLeftColumn || inRightColumn) {
+          const prevY = newTable[idx - 1][jdx];
+          const nextY = newTable[idx + 1][jdx];
+          const yGrad = gradPrefix * (
+             -sumRatio * (nextVertex.x - prevVertex.x) +
+             cellArea * sumRatio / sumArea * (prevY.x - nextY.x)
+           );
+          gradientTable[idx][jdx].y -= yGrad;
+        } else {
+          // return;
+          const xGrad = gradPrefix * -sumRatio * (nextVertex.y - prevVertex.y);
+          const yGrad = gradPrefix * -sumRatio * (nextVertex.x - prevVertex.x);
+          gradientTable[idx][jdx].x += xGrad;
+          gradientTable[idx][jdx].y -= yGrad;
+        }
+      });
 
-  return tableGradient;
+    }
+  }
+  const gradPenal = gradBuildPenalties(newTable, dims);
+  const divisor = gradPenal.length * gradPenal[0].length;
+  for (let i = 0; i < gradPenal.length; i++) {
+    for (let j = 0; j < gradPenal[0].length; j++) {
+      // gradientTable[i][j].x += gradPenal[i][j].x;
+      // gradientTable[i][j].y += gradPenal[i][j].y;
+      gradientTable[i][j].x /= divisor;
+      gradientTable[i][j].y /= divisor;
+      gradientTable[i][j].x *= -1;
+      gradientTable[i][j].y *= -1;
+    }
+  }
+  const allowedIndices = searchIndices.reduce((acc, idx) => {
+    acc[idx] = true;
+    return acc;
+  }, {});
+  const gradVec = translateTableToVector(gradientTable);
+  // gradVec.forEach((v, idx) => {
+  //   console.log(['old', xdx[idx], 'new', v]);
+  // });
+  // console.log(gradVec.map((v, idx) => {
+  //   return (Math.sign(xdx[idx]) === Math.sign(v));
+  // }));
+  return gradVec.filter((_, idx) => allowedIndices[idx]);
 }
 
 function discreteOverlapPenalty(rects, cell) {
@@ -604,8 +642,7 @@ export function objectiveFunction(vector, targetTable, technique, dims = {height
     }
   }
 
-  const penal = (technique === 'monteCarlo' ? buildPenalties : continuousBuildPenalties)(newTable, dims);
-  console.log(translateTableToVector(gradBuildPenalties(newTable, dims)))
+  const penal = 0;//(technique === 'monteCarlo' ? buildPenalties : continuousBuildPenalties)(newTable, dims);
   // const concavePenalty = rects.reduce((acc, row) =>
   //     acc + row.reduce((mem, rect) => mem + (checkForConcaveAngles(rect) ? 1 : 0), 0), 0)
 

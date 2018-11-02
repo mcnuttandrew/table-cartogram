@@ -2,12 +2,17 @@ import {norm} from 'mathjs';
 import {norm2} from '../math';
 import {
   translateVectorToTable,
+  translateTableToVector,
   getIndicesInVectorOfInterest,
   phaseShuffle
 } from '../utils';
 import {
-  finiteDiferenceForIndices
+  finiteDiferenceForIndices,
+  finiteDiference
 } from '../math.js';
+import {
+  buildErrorGradient
+} from '../objective-function';
 
 /**
  * Execute a search for the best stepSize for a given position and objective Function
@@ -51,9 +56,13 @@ export function coordinateDescentInnerLoop(objFunc, currentVec, stepSize, table,
   for (let phase = 0; phase < 4; phase++) {
     const currTable = translateVectorToTable(currentVec, table, dims.height, dims.width);
     const searchIndices = getIndicesInVectorOfInterest(currTable, phases[phase]);
-    const dx = finiteDiferenceForIndices(objFunc, currentVec, stepSize / 10, searchIndices);
+    const xdx = finiteDiference(objFunc, currentVec, stepSize / 10, searchIndices);
+    // console.log('old', xdx)
+    const dx = buildErrorGradient(currentVec, table, dims, searchIndices, xdx);
+    // const dx = finiteDiferenceForIndices(objFunc, currentVec, stepSize / 10, searchIndices);
+    // const dx =
     const localNorm = norm2(dx);
-    console.log(localNorm)
+    // console.log(localNorm, translateTableToVector(buildErrorGradient(currentVec, table, dims)))
     const bestStepSize = lineSearch(
       {objFunc, stepSize, currentVec, localNorm, dx, searchIndices, lineSearchSteps});
     for (let jdx = 0; jdx < dx.length; jdx++) {

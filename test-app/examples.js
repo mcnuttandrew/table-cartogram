@@ -220,7 +220,7 @@ export default {
   SMALL_RAMP: ramp(3, 3),
   DUMB_CALENDER: ramp(7, 4),
   twoByThree: checkerBoardGenerator(3, 2, 1, 1),
-  ONE_BY: checkerBoardGenerator(2, 2, 1, 1),
+  ONE_BY: checkerBoardGenerator(3, 3, 1, 2),
   ONE_BYS,
   ZION_VISITORS,
   USA_USA_USA,

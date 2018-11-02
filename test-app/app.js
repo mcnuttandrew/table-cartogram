@@ -59,7 +59,7 @@ function App() {
     //   getLabel: d => `${d.data.percent}%`
     // },
 
-    {data: EXAMPLES.ONE_BYS, technique: 'coordinate', stepSize: 5, computeMode: 'iterative'},
+    {data: EXAMPLES.ONE_BY, technique: 'coordinate', stepSize: 5, computeMode: 'iterative'},
     // {data: scaleMatrix(EXAMPLES.PATHOLOGICAL_2_BY), technique: 'newtonStep', stepSize: 5, computeMode: 'iterative'},
     // {data: [[1, 1], [1, 1]], technique: 'newtonStep', stepSize: 5, computeMode: 'iterative'},
     // {data: stateMigration.slice(0, 10).map(row => row.slice(0, 10)), technique: 'newtonStep', stepSize: 10, computeMode: 'iterative'},
