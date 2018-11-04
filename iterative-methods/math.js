@@ -79,7 +79,6 @@ export function computeHessian(objFunc, currentPos, stepSize) {
   return hessian;
 }
 
-
 /**
  * Compute the gradient for an objective function for PART of a particular position
  * This is an essential function for coordinate descent
@@ -89,7 +88,7 @@ export function computeHessian(objFunc, currentPos, stepSize) {
  * @param  {Number} stepSize - The size of the gradient step
  * @return {Array of Numbers} - The gradient of objFunc at currentPos
  */
-export function finiteDiferenceForIndices(objFunc, currentPos, stepSize, indices) {
+export function finiteDiferenceForIndices(objFunc, currentPos, stepSize, indices, onlyShowPenalty) {
   return indices.map(i => {
     // TODO make this faster by not mapping over the whole vector, just change the required item
     // MUTATIONS I GUESS!?!?!?
@@ -98,8 +97,8 @@ export function finiteDiferenceForIndices(objFunc, currentPos, stepSize, indices
     // currentPos[i] -= 2 * stepSize;
     // const backward = objFunc(currentPos);
     // currentPos[i] += stepSize;
-    const forward = objFunc(currentPos.map((row, idx) => row + (idx === i ? stepSize : 0)));
-    const backward = objFunc(currentPos.map((row, idx) => row - (idx === i ? stepSize : 0)));
+    const forward = objFunc(currentPos.map((row, idx) => row + (idx === i ? stepSize : 0)), onlyShowPenalty);
+    const backward = objFunc(currentPos.map((row, idx) => row - (idx === i ? stepSize : 0)), onlyShowPenalty);
     return (forward - backward) / (2 * stepSize);
   });
 }

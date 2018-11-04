@@ -52,7 +52,7 @@ export function buildIterativeCartogram(table, technique, layout = 'pickBest', d
   const nowCols = table[0].length;
   const numRows = table.length;
 
-  const objFunc = vec => objectiveFunction(vec, table, technique, dims);
+  const objFunc = (vec, onlyShowPenalty) => objectiveFunction(vec, table, technique, dims, onlyShowPenalty);
   const newTable = typeof layout === 'string' ?
     generateInitialTable(numRows, nowCols, table, objFunc, layout, dims) :
     layout;

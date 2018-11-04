@@ -36,6 +36,7 @@ function getAngle(a, b) {
   return Math.acos((a[0] * b[0] + a[1] * b[1]) / (norm(a) * norm(b)));
 }
 
+// TODO DRY UP THE NEXT TWO FUNCTIONS
 function computeMinDist(points, cell) {
   let minDist = Infinity;
   for (let jdx = 0; jdx < points.length; jdx++) {
@@ -338,8 +339,8 @@ function gradOverlapPenalty(props) {
     const xDeriv = derivPenalty(-(isFinite(minDist) ? minDist : 0)) * (cell.x - minPoint[0]);
     const yDeriv = derivPenalty(-(isFinite(minDist) ? minDist : 0)) * (cell.y - minPoint[1]);
     return {
-      x: xDeriv ? xDeriv / minDist : 0,
-      y: yDeriv ? yDeriv / minDist : 0
+      x: xDeriv ? xDeriv / 1 : 0,
+      y: yDeriv ? yDeriv / 1 : 0
     };
     // return derivPenalty(-(isFinite(minDist) ? minDist : 0));
   }
@@ -373,7 +374,6 @@ export function continuousBuildPenalties(newTable, dims) {
       penalties += expPenalty(cell.x);
       penalties += expPenalty(dims.height - cell.y);
       penalties += expPenalty(cell.y);
-
       penalties += contOrderPenalty({
         cell,
         inFirstRow,
@@ -427,11 +427,10 @@ export function gradBuildPenalties(newTable, dims) {
 
       // boundary penalties
       // dont allow the values to move outside of the box
-      // grad.x += derivPenalty(dims.width - cell.x);
-      // grad.x += derivPenalty(cell.x);
-      // grad.y += derivPenalty(dims.height - cell.y);
-      // grad.y += derivPenalty(cell.y);
-      // console.log(grad, dims.width - cell.x, dims.height - cell.y)
+      grad.x += derivPenalty(dims.width - cell.x);
+      grad.x += -derivPenalty(cell.x);
+      grad.y += derivPenalty(dims.height - cell.y);
+      grad.y += -derivPenalty(cell.y);
       const penalArgs = {
         ...computeEdges(newTable, i, j),
         cell,
@@ -440,8 +439,10 @@ export function gradBuildPenalties(newTable, dims) {
       };
       const orderGrad = gradOrderPenalty(penalArgs);
       const overlapGrad = gradOverlapPenalty(penalArgs);
-      grad.x += orderGrad.x + overlapGrad.x * 4;
-      grad.y += orderGrad.y + overlapGrad.y * 4;
+      grad.x += orderGrad.x;
+      grad.y += orderGrad.y;
+      grad.x += overlapGrad.x * 4;
+      grad.y += overlapGrad.y * 4;
       rowGradient.push(grad);
     }
     tableGradient.push(rowGradient);
@@ -450,7 +451,7 @@ export function gradBuildPenalties(newTable, dims) {
   return tableGradient;
 }
 
-export function buildErrorGradient(vector, targetTable, dims, searchIndices, xdx) {
+export function buildErrorGradient(vector, targetTable, dims, searchIndices, onlyShowPenalty) {
   const newTable = translateVectorToTable(vector, targetTable, dims.height, dims.width);
   const rects = getRectsFromTable(newTable);
   // sum up the relative amount of "error"
@@ -518,10 +519,15 @@ export function buildErrorGradient(vector, targetTable, dims, searchIndices, xdx
   const divisor = gradPenal.length * gradPenal[0].length;
   for (let i = 0; i < gradPenal.length; i++) {
     for (let j = 0; j < gradPenal[0].length; j++) {
-      // gradientTable[i][j].x += gradPenal[i][j].x;
-      // gradientTable[i][j].y += gradPenal[i][j].y;
-      gradientTable[i][j].x /= divisor;
-      gradientTable[i][j].y /= divisor;
+      if (onlyShowPenalty) {
+        gradientTable[i][j].x = gradPenal[i][j].x;
+        gradientTable[i][j].y = gradPenal[i][j].y;
+      } else {
+        gradientTable[i][j].x += gradPenal[i][j].x;
+        gradientTable[i][j].y += gradPenal[i][j].y;
+        gradientTable[i][j].x /= divisor;
+        gradientTable[i][j].y /= divisor;
+      }
       gradientTable[i][j].x *= -1;
       gradientTable[i][j].y *= -1;
     }
@@ -625,7 +631,7 @@ export function buildPenalties(newTable, dims) {
  * @param  {String} technique   Either monteCarlo or something else
  * @return {Number} Score
  */
-export function objectiveFunction(vector, targetTable, technique, dims = {height: 1, width: 1}) {
+export function objectiveFunction(vector, targetTable, technique, dims = {height: 1, width: 1}, onlyShowPenalty) {
   const newTable = translateVectorToTable(vector, targetTable, dims.height, dims.width);
   const rects = getRectsFromTable(newTable);
   // sum up the relative amount of "error"
@@ -642,9 +648,12 @@ export function objectiveFunction(vector, targetTable, technique, dims = {height
     }
   }
 
-  const penal = 0;//(technique === 'monteCarlo' ? buildPenalties : continuousBuildPenalties)(newTable, dims);
+  const penal = (technique === 'monteCarlo' ? buildPenalties : continuousBuildPenalties)(newTable, dims);
   // const concavePenalty = rects.reduce((acc, row) =>
   //     acc + row.reduce((mem, rect) => mem + (checkForConcaveAngles(rect) ? 1 : 0), 0), 0)
+  if (onlyShowPenalty) {
+    return penal;
+  }
 
   return errorSum / (rects.length * rects[0].length) + penal;
 }

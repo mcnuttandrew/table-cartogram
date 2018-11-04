@@ -3,6 +3,7 @@ import React from 'react';
 
 import OHARE_TEMP_DATA from '../test/ohare-temp-data.json';
 // import FLAT_DATA from '../test/tenByten.json';
+// import HUNDRED_BY_HUNDRED from '../test/tenByten.json';
 // import COMPLETED_RUN_DATA from '../scripts/hundred-run-data-1010.json';
 import ZION_RUN from '../scripts/zion-run.json';
 import {transposeMatrix} from '../iterative-methods/utils';
@@ -59,7 +60,7 @@ function App() {
     //   getLabel: d => `${d.data.percent}%`
     // },
 
-    {data: EXAMPLES.ONE_BY, technique: 'coordinate', stepSize: 5, computeMode: 'iterative'},
+    {data: EXAMPLES.ONE_BYS, technique: 'coordinate', stepSize: 5, computeMode: 'iterative'},
     // {data: scaleMatrix(EXAMPLES.PATHOLOGICAL_2_BY), technique: 'newtonStep', stepSize: 5, computeMode: 'iterative'},
     // {data: [[1, 1], [1, 1]], technique: 'newtonStep', stepSize: 5, computeMode: 'iterative'},
     // {data: stateMigration.slice(0, 10).map(row => row.slice(0, 10)), technique: 'newtonStep', stepSize: 10, computeMode: 'iterative'},

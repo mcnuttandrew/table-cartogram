@@ -132,7 +132,7 @@ export default class IterativeDisplay extends React.Component {
       const converged = previousValueAndCount.value < CONVERGENCE_BARRIER;
       const halted = previousValueAndCount.count > CONVERGENCE_THRESHOLD;
       const errored = isNaN(error);
-      if (this.state.runningMode !== 'running' || halted || converged || errored || this.state.stepsTaken > 100) {
+      if (this.state.runningMode !== 'running' || halted || converged || errored) {
         clearInterval(ticker);
         this.setState({
           runningMode: converged ? 'converged' :

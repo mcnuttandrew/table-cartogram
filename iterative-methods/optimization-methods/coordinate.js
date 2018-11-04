@@ -56,9 +56,15 @@ export function coordinateDescentInnerLoop(objFunc, currentVec, stepSize, table,
   for (let phase = 0; phase < 4; phase++) {
     const currTable = translateVectorToTable(currentVec, table, dims.height, dims.width);
     const searchIndices = getIndicesInVectorOfInterest(currTable, phases[phase]);
-    const xdx = finiteDiference(objFunc, currentVec, stepSize / 10, searchIndices);
-    // console.log('old', xdx)
-    const dx = buildErrorGradient(currentVec, table, dims, searchIndices, xdx);
+    // const xdx = finiteDiferenceForIndices(objFunc, currentVec, stepSize / 10, searchIndices, true);
+    // const newPen = buildErrorGradient(currentVec, table, dims, searchIndices, true);
+    // if (xdx.some((v, idx) => newPen[idx] !== v)) {
+    //   console.log(searchIndices)
+    //   console.log('old', xdx)
+    //   console.log('new', newPen)
+    //   console.log(currentVec)
+    // }
+    const dx = buildErrorGradient(currentVec, table, dims, searchIndices);
     // const dx = finiteDiferenceForIndices(objFunc, currentVec, stepSize / 10, searchIndices);
     // const dx =
     const localNorm = norm2(dx);
