@@ -16,7 +16,7 @@ import {
 } from '../test/iterative-tests';
 
 import GenericTable from './components/generic-test-table';
-import EXAMPLES, {BIRD_STRIKES, stateMigration} from './examples';
+import EXAMPLES, {stateMigration, NESTED_POPS, BIRD_STRIKES} from './examples';
 import IterativeDisplay from './components/iterative-display';
 import ExampleTreemap from './components/treemap-example-generator';
 import ExampleHeatmap from './components/heatmap-example';
@@ -27,18 +27,29 @@ import ObjectiveFunctionVisualization from './components/objective-function-visu
 import ContinuousLegend from './components/continuous-legend';
 
 const scaleMatrix = (matrix, factor = 1) => matrix.map(row => row.map(cell => cell * factor));
-
+console.log(NESTED_POPS)
 function App() {
   const tables = [
+    {
+      data: EXAMPLES.BIRD_STRIKES,
+      technique: 'coordinate',
+      stepSize: 10,
+      computeMode: 'iterative',
+      accessor: d => d.size,
+      dims: {
+        height: 0.3,
+        width: 1
+      }
+    },
     // {
-    //   data: BIRD_STRIKES,
+    //   data: NESTED_POPS,
     //   technique: 'coordinate',
     //   stepSize: 10,
     //   computeMode: 'iterative',
-    //   accessor: d => d.size,
+    //   accessor: d => d.GDP / d.pop,
     //   dims: {
     //     height: 0.3,
-    //     width: 1
+    //     width: 2
     //   }
     // },
     // {
@@ -60,7 +71,7 @@ function App() {
     //   getLabel: d => `${d.data.percent}%`
     // },
 
-    {data: EXAMPLES.ONE_BYS, technique: 'coordinate', stepSize: 5, computeMode: 'iterative'},
+    // {data: EXAMPLES.DUMB_CALENDER, technique: 'coordinate', stepSize: 5, computeMode: 'iterative'},
     // {data: scaleMatrix(EXAMPLES.PATHOLOGICAL_2_BY), technique: 'newtonStep', stepSize: 5, computeMode: 'iterative'},
     // {data: [[1, 1], [1, 1]], technique: 'newtonStep', stepSize: 5, computeMode: 'iterative'},
     // {data: stateMigration.slice(0, 10).map(row => row.slice(0, 10)), technique: 'newtonStep', stepSize: 10, computeMode: 'iterative'},

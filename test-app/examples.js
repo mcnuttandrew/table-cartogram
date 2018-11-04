@@ -29,12 +29,10 @@ const BIRD_STRIKES_BY_REGION = {
 const BIRD_SUM = Object.values(BIRD_STRIKES_BY_REGION)
   .reduce((acc, row) => acc + row, 0);
 const BIRDS = Object.entries(BIRD_STRIKES_BY_REGION)
-  .map((row) => {
-    return {
-      name: row[0],
-      size: Math.ceil(row[1] / BIRD_SUM * WAFFLE_CELLS)
-    };
-  });
+  .map((row) => ({
+    name: row[0],
+    size: Math.ceil(row[1] / BIRD_SUM * WAFFLE_CELLS)
+  }));
 const REGION_COLOR = Object.keys(BIRD_STRIKES_BY_REGION).reduce((acc, region, idx) => {
   acc[region] = RV_COLORS[idx];
   return acc;
@@ -56,6 +54,34 @@ BIRD_CELLS[99].size = 3;
 
 export const BIRD_STRIKES = transposeMatrix([...new Array(WAFFLE_WIDTH)].map((_, idx) => {
   return BIRD_CELLS.slice(idx * WAFFLE_HEIGHT, (idx + 1) * WAFFLE_HEIGHT);
+}));
+
+
+const countries = [
+  {country: 'USA',	GDP: 19390, color: '#e41a1c', pop: 330},
+  // {country: 'EU',	GDP: 17277, color: '#2171b5', pop: 510},
+  {country: 'China',	GDP: 12237, color: '#4daf4a', pop: 1380},
+  {country: 'Japan',	GDP: 4872, color: '#984ea3', pop: 130},
+  {country: 'Other EU',	GDP: 8396, color: '#2171b5', pop: 290},
+  {country: 'Germany',	GDP: 3677, color: '#eff3ff', pop: 80},
+  {country: 'UK',	GDP: 2622, color: '#bdd7e7', pop: 70},
+  {country: 'France',	GDP: 2582, color: '#6baed6', pop: 70},
+  {country: 'India',	GDP: 2597, color: '#ff7f00', pop: 1300},
+  // {country: 'Brazil',	GDP: 2055, color: '#ffff33', pop: 210}
+];
+
+let counter = 0;
+const COUNTRY_CELLS = countries.reduce((acc, row) => {
+  counter += row.pop / 10;
+  const newCells = [...new Array(row.pop / 10 + 1)].map(_ => row);
+  return acc.concat(newCells);
+}, []);
+console.log(COUNTRY_CELLS, counter)
+
+const NESTED_POP_WAFFLE_WIDTH = 73;
+const NESTED_POP_WAFFLE_HEIGHT = 5;
+export const NESTED_POPS = transposeMatrix([...new Array(NESTED_POP_WAFFLE_WIDTH)].map((_, idx) => {
+  return COUNTRY_CELLS.slice(idx * NESTED_POP_WAFFLE_HEIGHT, (idx + 1) * NESTED_POP_WAFFLE_HEIGHT);
 }));
 
 const elementLookUp = Elements.reduce((acc, row) => {

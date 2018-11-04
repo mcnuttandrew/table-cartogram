@@ -64,8 +64,8 @@ export function coordinateDescentInnerLoop(objFunc, currentVec, stepSize, table,
     //   console.log('new', newPen)
     //   console.log(currentVec)
     // }
-    const dx = buildErrorGradient(currentVec, table, dims, searchIndices);
-    // const dx = finiteDiferenceForIndices(objFunc, currentVec, stepSize / 10, searchIndices);
+    // const dx = buildErrorGradient(currentVec, table, dims, searchIndices);
+    const dx = finiteDiferenceForIndices(objFunc, currentVec, stepSize / 10, searchIndices);
     // const dx =
     const localNorm = norm2(dx);
     // console.log(localNorm, translateTableToVector(buildErrorGradient(currentVec, table, dims)))
