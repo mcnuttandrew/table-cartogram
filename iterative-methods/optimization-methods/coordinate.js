@@ -12,7 +12,7 @@ import {
 } from '../math.js';
 import {
   buildErrorGradient
-} from '../objective-function';
+} from '../grad-penal';
 
 /**
  * Execute a search for the best stepSize for a given position and objective Function
@@ -62,10 +62,10 @@ export function coordinateDescentInnerLoop(objFunc, currentVec, stepSize, table,
     //   console.log(searchIndices)
     //   console.log('old', xdx)
     //   console.log('new', newPen)
-    //   console.log(currentVec)
+    //   // console.log(currentVec)
     // }
-    // const dx = buildErrorGradient(currentVec, table, dims, searchIndices);
-    const dx = finiteDiferenceForIndices(objFunc, currentVec, stepSize / 10, searchIndices);
+    const dx = buildErrorGradient(currentVec, table, dims, searchIndices);
+    // const dx = finiteDiferenceForIndices(objFunc, currentVec, stepSize / 10, searchIndices);
     // const dx =
     const localNorm = norm2(dx);
     // console.log(localNorm, translateTableToVector(buildErrorGradient(currentVec, table, dims)))
@@ -134,7 +134,7 @@ export function coordinateDescentWithLineSearch(objFunc, candidateVector, numIte
     // TODO MAGIC NUMBER
     const stepSize = Math.min(0.01);
     // , objFunc(currentVec));
-    coordinateDescentInnerLoop(objFunc, currentVec, stepSize, table, dims, 15);
+    coordinateDescentInnerLoop(objFunc, currentVec, stepSize, table, dims, 20);
   }
   /* eslint-enable max-depth */
   return currentVec;

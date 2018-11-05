@@ -69,12 +69,20 @@ export default class IterativeDisplay extends React.Component {
   }
 
   adaptiveBuild() {
-    const {data, accessor = d => d, layout, dims = {height: 1, width: 1}} = this.props;
+    const {
+      data,
+      accessor = d => d,
+      layout,
+      dims = {height: 1, width: 1},
+      technique
+    } = this.props;
     const startTime = (new Date()).getTime();
     const {gons, error, stepsTaken, maxError} = tableCartogramAdaptive({
       data,
       layout,
       targetAccuracy: CONVERGENCE_BARRIER,
+      technique,
+      logging: true,
       ...dims
     });
     const endTime = (new Date()).getTime();

@@ -70,13 +70,10 @@ const countries = [
   // {country: 'Brazil',	GDP: 2055, color: '#ffff33', pop: 210}
 ];
 
-let counter = 0;
 const COUNTRY_CELLS = countries.reduce((acc, row) => {
-  counter += row.pop / 10;
   const newCells = [...new Array(row.pop / 10 + 1)].map(_ => row);
   return acc.concat(newCells);
 }, []);
-console.log(COUNTRY_CELLS, counter)
 
 const NESTED_POP_WAFFLE_WIDTH = 73;
 const NESTED_POP_WAFFLE_HEIGHT = 5;
@@ -113,7 +110,7 @@ export const ZION_VISITORS_WITH_ANNOTATION = ZionVisitors.map(year =>
 
 // EXAMPLES FROM PAPER
 
-// EVANS ET Et have a typo NI -> MI
+// EVANS ET AL have a typo NI -> MI
 /* eslint-disable max-len */
 const USA_USA_USA_LABELS = [
   [['WA', 6.7250], ['MT', 0.9890], ['ND', 0.673], ['MN', 5.3040], ['WI', 5.687], ['NY', 19.378], ['VT', 0.6260], ['ME', 1.328]],
@@ -144,16 +141,16 @@ const BLACK_AND_WHITE_TABLE = [
   [7, 9, 9, 6]
 ];
 
-// const HAND_SYMMETRIC = [
-//   [9, 1, 1, 1, 1, 1, 1, 9],
-//   [1, 1, 1, 2, 2, 1, 1, 1],
-//   [1, 1, 5, 1, 1, 5, 1, 1],
-//   [1, 2, 1, 4, 4, 1, 2, 1],
-//   [1, 2, 1, 4, 4, 1, 2, 1],
-//   [1, 1, 5, 1, 1, 5, 1, 1],
-//   [1, 1, 1, 2, 2, 1, 1, 1],
-//   [9, 1, 1, 1, 1, 1, 1, 9]
-// ];
+const HAND_SYMMETRIC_OLD = [
+  [9, 1, 1, 1, 1, 1, 1, 9],
+  [1, 1, 1, 2, 2, 1, 1, 1],
+  [1, 1, 5, 1, 1, 5, 1, 1],
+  [1, 2, 1, 4, 4, 1, 2, 1],
+  [1, 2, 1, 4, 4, 1, 2, 1],
+  [1, 1, 5, 1, 1, 5, 1, 1],
+  [1, 1, 1, 2, 2, 1, 1, 1],
+  [9, 1, 1, 1, 1, 1, 1, 9]
+];
 
 const HAND_SYMMETRIC = [
   [5, 1, 1, 1, 1, 3, 5, 9, 1, 7, 2, 1],
@@ -267,9 +264,10 @@ export default {
   ELELMENTS_BOIL,
   ELELMENTS_MASS,
 
-  TRI_BOARD: nStopCheckerBoardGenerator(7, 7, [5, 1, 20]),
+  TRI_BOARD: nStopCheckerBoardGenerator(10, 10, [5, 1, 20]),
 
   HAND_SYMMETRIC,
+  HAND_SYMMETRIC_OLD,
   RIBBONS,
   USA_USA_USA_LABELS,
 
