@@ -14,7 +14,7 @@ import {
 } from '../../';
 
 import {geoCenter} from '../../iterative-methods/utils';
-import Speeding from '../../test/speeding';
+import Speeding from '../large-examples/speeding';
 
 function decorateGonsWithData(data, gons) {
   for (let i = 0; i < data.length; i++) {
