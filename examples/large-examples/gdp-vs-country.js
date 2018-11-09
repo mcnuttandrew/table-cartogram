@@ -1,4 +1,4 @@
-import {transposeMatrix} from '../iterative-methods/utils';
+import {transposeMatrix} from '../src/utils';
 
 const countries = [
   {country: 'USA',	GDP: 19390, color: '#e41a1c', pop: 330},

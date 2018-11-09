@@ -1,4 +1,4 @@
-import {transposeMatrix} from '../../iterative-methods/utils';
+import {transposeMatrix} from '../../src/utils';
 
 const senators = [
   {state: 'Alabama', party: 'Republican', name: 'Richard Shelby', date: 'January 3, 1987'},

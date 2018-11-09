@@ -8,7 +8,7 @@ import {
 import {
   area,
   round
-} from '../iterative-methods/utils';
+} from '../src/utils';
 import tape from 'tape';
 
 /* eslint-disable max-len*/

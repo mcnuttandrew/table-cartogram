@@ -1,4 +1,4 @@
-import {round, computeErrors} from '../iterative-methods/utils';
+import {round, computeErrors} from '../src/utils';
 import {hierarchy, treemap} from 'd3-hierarchy';
 
 /**

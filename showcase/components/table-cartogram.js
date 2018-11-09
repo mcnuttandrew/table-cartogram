@@ -16,7 +16,7 @@ import {
   area,
   round,
   geoCenter
-} from '../../iterative-methods/utils';
+} from '../../src/utils';
 
 import {RV_COLORS} from '../colors';
 

@@ -13,8 +13,8 @@ import {
   tableCartogramAdaptive
 } from '../../';
 
-import {geoCenter} from '../../iterative-methods/utils';
-import Speeding from '../large-examples/speeding';
+import {geoCenter} from '../../src/utils';
+import Speeding from '../../examples/large-examples/speeding';
 
 function decorateGonsWithData(data, gons) {
   for (let i = 0; i < data.length; i++) {

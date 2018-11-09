@@ -4,13 +4,6 @@ import React from 'react';
 // import FLAT_DATA from '../test/tenByten.json';
 // import HUNDRED_BY_HUNDRED from '../test/tenByten.json';
 // import COMPLETED_RUN_DATA from '../scripts/hundred-run-data-1010.json';
-import {TapReactBrowser} from 'tap-react-browser';
-import {
-  translateVectorToTabletranslateTableToVector,
-  // findSumForTableTest,
-  // buildIterativeCartogramTest,
-  testTreeMapForError
-} from '../test/iterative-tests';
 
 import EXAMPLES from '../examples/examples';
 import IterativeDisplay from './components/iterative-display';
@@ -100,19 +93,10 @@ function App() {
       layout={'gridLayout'}
       key={`${config.technique}-${idx}`}/>
   ));
-  const SHOW_TESTS = false;
   return (
     <div>
-      <h1>TABLE CARTOGRAM VISUAL TEST SUITE</h1>
+      <h1>TABLE CARTOGRAM SHOWCASE</h1>
       <div>
-        {SHOW_TESTS && <TapReactBrowser
-          runAsPromises
-          tests={[
-            // translateVectorToTabletranslateTableToVector,
-            // findSumForTableTest,
-            // buildIterativeCartogramTest,
-            // testTreeMapForError
-          ]}/>}
         <div style={{display: 'flex', flexWrap: 'wrap'}}>
           {
             tables

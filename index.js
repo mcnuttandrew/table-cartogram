@@ -1,5 +1,5 @@
-import {buildIterativeCartogram} from './iterative-methods/optimization';
-import {prepareRects, computeErrors, error, log} from './iterative-methods/utils';
+import {buildIterativeCartogram} from './src/optimization';
+import {prepareRects, computeErrors, error, log} from './src/utils';
 
 const inputTableIsInvalid = table => {
   const someValuesAreBad = !table.every(row => row && row.every(cell => cell));

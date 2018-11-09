@@ -17,7 +17,7 @@ import {
 import {
   area,
   computeErrors
-} from '../../iterative-methods/utils';
+} from '../../src/utils';
 
 import CartogramPlot from './table-cartogram';
 

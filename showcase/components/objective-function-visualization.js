@@ -6,21 +6,21 @@ import {rgb} from 'd3-color';
 
 import {
   objectiveFunction
-} from '../../iterative-methods/objective-function';
+} from '../../src/objective-function';
 
 import {
   generateInitialTable
-} from '../../iterative-methods/layouts';
+} from '../../src/layouts';
 
 import {
   translateTableToVector,
   prepareRects,
   translateVectorToTable
-} from '../../iterative-methods/utils';
+} from '../../src/utils';
 
 import {
   executeOptimization
-} from '../../iterative-methods/optimization';
+} from '../../src/optimization';
 
 import CartogramPlot from './table-cartogram';
 

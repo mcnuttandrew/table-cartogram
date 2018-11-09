@@ -21,7 +21,7 @@ npm manifest:
     "license": "MIT",
     "scripts": {
       "test": "babel-node test/test-index.js",
-      "start": "(cd test-app && command -v yarn >/dev/null && yarn && npm start || npm install && npm start)"
+      "start": "(cd showcase && command -v yarn >/dev/null && yarn && npm start || npm install && npm start)"
     },
     "devDependencies": {
       "babel-cli": "6.18.0",

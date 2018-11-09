@@ -7,7 +7,7 @@ import {
 } from 'react-vis';
 
 import {partitionQuadrangle} from '../../old-stuff/utils';
-import {geoCenter, area, round} from '../../iterative-methods/utils';
+import {geoCenter, area, round} from '../../src/utils';
 import {RV_COLORS} from '../colors';
 
 export default class PartitionPolygonExample extends React.Component {

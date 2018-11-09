@@ -5,7 +5,7 @@ import {
   translateTableToVector,
   computeErrors,
   prepareRects
-} from '../iterative-methods/utils';
+} from '../src/utils';
 import {
   hasPenalties
 } from './lazy-penalties';

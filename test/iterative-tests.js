@@ -3,7 +3,7 @@ import {
   translateTableToVector,
   findSumForTable,
   area
-} from '../iterative-methods/utils';
+} from '../src/utils';
 
 import tape from 'tape';
 
@@ -18,7 +18,7 @@ tape('test tableCartogram computation', t => {
   const directResults = tableCartogram({
     data: TEST_TABLE,
     technique: 'coordinate',
-    layout: 'pickBest',
+    layout: 'gridLayout',
     iterations: 300,
     accessor: d => d.x,
     height: 0.5
@@ -49,21 +49,24 @@ tape('test tableCartogram computation', t => {
 
 tape('test tableCartogramAdaptive computation', t => {
   const TEST_TABLE = [[{x: 1}, {x: 2}], [{x: 2}, {x: 1}]];
-  const directResults = tableCartogramAdaptive({
+  const adaptive = tableCartogramAdaptive({
     data: TEST_TABLE,
     technique: 'coordinate',
-    layout: 'pickBest',
+    layout: 'gridLayout',
     iterations: 300,
     accessor: d => d.x,
     height: 0.5
   });
+  const directResults = adaptive.gons;
+  t.ok(adaptive.stepsTaken < 300, 'should find that the maximum number of steps is not surpassed');
+  t.ok(adaptive.error < 0.0001, 'should find that the average error is acceptable');
+  t.ok(adaptive.maxError < 0.0001, 'should find that the average error is acceptable');
 
   t.ok(directResults.every((cell, idx) => {
     const j = idx % 2;
     const i = Math.floor(idx / 2);
     return cell.value === TEST_TABLE[i][j].x;
   }), 'all cells have correct value decorated');
-
   t.ok(directResults.every((cell, idx) => {
     const j = idx % 2;
     const i = Math.floor(idx / 2);
@@ -86,7 +89,7 @@ tape('test tableCartogramWithUpdate computation', t => {
   const resultsBuilder = tableCartogramWithUpdate({
     data: TEST_TABLE,
     technique: 'coordinate',
-    layout: 'pickBest',
+    layout: 'gridLayout',
     iterations: 300,
     accessor: d => d.x,
     height: 0.5

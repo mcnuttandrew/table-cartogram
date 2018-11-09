@@ -1,4 +1,4 @@
-import {transposeMatrix} from '../../iterative-methods/utils';
+import {transposeMatrix} from '../../src/utils';
 import {RV_COLORS} from '../colors';
 
 // MAKE DICT INTO WAFFLE PLOT
