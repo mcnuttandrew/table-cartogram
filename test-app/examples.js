@@ -1,112 +1,10 @@
-import {RV_COLORS} from './colors';
-import {transposeMatrix} from '../iterative-methods/utils';
-import ZionVisitors from '../test/zion-visitors';
-// Source Wikipedia
-import Elements from '../test/elements';
-
-import StateMigration from '../state-migration-data.json';
-
-const StatesNames = StateMigration.map(d => d['State of residence']);
-export const stateMigration = StateMigration.reverse().map(row => {
-  return StatesNames.map(state => row[state]);
-});
-
-// MAKE DICT INTO WAFFLE PLOT
-// https://en.wikipedia.org/wiki/List_of_regions_of_the_United_States
-const WAFFLE_WIDTH = 20;
-const WAFFLE_HEIGHT = 5;
-const WAFFLE_CELLS = WAFFLE_WIDTH * WAFFLE_HEIGHT;
-
-const BIRD_STRIKES_BY_REGION = {
-  Midwest: 38042,
-  Canada: 429,
-  South: 68307,
-  West: 39481,
-  Northeast: 30142,
-  'US Islands': 5111
-};
-
-const BIRD_SUM = Object.values(BIRD_STRIKES_BY_REGION)
-  .reduce((acc, row) => acc + row, 0);
-const BIRDS = Object.entries(BIRD_STRIKES_BY_REGION)
-  .map((row) => ({
-    name: row[0],
-    size: Math.ceil(row[1] / BIRD_SUM * WAFFLE_CELLS)
-  }));
-const REGION_COLOR = Object.keys(BIRD_STRIKES_BY_REGION).reduce((acc, region, idx) => {
-  acc[region] = RV_COLORS[idx];
-  return acc;
-}, {});
-
-const BIRD_CELLS = BIRDS.reduce((acc, {name, size}) => {
-  return acc.concat([...new Array(size)].map((_, idx) =>
-    ({
-      size: 0.5 + (
-        ((size % 2) && idx === (size - 1)) ? 0.5 :
-          (!(idx % 2) ? 1.0 : 0)
-      ),
-      name,
-      // size: 1,
-      color: REGION_COLOR[name]
-    })));
-}, []).slice(0, 100);
-BIRD_CELLS[99].size = 3;
-
-export const BIRD_STRIKES = transposeMatrix([...new Array(WAFFLE_WIDTH)].map((_, idx) => {
-  return BIRD_CELLS.slice(idx * WAFFLE_HEIGHT, (idx + 1) * WAFFLE_HEIGHT);
-}));
-
-
-const countries = [
-  {country: 'USA',	GDP: 19390, color: '#e41a1c', pop: 330},
-  // {country: 'EU',	GDP: 17277, color: '#2171b5', pop: 510},
-  {country: 'China',	GDP: 12237, color: '#4daf4a', pop: 1380},
-  {country: 'Japan',	GDP: 4872, color: '#984ea3', pop: 130},
-  {country: 'Other EU',	GDP: 8396, color: '#2171b5', pop: 290},
-  {country: 'Germany',	GDP: 3677, color: '#eff3ff', pop: 80},
-  {country: 'UK',	GDP: 2622, color: '#bdd7e7', pop: 70},
-  {country: 'France',	GDP: 2582, color: '#6baed6', pop: 70},
-  {country: 'India',	GDP: 2597, color: '#ff7f00', pop: 1300},
-  // {country: 'Brazil',	GDP: 2055, color: '#ffff33', pop: 210}
+const POWER_ARRANGEMENTS = [
+  [[0, 1], [3, 2]],
+  [[0, 2], [3, 1]],
+  [[0, 1], [2, 3]]
 ];
 
-const COUNTRY_CELLS = countries.reduce((acc, row) => {
-  const newCells = [...new Array(row.pop / 10 + 1)].map(_ => row);
-  return acc.concat(newCells);
-}, []);
-
-const NESTED_POP_WAFFLE_WIDTH = 73;
-const NESTED_POP_WAFFLE_HEIGHT = 5;
-export const NESTED_POPS = transposeMatrix([...new Array(NESTED_POP_WAFFLE_WIDTH)].map((_, idx) => {
-  return COUNTRY_CELLS.slice(idx * NESTED_POP_WAFFLE_HEIGHT, (idx + 1) * NESTED_POP_WAFFLE_HEIGHT);
-}));
-
-const elementLookUp = Elements.reduce((acc, row) => {
-  acc[row.Symbol] = row;
-  return acc;
-}, {});
-
-const ElementsOfInterest = [[
-  'Sc', 'Ti', 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn'
-], [
-  'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd'
-], [
-  'La', 'Hf', 'Ta', 'W', 'Re', 'Os', 'Ir', 'Pr', 'Au', 'Hg'
-]].map(row => row.map(symbol => elementLookUp[symbol]));
-const generateElementTable = key => ElementsOfInterest.map(row => row.map(cell => Number(cell[key])));
-
-const ELELMENTS_THERMAL = generateElementTable('C');
-// dont have molar volume
-const ELELMENTS_DENSITY = generateElementTable('Density');
-const ELELMENTS_BOIL = generateElementTable('Boil');
-const ELELMENTS_MASS = generateElementTable('Atomic weight');
-
-const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-const ZION_VISITORS = ZionVisitors.map(year => MONTHS.map(month => year[month])).slice(0, 5);
-
-export const ZION_VISITORS_WITH_ANNOTATION = ZionVisitors.map(year =>
-  MONTHS.map(month => ({year, month, value: year[month]}))
-).slice(0, 5);
+const applyPower = matrix => matrix.map(row => row.map(d => Math.pow(5, d)));
 
 // EXAMPLES FROM PAPER
 
@@ -245,7 +143,6 @@ export default {
   twoByThree: checkerBoardGenerator(3, 2, 1, 1),
   ONE_BY: checkerBoardGenerator(3, 3, 1, 2),
   ONE_BYS,
-  ZION_VISITORS,
   USA_USA_USA,
   EXAMPLE_TABLE,
   EXAMPLE_TABLE_SLIGHT_DIFF,
@@ -259,11 +156,6 @@ export default {
   PATHOLOGICAL_2_BY,
   MULTIPLICATION_TABLE,
 
-  ELELMENTS_THERMAL,
-  ELELMENTS_DENSITY,
-  ELELMENTS_BOIL,
-  ELELMENTS_MASS,
-
   TRI_BOARD: nStopCheckerBoardGenerator(10, 10, [5, 1, 20]),
 
   HAND_SYMMETRIC,
@@ -271,5 +163,9 @@ export default {
   RIBBONS,
   USA_USA_USA_LABELS,
 
-  DND_ALIGNMENTS
+  DND_ALIGNMENTS,
+
+  POWER_1: applyPower(POWER_ARRANGEMENTS[0]),
+  POWER_2: applyPower(POWER_ARRANGEMENTS[1]),
+  POWER_3: applyPower(POWER_ARRANGEMENTS[2])
 };

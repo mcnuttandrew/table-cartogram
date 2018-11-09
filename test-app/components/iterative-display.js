@@ -24,6 +24,16 @@ import CartogramPlot from './table-cartogram';
 const CONVERGENCE_THRESHOLD = 10;
 const CONVERGENCE_BARRIER = 0.001;
 
+const COLOR_MODES = [
+  'errorHeat',
+  'byValue',
+  'periodicColors',
+  'valueHeat',
+  'valueHeatAlt',
+  'byDataColor',
+  'plasmaHeat'
+];
+
 function decorateGonsWithErrors(data, gons, accessor, dims) {
   const tableSum = data.reduce((acc, row) => acc + row.reduce((mem, cell) => mem + accessor(cell), 0), 0);
   const expectedAreas = data.map(row => row.map(cell => accessor(cell) / tableSum));
@@ -210,20 +220,11 @@ export default class IterativeDisplay extends React.Component {
           orientation="horizontal"
           width={300}
           items={['AVG', 'MAX']} />}
-        <button onClick={() => {
-          const colorModes = [
-            'errorHeat',
-            'byValue',
-            'periodicColors',
-            'valueHeat',
-            'valueHeatAlt',
-            'byDataColor'
-          ];
-          const fillIndex = colorModes.findIndex(d => d === fillMode);
-          this.setState({
-            fillMode: colorModes[(fillIndex + 1) % colorModes.length]
-          });
-        }}>{`CHANGE COLOR MODE (current ${fillMode})`}</button>
+        <select
+          onChange={({target: {value}}) => this.setState({fillMode: value})}
+          value={fillMode}>
+          {COLOR_MODES.map(d => <option value={d} key={d}>{d}</option>)}
+        </select>
         <button onClick={() => this.setState({showLabels: !this.state.showLabels})}>TOGGLE LABELS</button>
         <button onClick={() => this.setState({runningMode: 'stopped'})}>STOP</button>
       </div>

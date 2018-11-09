@@ -1,6 +1,10 @@
 import React from 'react';
 
-import {interpolateInferno, interpolateReds} from 'd3-scale-chromatic';
+import {
+  interpolateInferno,
+  interpolateReds,
+  interpolatePlasma
+} from 'd3-scale-chromatic';
 
 import {
   XYPlot,
@@ -16,18 +20,20 @@ import {
 
 import {RV_COLORS} from '../colors';
 
-function colorCell(cell, index, fillMode, valueDomain) {
+function colorCell(cell, index, fillMode, {min, max}) {
   switch (fillMode) {
   case 'valueHeat':
     return interpolateInferno(
-      1 - ((cell.value - valueDomain.min) / (valueDomain.max - valueDomain.min))
+      1 - ((cell.value - min) / (max - min))
     );
   case 'valueHeatAlt':
     return interpolateReds(
-      1 - Math.sqrt(1 - (cell.value - valueDomain.min) / (valueDomain.max - valueDomain.min))
+      1 - Math.sqrt(1 - (cell.value - min) / (max - min))
     );
   case 'errorHeat':
     return interpolateInferno(Math.sqrt(cell.individualError));
+  case 'plasmaHeat':
+    return interpolatePlasma(((cell.value - min) / (max - min)));
   case 'byValue':
     return RV_COLORS[cell.value % RV_COLORS.length];
   case 'byDataColor':
@@ -47,9 +53,9 @@ export default function cartogramPlot(props) {
     showLabels,
     height = 600,
     width = 600,
-    showAxisLabels,
-    xLabels,
-    yLabels,
+    showAxisLabels = false,
+    xLabels = [],
+    yLabels = [],
     getLabel
   } = props;
   const valueDomain = data.reduce((acc, row) => {
@@ -113,7 +119,6 @@ export default function cartogramPlot(props) {
         })} />}
       {showAxisLabels && <LabelSeries
           data={data.filter((d, idx) => !(idx % dataWidth)).map((cell, index) => {
-            console.log(index, index % dataWidth)
             const {y} = geoCenter(cell.vertices);
             return ({
               x: -0.01,

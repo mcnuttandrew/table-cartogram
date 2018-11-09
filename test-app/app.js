@@ -1,12 +1,9 @@
 import ReactDOM from 'react-dom';
 import React from 'react';
 
-import OHARE_TEMP_DATA from '../test/ohare-temp-data.json';
 // import FLAT_DATA from '../test/tenByten.json';
 // import HUNDRED_BY_HUNDRED from '../test/tenByten.json';
 // import COMPLETED_RUN_DATA from '../scripts/hundred-run-data-1010.json';
-import ZION_RUN from '../scripts/zion-run.json';
-import {transposeMatrix} from '../iterative-methods/utils';
 import {TapReactBrowser} from 'tap-react-browser';
 import {
   translateVectorToTabletranslateTableToVector,
@@ -15,22 +12,44 @@ import {
   testTreeMapForError
 } from '../test/iterative-tests';
 
-import GenericTable from './components/generic-test-table';
-import EXAMPLES, {stateMigration, NESTED_POPS, BIRD_STRIKES} from './examples';
+import EXAMPLES from './examples';
 import IterativeDisplay from './components/iterative-display';
-import ExampleTreemap from './components/treemap-example-generator';
-import ExampleHeatmap from './components/heatmap-example';
 import CalendarDisplay from './components/calendar-example';
 import HourCalendar from './components/hour-calendar';
 import CartogramPlot from './components/table-cartogram';
-import ObjectiveFunctionVisualization from './components/objective-function-visualization';
-import ContinuousLegend from './components/continuous-legend';
 
-const scaleMatrix = (matrix, factor = 1) => matrix.map(row => row.map(cell => cell * factor));
 function App() {
   const tables = [
+    // ...require('./large-examples/element-examples')
+    //   .ELEMENT_TABLES.map(key => {
+    //     return {
+    //       data: require('./large-examples/element-examples')[key],
+    //       technique: 'coordinate',
+    //       stepSize: 10,
+    //       computeMode: 'iterative',
+    //       accessor: cell => cell.value,
+    //       getLabel: cell => cell.data.symbol,
+    //       showAxisLabels: true,
+    //       dims: {
+    //         height: 0.3,
+    //         width: 1
+    //       }
+    //     };
+    //   })
     // {
-    //   data: BIRD_STRIKES,
+    //   data: require('./large-examples/senate').SENATORS,
+    //   technique: 'coordinate',
+    //   stepSize: 10,
+    //   computeMode: 'iterative',
+    //   accessor: d => d.yearsInOffice,
+    //   dims: {
+    //     height: 0.3,
+    //     width: 1
+    //   }
+    // },
+
+    // {
+    //   data: require('./large-examples/bird-strikes').BIRD_STRIKES,
     //   technique: 'coordinate',
     //   stepSize: 10,
     //   computeMode: 'iterative',
@@ -41,13 +60,13 @@ function App() {
     //   }
     // },
     // {
-    //   data: NESTED_POPS,
+    //   data: require('./large-examples/gdp-vs-country').NESTED_POPS,
     //   technique: 'coordinate',
     //   stepSize: 10,
     //   computeMode: 'iterative',
     //   accessor: d => d.GDP / d.pop,
     //   dims: {
-    //     height: 0.3,
+    //     height: 0.5,
     //     width: 2
     //   }
     // },
@@ -71,26 +90,14 @@ function App() {
     // },
 
     {data: EXAMPLES.HAND_SYMMETRIC_OLD, technique: 'coordinate', stepSize: 5, computeMode: 'iterative'},
-    // {data: scaleMatrix(EXAMPLES.PATHOLOGICAL_2_BY), technique: 'newtonStep', stepSize: 5, computeMode: 'iterative'},
-    // {data: [[1, 1], [1, 1]], technique: 'newtonStep', stepSize: 5, computeMode: 'iterative'},
-    // {data: stateMigration.slice(0, 10).map(row => row.slice(0, 10)), technique: 'newtonStep', stepSize: 10, computeMode: 'iterative'},
-    // {data: EXAMPLES.USA_USA_USA, technique: 'newtonStep', stepSize: 10, computeMode: 'direct'},
-    // {
-    //   data: EXAMPLES.BLACK_AND_WHITE_TABLE,
-    //   technique: 'newtonStep',
-    //   stepSize: 10,
-    //   computeMode: 'iterative',
-    //   dims: {
-    //     height: 0.75,
-    //     width: 0.75
-    //   }
-    // },
-    // {data: transposeMatrix(EXAMPLES.BLACK_AND_WHITE_TABLE), technique: 'newtonStep', stepSize: 10, computeMode: 'iterative'},
-  ].map((config, idx) => (
+    // {data: EXAMPLES.POWER_2, technique: 'coordinate', stepSize: 5, computeMode: 'iterative'},
+    // {data: EXAMPLES.POWER_3, technique: 'coordinate', stepSize: 5, computeMode: 'iterative'}
+  ]
+  .map((config, idx) => (
     <IterativeDisplay
       {...config}
       iterations={400}
-      layout={'pickBest'}
+      layout={'gridLayout'}
       key={`${config.technique}-${idx}`}/>
   ));
   const SHOW_TESTS = false;
@@ -101,7 +108,7 @@ function App() {
         {SHOW_TESTS && <TapReactBrowser
           runAsPromises
           tests={[
-            translateVectorToTabletranslateTableToVector,
+            // translateVectorToTabletranslateTableToVector,
             // findSumForTableTest,
             // buildIterativeCartogramTest,
             // testTreeMapForError
@@ -127,10 +134,7 @@ function App() {
           // <ObjectiveFunctionVisualization />
         }
         {
-          // <HourCalendar data={OHARE_TEMP_DATA}/>
-        }
-        {
-          // <HourCalendar data={OHARE_TEMP_DATA} celius/>
+          // <HourCalendar data={require('./large-examples/ohare-temp-data.json')}/>
         }
       </div>
     </div>
