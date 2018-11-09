@@ -1,60 +1,127 @@
 import {
-  // buildIterativeCartogram
-} from '../';
-
-import {
   translateVectorToTable,
   translateTableToVector,
-  findSumForTable
+  findSumForTable,
+  area
 } from '../iterative-methods/utils';
 
-import EXAMPLES from '../test-app/examples';
-import {checkErrorOfTreemap} from '../test-app/test-app-utils';
+import tape from 'tape';
 
-export function buildIterativeCartogramTest(t) {
-  // TODO REWRITE TEST, CURRENTLY GARBAGE
-  // ['monte', 'powell'].forEach(optimizationAlgo => {
-  //   const usingMonte = optimizationAlgo === 'monte';
-  //   const exampleTable = [[1, 1], [1, 1]];
-  //   const foundTable = buildIterativeCartogram(exampleTable, null, usingMonte);
-  //   const expectedTable = [
-  //     [{x: 0, y: 0}, {x: 0.5, y: 0}, {x: 1, y: 0}],
-  //     [{x: 0, y: 0.5}, {x: 0.5, y: 0.5}, {x: 1, y: 0.5}],
-  //     [{x: 0, y: 1}, {x: 0.5, y: 1}, {x: 1, y: 1}]
-  //   ];
-  //   t.deepEqual(foundTable, expectedTable, `${optimizationAlgo}: found table performs as expected -> 2x2`);
-  //
-  //   const exampleTable2 = [[1, 1, 1], [1, 1, 1]];
-  //   const foundTable2 = buildIterativeCartogram(exampleTable2, null, usingMonte);
-  //   const expectedTable2 = [
-  //     [{x: 0, y: 0 * 1}, {x: 1 / 3, y: 0 * 1}, {x: 2 / 3, y: 0 * 1}, {x: 1, y: 0}],
-  //     [{x: 0, y: 1 / 2}, {x: 1 / 3, y: 1 / 2}, {x: 2 / 3, y: 1 / 2}, {x: 1, y: 1 / 2}],
-  //     [{x: 0, y: 1 / 1}, {x: 1 / 3, y: 1 / 1}, {x: 2 / 3, y: 1 / 1}, {x: 1, y: 1}]
-  //   ];
-  //   t.equal(foundTable2.length, 3, `${optimizationAlgo}: 2x3 has correct width`);
-  //   t.equal(foundTable2[0].length, 4, `${optimizationAlgo}: 2x3 has correct height`);
-  //   t.deepEqual(foundTable2, expectedTable2, `${optimizationAlgo}: found table performs as expected -> 2x3`);
-  //
-  //   const exampleTable3 = [[1, 1], [1, 1], [1, 1]];
-  //   const foundTable3 = buildIterativeCartogram(exampleTable3, null, usingMonte);
-  //   const expectedTable3 = [
-  //     [{x: 0, y: 0 * 1}, {x: 1 / 2, y: 0 * 1}, {x: 1, y: 0}],
-  //     [{x: 0, y: 1 / 3}, {x: 1 / 2, y: 1 / 3}, {x: 1, y: 1 / 3}],
-  //     [{x: 0, y: 2 / 3}, {x: 1 / 2, y: 2 / 3}, {x: 1, y: 2 / 3}],
-  //     [{x: 0, y: 1 / 1}, {x: 1 / 2, y: 1 / 1}, {x: 1, y: 1}]
-  //   ];
-  //   t.equal(foundTable3.length, 4, `${optimizationAlgo}: 3x2 has correct width`);
-  //   t.equal(foundTable3[0].length, 3, `${optimizationAlgo}: 3x2 has correct height`);
-  //   t.deepEqual(foundTable3, expectedTable3, `${optimizationAlgo}: found table performs as expected -> 3x2`);
-  // });
-  // t.end();
-}
+import {
+  tableCartogram,
+  tableCartogramWithUpdate,
+  tableCartogramAdaptive
+} from '../';
+
+tape('test tableCartogram computation', t => {
+  const TEST_TABLE = [[{x: 1}, {x: 2}], [{x: 2}, {x: 1}]];
+  const directResults = tableCartogram({
+    data: TEST_TABLE,
+    technique: 'coordinate',
+    layout: 'pickBest',
+    iterations: 300,
+    accessor: d => d.x,
+    height: 0.5
+  });
+
+  t.ok(directResults.every((cell, idx) => {
+    const j = idx % 2;
+    const i = Math.floor(idx / 2);
+    return cell.value === TEST_TABLE[i][j].x;
+  }), 'all cells have correct value decorated');
+
+  t.ok(directResults.every((cell, idx) => {
+    const j = idx % 2;
+    const i = Math.floor(idx / 2);
+    return JSON.stringify(cell.data) === JSON.stringify(TEST_TABLE[i][j]);
+  }), 'all cells have correct data decorated');
+
+  const TABLE_SUM = 6;
+  directResults.forEach((cell, idx) => {
+    const j = idx % 2;
+    const i = Math.floor(idx / 2);
+    const HEIGHT = 0.5;
+    const DELTA = area(cell.vertices) - HEIGHT * TEST_TABLE[i][j].x / TABLE_SUM;
+    t.ok(Math.abs(DELTA) < 0.00001, `cell (${j},${i}) has correct area`);
+  });
+  t.end();
+});
+
+tape('test tableCartogramAdaptive computation', t => {
+  const TEST_TABLE = [[{x: 1}, {x: 2}], [{x: 2}, {x: 1}]];
+  const directResults = tableCartogramAdaptive({
+    data: TEST_TABLE,
+    technique: 'coordinate',
+    layout: 'pickBest',
+    iterations: 300,
+    accessor: d => d.x,
+    height: 0.5
+  });
+
+  t.ok(directResults.every((cell, idx) => {
+    const j = idx % 2;
+    const i = Math.floor(idx / 2);
+    return cell.value === TEST_TABLE[i][j].x;
+  }), 'all cells have correct value decorated');
+
+  t.ok(directResults.every((cell, idx) => {
+    const j = idx % 2;
+    const i = Math.floor(idx / 2);
+    return JSON.stringify(cell.data) === JSON.stringify(TEST_TABLE[i][j]);
+  }), 'all cells have correct data decorated');
+
+  const TABLE_SUM = 6;
+  directResults.forEach((cell, idx) => {
+    const j = idx % 2;
+    const i = Math.floor(idx / 2);
+    const HEIGHT = 0.5;
+    const DELTA = area(cell.vertices) - HEIGHT * TEST_TABLE[i][j].x / TABLE_SUM;
+    t.ok(Math.abs(DELTA) < 0.00001, `cell (${j},${i}) has correct area`);
+  });
+  t.end();
+});
+
+tape('test tableCartogramWithUpdate computation', t => {
+  const TEST_TABLE = [[{x: 1}, {x: 2}], [{x: 2}, {x: 1}]];
+  const resultsBuilder = tableCartogramWithUpdate({
+    data: TEST_TABLE,
+    technique: 'coordinate',
+    layout: 'pickBest',
+    iterations: 300,
+    accessor: d => d.x,
+    height: 0.5
+  });
+
+  t.equal(typeof resultsBuilder, 'function', 'should get a function back from the updatable version');
+  const directResults = resultsBuilder(300);
+  t.ok(directResults.every((cell, idx) => {
+    const j = idx % 2;
+    const i = Math.floor(idx / 2);
+    return cell.value === TEST_TABLE[i][j].x;
+  }), 'all cells have correct value decorated');
+
+  t.ok(directResults.every((cell, idx) => {
+    const j = idx % 2;
+    const i = Math.floor(idx / 2);
+    return JSON.stringify(cell.data) === JSON.stringify(TEST_TABLE[i][j]);
+  }), 'all cells have correct data decorated');
+
+  const TABLE_SUM = 6;
+  directResults.forEach((cell, idx) => {
+    const j = idx % 2;
+    const i = Math.floor(idx / 2);
+    const HEIGHT = 0.5;
+    const DELTA = area(cell.vertices) - HEIGHT * TEST_TABLE[i][j].x / TABLE_SUM;
+    t.ok(Math.abs(DELTA) < 0.00001, `cell (${j},${i}) has correct area`);
+  });
+  t.end();
+});
 
 function getNbyMTable(n, m, builder = b => 0) {
   return [...new Array(n)].map(a => [...new Array(m)].map(builder));
 }
 
-export function translateVectorToTabletranslateTableToVector(t) {
+tape('translateVectorToTabletranslateTableToVector', t => {
   const TABLE = getNbyMTable(2, 3);
   const VEC = [
     1, 2,
@@ -73,7 +140,6 @@ export function translateVectorToTabletranslateTableToVector(t) {
   const newVector = translateTableToVector(newTable);
   t.equal(newVector.length, 10, 'should have the correct number of elements in it');
   t.deepEqual(newVector, VEC, 'should correctly transform table to original vector');
-  // TODO WRITE SOME MORE TRESTS
 
   // need to add one to account for the first argument representing vertex positions
   const preppedTable = getNbyMTable(2 + 1, 3 + 1, b => ({x: 0, y: 0}));
@@ -83,16 +149,11 @@ export function translateVectorToTabletranslateTableToVector(t) {
     twoByNewVector, [...new Array(10)].map(x => 0),
     'should correctly transform the constructed two by 3');
   t.end();
-}
+});
 
-export function findSumForTableTest(t) {
+tape('findSumForTableTest', t => {
   const inputTable = [[1, 1, 3], [2, 3, 4]];
   t.equal(findSumForTable(inputTable), 14, 'should get correct result for basic sum');
   t.equal(findSumForTable(getNbyMTable(100, 100), 0), 0, 'should get zero for empty table');
   t.end();
-}
-
-export function testTreeMapForError(t) {
-  t.equal(checkErrorOfTreemap(EXAMPLES.EXAMPLE_TABLE), 0, 'tree map should have zero cartographic error');
-  t.end();
-}
+});

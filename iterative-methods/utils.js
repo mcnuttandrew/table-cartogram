@@ -313,3 +313,13 @@ export function trace(mat) {
   }
   return ret;
 }
+
+/* eslint-disable no-console */
+export function log(content) {
+  console.log(...content);
+}
+
+export function error(content) {
+  console.error(...content);
+}
+/* eslint-enable no-console */

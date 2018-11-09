@@ -12,7 +12,7 @@ import {
   testTreeMapForError
 } from '../test/iterative-tests';
 
-import EXAMPLES from './examples';
+import EXAMPLES from '../examples/examples';
 import IterativeDisplay from './components/iterative-display';
 import CalendarDisplay from './components/calendar-example';
 import HourCalendar from './components/hour-calendar';
@@ -20,10 +20,10 @@ import CartogramPlot from './components/table-cartogram';
 
 function App() {
   const tables = [
-    // ...require('./large-examples/element-examples')
+    // ...require('../examples/large-examples/element-examples')
     //   .ELEMENT_TABLES.map(key => {
     //     return {
-    //       data: require('./large-examples/element-examples')[key],
+    //       data: require('../examples/large-examples/element-examples')[key],
     //       technique: 'coordinate',
     //       stepSize: 10,
     //       computeMode: 'iterative',
@@ -37,7 +37,7 @@ function App() {
     //     };
     //   })
     // {
-    //   data: require('./large-examples/senate').SENATORS,
+    //   data: require('../examples/large-examples/senate').SENATORS,
     //   technique: 'coordinate',
     //   stepSize: 10,
     //   computeMode: 'iterative',
@@ -49,7 +49,7 @@ function App() {
     // },
 
     // {
-    //   data: require('./large-examples/bird-strikes').BIRD_STRIKES,
+    //   data: require('../examples/large-examples/bird-strikes').BIRD_STRIKES,
     //   technique: 'coordinate',
     //   stepSize: 10,
     //   computeMode: 'iterative',
@@ -60,7 +60,7 @@ function App() {
     //   }
     // },
     // {
-    //   data: require('./large-examples/gdp-vs-country').NESTED_POPS,
+    //   data: require('../examples/large-examples/gdp-vs-country').NESTED_POPS,
     //   technique: 'coordinate',
     //   stepSize: 10,
     //   computeMode: 'iterative',
@@ -134,7 +134,7 @@ function App() {
           // <ObjectiveFunctionVisualization />
         }
         {
-          // <HourCalendar data={require('./large-examples/ohare-temp-data.json')}/>
+          // <HourCalendar data={require('../examples/large-examples/ohare-temp-data.json')}/>
         }
       </div>
     </div>
