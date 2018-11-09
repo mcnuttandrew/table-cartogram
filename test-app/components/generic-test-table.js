@@ -3,11 +3,11 @@ import React from 'react';
 import {
   XYPlot,
   PolygonSeries,
-  LineSeries,
+  // LineSeries,
   LabelSeries
 } from 'react-vis';
 
-import {geoCenter, computeErrors} from '../../iterative-methods/utils';
+import {geoCenter} from '../../iterative-methods/utils';
 import {RV_COLORS} from '../colors';
 const tableCartogram = require('../../old-stuff/first-attempt.js').default;
 
@@ -19,10 +19,9 @@ export default class GenericTable extends React.Component {
     const {data, name, size} = this.props;
     const {mode} = this.state;
     const triangles = tableCartogram().mode(mode)(data);
-    const polygons = tableCartogram().mode('polygon')(data);
-    const line = tableCartogram().mode('zigzag')(data);
-    console.log(triangles)
-    console.log(computeErrors(data, triangles, d => d))
+    // const polygons = tableCartogram().mode('polygon')(data);
+    // const line = tableCartogram().mode('zigzag')(data);
+
     return (
       <div>
         {name}

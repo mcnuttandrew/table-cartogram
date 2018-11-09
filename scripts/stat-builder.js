@@ -40,7 +40,7 @@ const measureCheckerBoardPerformance = () => {
     'zigZagOnY',
     'zigZagOnXY',
     'psuedoCartogramLayout',
-    'psuedoCartogramLayoutZigZag',
+    'psuedoCartogramLayoutZigZag'
     // 'partialPsuedoCartogram'
   ];
   // const inputLayouts = ['pickBest', 'pickWorst'];

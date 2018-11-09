@@ -99,75 +99,75 @@ const REGIONS = [
 ];
 
 const STATE_MAP = {
-  'Alabama': 'AL',
-  'Alaska': 'AK',
-  'Arizona': 'AZ',
-  'Arkansas': 'AR',
-  'California': 'CA',
-  'Colorado': 'CO',
-  'Connecticut': 'CT',
-  'Delaware': 'DE',
+  Alabama: 'AL',
+  Alaska: 'AK',
+  Arizona: 'AZ',
+  Arkansas: 'AR',
+  California: 'CA',
+  Colorado: 'CO',
+  Connecticut: 'CT',
+  Delaware: 'DE',
   'District of Columbia': 'DC',
-  'Florida': 'FL',
-  'Georgia': 'GA',
-  'Hawaii': 'HI',
-  'Idaho': 'ID',
-  'Illinois': 'IL',
-  'Indiana': 'IN',
-  'Iowa': 'IA',
-  'Kansas': 'KS',
-  'Kentucky': 'KY',
-  'Louisiana': 'LA',
-  'Maine': 'ME',
-  'Maryland': 'MD',
-  'Massachusetts': 'MA',
-  'Michigan': 'MI',
-  'Minnesota': 'MN',
-  'Mississippi': 'MS',
-  'Missouri': 'MO',
-  'Montana': 'MT',
-  'Nebraska': 'NE',
-  'Nevada': 'NV',
+  Florida: 'FL',
+  Georgia: 'GA',
+  Hawaii: 'HI',
+  Idaho: 'ID',
+  Illinois: 'IL',
+  Indiana: 'IN',
+  Iowa: 'IA',
+  Kansas: 'KS',
+  Kentucky: 'KY',
+  Louisiana: 'LA',
+  Maine: 'ME',
+  Maryland: 'MD',
+  Massachusetts: 'MA',
+  Michigan: 'MI',
+  Minnesota: 'MN',
+  Mississippi: 'MS',
+  Missouri: 'MO',
+  Montana: 'MT',
+  Nebraska: 'NE',
+  Nevada: 'NV',
   'New Hampshire': 'NH',
   'New Jersey': 'NJ',
   'New Mexico': 'NM',
   'New York': 'NY',
   'North Carolina': 'NC',
   'North Dakota': 'ND',
-  'Ohio': 'OH',
-  'Oklahoma': 'OK',
-  'Oregon': 'OR',
-  'Pennsylvania': 'PA',
+  Ohio: 'OH',
+  Oklahoma: 'OK',
+  Oregon: 'OR',
+  Pennsylvania: 'PA',
   'Rhode Island': 'RI',
   'South Carolina': 'SC',
   'South Dakota': 'SD',
-  'Tennessee': 'TN',
-  'Texas': 'TX',
-  'Utah': 'UT',
-  'Vermont': 'VT',
-  'Virginia': 'VA',
-  'Washington': 'WA',
+  Tennessee: 'TN',
+  Texas: 'TX',
+  Utah: 'UT',
+  Vermont: 'VT',
+  Virginia: 'VA',
+  Washington: 'WA',
   'West Virginia': 'WV',
-  'Wisconsin': 'WI',
-  'Wyoming': 'WY',
+  Wisconsin: 'WI',
+  Wyoming: 'WY',
 
   'Virgin Islands': 'VI',
   'Puerto Rico': 'PR',
-  'Philippines': 'PI',
+  Philippines: 'PI',
 
-  'Alberta': 'AB',
+  Alberta: 'AB',
   'British Columbia': 'BC',
-  'Manitoba': 'MB',
+  Manitoba: 'MB',
   'New Brunswick': 'NB',
   'Newfoundland and Labrador': 'NL',
   'Nova Scotia': 'NS',
   'Northwest Territories': 'NT',
-  'Nunavut': 'NU',
-  'Ontario': 'ON',
+  Nunavut: 'NU',
+  Ontario: 'ON',
   'Prince Edward Island': 'PE',
-  'Quebec': 'QC',
-  'Saskatchewan': 'SK',
-  'Yukon': 'YT',
+  Quebec: 'QC',
+  Saskatchewan: 'SK',
+  Yukon: 'YT'
 };
 
 const INV_STATE_MAP = Object.entries(STATE_MAP).reduce((acc, row) => {
@@ -181,25 +181,6 @@ const STATE_TO_REGION = REGIONS.reduce((acc, region) => {
   });
   return acc;
 }, {});
-
-// const OTHER = {};
-//
-// const REGION_STRIKES = BirdStrikes.reduce((acc, row) => {
-//   const strikeRegion = STATE_TO_REGION[row['Origin State']];
-//   if (!strikeRegion || row['Origin State'] === 'N/A') {
-//     // console.log(row['Origin State'])
-//     OTHER[row['Origin State']] = true;
-//     return acc;
-//   }
-//   if (!acc[strikeRegion]) {
-//     acc[strikeRegion] = 0;
-//   }
-//   acc[strikeRegion] += 1;
-//   return acc;
-// }, {});
-//
-// console.log(JSON.stringify(OTHER, null, 2));
-// console.log(JSON.stringify(REGION_STRIKES, null, 2));
 
 const strikeCounts = [
   [17913, 'TX'],

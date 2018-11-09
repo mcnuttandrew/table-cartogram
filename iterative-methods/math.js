@@ -28,7 +28,6 @@ export function finiteDiference(objFunc, currentPos, stepSize) {
   });
 }
 
-
 export function computeHessian(objFunc, currentPos, stepSize) {
   const forwardEvals = currentPos.map((d, i) => {
     return objFunc(currentPos.map((row, idx) => row + (idx === i ? stepSize : 0)));

@@ -1,6 +1,7 @@
 const fs = require('fs');
 
-fs.readFile('./scripts/state-to-state.json', (err, strData) => {
+// DATA FROM CENSUS
+fs.readFile('./scripts/migration-data-raw.json', (err, strData) => {
   if (err) {
     console.log(err)
     return;

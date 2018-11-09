@@ -1,8 +1,4 @@
 import {findSumForTable, translateTableToVector} from './utils';
-import {
-  computeHessian,
-  trace
-} from './math.js';
 
 function psuedoCartogramLayout(numRows, numCols, colSums, rowSums, total) {
   return [...new Array(numCols + 1)].map((i, y) => {
@@ -87,15 +83,6 @@ export function generateInitialTable(numCols, numRows, table, objFunc, layout, d
     layouts[key](numRows, numCols, colSums, rowSums, total));
   const measurements = constructedLayouts.reduce((acc, newTable, idx) => {
     const currentVec = translateTableToVector(newTable);
-
-    const hesstianTrace = layout === 'pickBestHessian' ?
-      Math.abs(trace(computeHessian(objFunc, currentVec, 0.001))) : 0;
-    if (layout === 'pickBestHessian' && acc.bestScore > hesstianTrace) {
-      return {
-        bestIndex: idx,
-        bestScore: hesstianTrace
-      };
-    }
 
     const newScore = objFunc(currentVec);
     if (layout === 'pickBest' ? (acc.bestScore > newScore) : (acc.bestScore < newScore)) {

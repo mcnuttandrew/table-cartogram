@@ -1,5 +1,5 @@
 import {
-  buildIterativeCartogram
+  // buildIterativeCartogram
 } from '../';
 
 import {

@@ -53,7 +53,6 @@ class ObjectiveFunctionVisualization extends React.Component {
   }
 
   paintCanvas(pos, objFunc) {
-    console.log('paint')
     const {width, height, vectorShell} = this.props;
     const x = scaleLinear().domain([0, width]).range([0, 1]);
     const y = scaleLinear().domain([0, height]).range([0, 1]);

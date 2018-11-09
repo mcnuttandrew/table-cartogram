@@ -8,7 +8,8 @@
     "scrape": "babel-node manifold-scrape/manifold-scrape.js",
     "start": "(cd test-app && yarn && yarn start)",
     "stats": "babel-node scripts/stat-builder.js",
-    "circle": "babel-node scripts/make-bird-strike.js"
+    "circle": "babel-node scripts/make-bird-strike.js",
+    "lint": "eslint ./"
   },
   "devDependencies": {
     "babel-cli": "6.18.0",
@@ -60,7 +61,6 @@
     }
   },
   "dependencies": {
-    "d3-random": "^1.1.2",
     "mathjs": "^5.1.2",
     "point-in-polygon": "^1.0.1"
   }

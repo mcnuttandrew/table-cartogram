@@ -370,7 +370,8 @@ export function buildPenalties(newTable, dims) {
  * @param  {String} technique   Either monteCarlo or something else
  * @return {Number} Score
  */
-export function objectiveFunction(vector, targetTable, technique, dims = {height: 1, width: 1}, onlyShowPenalty) {
+export function objectiveFunction(
+  vector, targetTable, technique, dims = {height: 1, width: 1}, onlyShowPenalty) {
   const newTable = translateVectorToTable(vector, targetTable, dims.height, dims.width);
   const rects = getRectsFromTable(newTable);
   // sum up the relative amount of "error"

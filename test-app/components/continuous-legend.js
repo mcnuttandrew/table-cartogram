@@ -9,7 +9,6 @@ class ContinuousLegend extends React.Component {
 
     for (let i = 0; i <= 600; i++) {
       ctx.beginPath();
-      console.log(i / 600)
       ctx.strokeStyle = d3ColorScale(2 * i / 600);
       ctx.strokeOpacity = 1;
       ctx.moveTo(i, 0);
