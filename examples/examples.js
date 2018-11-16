@@ -134,6 +134,16 @@ const DND_ALIGNMENTS = [
   ]
 ];
 
+const infColor = (val, idx) => ({val, color: (idx % 2) ? 'red' : 'blue'});
+const SYSTEMS_TIMING = [
+  [22380.39, 1135.6, 3374.33879, 301.4665706].map(infColor),
+  [524.9617267, 116.6426814, 653.8473961, 162.6940126].map(infColor),
+  [12504.90642, 654.984771, 2455.719995, 156.6454175].map(infColor),
+  [16011.18683, 840.4974971, 2738.569166, 270.9505813].map(infColor),
+  [897.2846205, 233.7842667, 714.8889534, 155.0058439].map(infColor),
+  [4623.46108, 279.8359892, 1823.133411, 120.4488714].map(infColor)
+];
+
 export default {
   BLOCKS,
   SUB_BLOCKS,
@@ -164,6 +174,8 @@ export default {
   USA_USA_USA_LABELS,
 
   DND_ALIGNMENTS,
+
+  SYSTEMS_TIMING,
 
   POWER_1: applyPower(POWER_ARRANGEMENTS[0]),
   POWER_2: applyPower(POWER_ARRANGEMENTS[1]),

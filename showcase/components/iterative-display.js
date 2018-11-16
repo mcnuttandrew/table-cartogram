@@ -18,21 +18,11 @@ import {
   area,
   computeErrors
 } from '../../src/utils';
-
+import {COLOR_MODES} from '../colors';
 import CartogramPlot from './table-cartogram';
 
 const CONVERGENCE_THRESHOLD = 10;
 const CONVERGENCE_BARRIER = 0.001;
-
-const COLOR_MODES = [
-  'errorHeat',
-  'byValue',
-  'periodicColors',
-  'valueHeat',
-  'valueHeatAlt',
-  'byDataColor',
-  'plasmaHeat'
-];
 
 function decorateGonsWithErrors(data, gons, accessor, dims) {
   const tableSum = data.reduce((acc, row) => acc + row.reduce((mem, cell) => mem + accessor(cell), 0), 0);
@@ -223,7 +213,7 @@ export default class IterativeDisplay extends React.Component {
         <select
           onChange={({target: {value}}) => this.setState({fillMode: value})}
           value={fillMode}>
-          {COLOR_MODES.map(d => <option value={d} key={d}>{d}</option>)}
+          {Object.keys(COLOR_MODES).map(d => <option value={d} key={d}>{d}</option>)}
         </select>
         <button onClick={() => this.setState({showLabels: !this.state.showLabels})}>TOGGLE LABELS</button>
         <button onClick={() => this.setState({runningMode: 'stopped'})}>STOP</button>

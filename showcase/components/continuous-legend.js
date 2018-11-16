@@ -1,15 +1,14 @@
-import {interpolateRdBu} from 'd3-scale-chromatic';
+const scaleChromatic = require('d3-scale-chromatic');
 import React from 'react';
 
 class ContinuousLegend extends React.Component {
   componentDidMount() {
-    const {d3ColorScale} = this.props;
     const canvas = this.refs.ctx;
     const ctx = canvas.getContext('2d');
-
+    const colorScale = scaleChromatic[this.props.d3ColorScale];
     for (let i = 0; i <= 600; i++) {
       ctx.beginPath();
-      ctx.strokeStyle = d3ColorScale(2 * i / 600);
+      ctx.strokeStyle = colorScale(2 * i / 600);
       ctx.strokeOpacity = 1;
       ctx.moveTo(i, 0);
       ctx.lineTo(i, 100);
@@ -26,7 +25,7 @@ class ContinuousLegend extends React.Component {
 }
 
 ContinuousLegend.defaultProps = {
-  d3ColorScale: interpolateRdBu
+  d3ColorScale: 'interpolateRdBu'
 };
 
 export default ContinuousLegend;

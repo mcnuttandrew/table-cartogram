@@ -1,12 +1,6 @@
 import React from 'react';
 
 import {
-  interpolateInferno,
-  interpolateReds,
-  interpolatePlasma
-} from 'd3-scale-chromatic';
-
-import {
   XYPlot,
   PolygonSeries,
   LabelSeries
@@ -18,35 +12,10 @@ import {
   geoCenter
 } from '../../src/utils';
 
-import {RV_COLORS} from '../colors';
+import {colorCell} from '../colors';
 
-function colorCell(cell, index, fillMode, {min, max}) {
-  switch (fillMode) {
-  case 'valueHeat':
-    return interpolateInferno(
-      1 - ((cell.value - min) / (max - min))
-    );
-  case 'valueHeatAlt':
-    return interpolateReds(
-      1 - Math.sqrt(1 - (cell.value - min) / (max - min))
-    );
-  case 'errorHeat':
-    return interpolateInferno(Math.sqrt(cell.individualError));
-  case 'plasmaHeat':
-    return interpolatePlasma(((cell.value - min) / (max - min)));
-  case 'byValue':
-    return RV_COLORS[cell.value % RV_COLORS.length];
-  case 'byDataColor':
-    return cell.data.color || '#fff';
-  case 'none':
-    return 'rgba(255, 255, 255, 0)';
-  default:
-  case 'periodicColors':
-    return RV_COLORS[(index + 3) % RV_COLORS.length];
-  }
-}
 
-export default function cartogramPlot(props) {
+function plot(props, setX, xFlip, yFlip) {
   const {
     data,
     fillMode,
@@ -56,7 +25,11 @@ export default function cartogramPlot(props) {
     showAxisLabels = false,
     xLabels = [],
     yLabels = [],
-    getLabel
+    getLabel,
+    rugMode,
+    showBorder = true,
+    rectStyle = {},
+    clipToX
   } = props;
   const valueDomain = data.reduce((acc, row) => {
     return {
@@ -66,14 +39,19 @@ export default function cartogramPlot(props) {
   }, {min: Infinity, max: -Infinity});
 
   const dataWidth = xLabels.length;
+  const XYprops = {
+    animation: !rugMode,
+    colorType: "linear",
+    yDomain: yFlip ? [0, 1] : [1, 0],
+    width,
+    margin: rugMode ? 0 : 50,
+    height
+  }
+  if (setX || clipToX) {
+    XYprops.xDomain = xFlip ? [1, 0] : [0, 1];
+  }
   return (
-    <XYPlot
-      animation
-      colorType="linear"
-      yDomain={[1, 0]}
-      width={width}
-      margin={50}
-      height={height}>
+    <XYPlot {...XYprops}>
       {data.map((cell, index) => {
         return (<PolygonSeries
           key={`quad-${index}`}
@@ -84,17 +62,18 @@ export default function cartogramPlot(props) {
             stroke: '#000',
             strokeOpacity: 1,
             opacity: 0.5,
-            fill: colorCell(cell, index, fillMode, valueDomain)
+            fill: colorCell(cell, index, fillMode, valueDomain),
+            ...rectStyle
           }}/>);
       })}
-      <PolygonSeries
+      {showBorder && <PolygonSeries
         style={{
           fill: 'none',
           strokeOpacity: 1,
           strokeWidth: 1,
           stroke: 'black'
         }}
-        data={[{x: 0, y: 0}, {x: 0, y: 1}, {x: 1, y: 1}, {x: 1, y: 0}]} />
+        data={[{x: 0, y: 0}, {x: 0, y: 1}, {x: 1, y: 1}, {x: 1, y: 0}]} />}
       {showLabels && <LabelSeries data={data.map((cell, index) => ({
         ...geoCenter(cell.vertices),
         label: getLabel ? getLabel(cell) : `${cell.value}`,
@@ -146,4 +125,21 @@ export default function cartogramPlot(props) {
       })} />}
     </XYPlot>
   );
+}
+
+export default function cartogramPlot(props) {
+  if (!props.rugMode) {
+    return plot(props);
+  }
+  
+  return (<div style={{display: 'flex', flexDirection: 'column'}}>
+      <div style={{display: 'flex'}}>
+        {plot(props, true, false, false)}
+        {plot(props, true, true, false)}
+      </div>
+      <div style={{display: 'flex'}}>
+        {plot(props, true, false, true)}
+        {plot(props, true, true, true)}
+      </div>
+    </div>)
 }

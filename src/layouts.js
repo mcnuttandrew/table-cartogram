@@ -1,4 +1,4 @@
-import {findSumForTable, translateTableToVector} from './utils';
+import {findSumForTable, translateTableToVector, log} from './utils';
 
 function psuedoCartogramLayout(numRows, numCols, colSums, rowSums, total) {
   return [...new Array(numCols + 1)].map((i, y) => {
@@ -94,6 +94,6 @@ export function generateInitialTable(numCols, numRows, table, objFunc, layout, d
 
     return acc;
   }, {bestIndex: -1, bestScore: layout === 'pickWorst' ? -Infinity : Infinity});
-  console.log(layout, Object.keys(layouts)[measurements.bestIndex]);
+  log([layout, Object.keys(layouts)[measurements.bestIndex]]);
   return scaleLayoutsToDims(constructedLayouts[measurements.bestIndex], dims);
 }

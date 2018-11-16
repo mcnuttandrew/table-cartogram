@@ -1,3 +1,11 @@
+import {
+  interpolateInferno,
+  interpolateReds,
+  interpolatePlasma,
+  interpolateGreens,
+  interpolateRdBu
+} from 'd3-scale-chromatic';
+
 export const RV_COLORS = [
   '#19CDD7',
   '#DDB27C',
@@ -21,3 +29,29 @@ export const RV_COLORS = [
   '#89DAC1',
   '#B3AD9E'
 ];
+
+export const COLOR_MODES = {
+  valueHeat: (cell, index, {min, max}) =>
+    interpolateInferno(1 - ((cell.value - min) / (max - min))),
+  valueHeatReds: (cell, index, {min, max}) =>
+    interpolateReds(1 - Math.sqrt(1 - (cell.value - min) / (max - min))),
+  valueHeatGreens: (cell, index, {min, max}) =>
+    interpolateGreens(1 - Math.sqrt(1 - (cell.value - min) / (max - min))),
+  valueHeatRedWhiteBlue: (cell, index, {min, max}) => {
+    return interpolateRdBu(1 - ((cell.value - min) / (max - min)));
+  },
+  errorHeat: (cell, index, {min, max}) =>
+    interpolateInferno(Math.sqrt(cell.individualError)),
+  plasmaHeat: (cell, index, {min, max}) =>
+    interpolatePlasma(((cell.value - min) / (max - min))),
+  byValue: (cell, index, domain) =>
+    RV_COLORS[cell.value % RV_COLORS.length],
+  byDataColor: (cell, index, domain) =>
+    cell.data.color || '#fff',
+  none: (cell, index, domain) => 'rgba(255, 255, 255, 0)',
+  periodicColors: (cell, index, domain) =>
+    RV_COLORS[(index + 3) % RV_COLORS.length]
+};
+
+export const colorCell = (cell, index, fillMode, domain) =>
+  (COLOR_MODES[fillMode] || COLOR_MODES.node)(cell, fillMode, domain);

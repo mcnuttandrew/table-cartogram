@@ -10,6 +10,7 @@ import IterativeDisplay from './components/iterative-display';
 import CalendarDisplay from './components/calendar-example';
 import HourCalendar from './components/hour-calendar';
 import CartogramPlot from './components/table-cartogram';
+import ZionExperiment from './components/zion-experiment';
 
 function App() {
   const tables = [
@@ -82,7 +83,25 @@ function App() {
     //   getLabel: d => `${d.data.percent}%`
     // },
 
-    {data: EXAMPLES.HAND_SYMMETRIC_OLD, technique: 'coordinate', stepSize: 5, computeMode: 'iterative'},
+    {
+      data: EXAMPLES.SYSTEMS_TIMING.map(row => row.filter((d, i) => (i % 2))), 
+      technique: 'coordinate', 
+      stepSize: 5, 
+      computeMode: 'iterative',
+      accessor: d => 166 / d.val,
+      // accessor: d => d.val / (152 * 10),
+      // xLabels: ['Training', 'Inference', 'Training', 'Inference'],
+      xLabels: ['Plaid', 'Tensorflow'],
+      yLabels: ['GOOG CPU', 'GOOG GPU', 'SCHOOL CPU', 'GOOG CPU', 'GOOG GPU', 'SCHOOL CPU'],
+      showAxisLabels: true,
+      getLabel: d => `${Math.floor(166 / d.data.val * 1000) / 1000}`,
+      // getLabel: d => `${Math.floor(d.data.val / (152 * 10) * 1000) / 1000}`,
+      dims: {
+        height: 1,
+        width: 1
+      }
+    },
+    // {data: EXAMPLES.SYSTEMS_TIMING, technique: 'coordinate', stepSize: 5, computeMode: 'iterative'},
     // {data: EXAMPLES.POWER_2, technique: 'coordinate', stepSize: 5, computeMode: 'iterative'},
     // {data: EXAMPLES.POWER_3, technique: 'coordinate', stepSize: 5, computeMode: 'iterative'}
   ]
@@ -99,7 +118,7 @@ function App() {
       <div>
         <div style={{display: 'flex', flexWrap: 'wrap'}}>
           {
-            tables
+            // tables
           }
         </div>
         <div>
@@ -120,6 +139,9 @@ function App() {
         {
           // <HourCalendar data={require('../examples/large-examples/ohare-temp-data.json')}/>
         }
+        {
+          <ZionExperiment />
+        }
       </div>
     </div>
   );
@@ -129,3 +151,5 @@ const el = document.createElement('div');
 document.body.appendChild(el);
 
 ReactDOM.render(React.createElement(App), el);
+
+

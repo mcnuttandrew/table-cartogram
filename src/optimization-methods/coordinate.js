@@ -61,8 +61,8 @@ export function coordinateDescentInnerLoop(objFunc, currentVec, stepSize, table,
     //   console.log('new', newPen)
     //   // console.log(currentVec)
     // }
-    const dx = buildErrorGradient(currentVec, table, dims, searchIndices);
-    // const dx = finiteDiferenceForIndices(objFunc, currentVec, stepSize / 10, searchIndices);
+    // const dx = buildErrorGradient(currentVec, table, dims, searchIndices);
+    const dx = finiteDiferenceForIndices(objFunc, currentVec, stepSize / 10, searchIndices);
     const localNorm = norm2(dx);
     const bestStepSize = lineSearch(
       {objFunc, stepSize, currentVec, localNorm, dx, searchIndices, lineSearchSteps});
@@ -127,7 +127,7 @@ export function coordinateDescentWithLineSearch(objFunc, candidateVector, numIte
   /* eslint-disable max-depth */
   for (let i = 0; i < numIterations; i++) {
     // TODO MAGIC NUMBER
-    const stepSize = Math.min(0.005);
+    const stepSize = Math.min(0.01);
     // , objFunc(currentVec));
     coordinateDescentInnerLoop(objFunc, currentVec, stepSize, table, dims, 20);
   }
