@@ -1,4 +1,6 @@
 import pointInPolygon from 'point-in-polygon';
+import {union} from 'polybooljs';
+
 /* eslint-disable complexity */
 /**
  * Reformat a vector representation of a layout into a table representation
@@ -303,7 +305,7 @@ function shuffle(a) {
   }
   return a;
 }
-const DETERMINISTIC = true;
+const DETERMINISTIC = false;
 export const phaseShuffle = DETERMINISTIC ? () => [0, 1, 2, 3] : () => shuffle([0, 1, 2, 3]);
 
 export function trace(mat) {
@@ -323,3 +325,44 @@ export function error(content) {
   console.error(...content);
 }
 /* eslint-enable no-console */
+
+/** Generate a polygon
+ * @param {number} number - the number of sides in the polygon
+ * @param {number} radius - the radius of the polygon
+ * @param {object} offset - the offset of the polygon from zero, {x, y}
+ * @returns {array} list of points in polygon
+ */
+export function generatePolygon(numberOfSides, radius, offset) {
+  return new Array(numberOfSides).fill(0).map((point, index) => {
+    const angle = Math.PI * 2 * index / numberOfSides + Math.PI / 3;
+    return {x: radius * Math.cos(angle) + offset.x, y: radius * Math.sin(angle) + offset.y};
+  });
+}
+
+export function fusePolygons(polygons, accessor) {
+  const gonGroups = polygons.reduce((acc, row) => {
+    const key = accessor(row);
+    if (!acc[key]) {
+      acc[key] = [];
+    }
+    acc[key].push(row);
+    return acc;
+  }, {});
+
+  const fusions = Object.entries(gonGroups).reduce((acc, row) => {
+    const accumlator = {
+      regions: [[]],
+      inverted: false
+    };
+    acc[row[0]] = row[1].reduce((mem, d) => union({
+      regions: [d.vertices.map(vertex => [vertex.x, vertex.y])],
+      inverted: false
+    }, mem), accumlator).regions[0].map(d => ({x: d[0], y: d[1]}));
+    return acc;
+  }, {});
+
+  return Object.entries(fusions).map(row => ({
+    vertices: row[1],
+    key: row[0]
+  }));
+}

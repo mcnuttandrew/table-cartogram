@@ -62,6 +62,7 @@
   },
   "dependencies": {
     "mathjs": "^5.1.2",
-    "point-in-polygon": "^1.0.1"
+    "point-in-polygon": "^1.0.1",
+    "polybooljs": "^1.2.0"
   }
 }

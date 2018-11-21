@@ -127,7 +127,7 @@ export function coordinateDescentWithLineSearch(objFunc, candidateVector, numIte
   /* eslint-disable max-depth */
   for (let i = 0; i < numIterations; i++) {
     // TODO MAGIC NUMBER
-    const stepSize = Math.min(0.001);
+    const stepSize = Math.min(0.01);
     // , objFunc(currentVec));
     coordinateDescentInnerLoop(objFunc, currentVec, stepSize, table, dims, 20);
   }

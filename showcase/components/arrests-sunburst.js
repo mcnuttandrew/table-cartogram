@@ -14,6 +14,9 @@ export default function ArrestsSunburst() {
         strokeWidth: '0.8'
       }}
       colorType="literal"
+      getLabel={d => {
+        return 'xx';
+      }}
       width={500}
       height={500}/>
   );

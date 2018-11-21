@@ -16,7 +16,8 @@ import {
 
 import {
   area,
-  computeErrors
+  computeErrors,
+  fusePolygons
 } from '../../src/utils';
 import {COLOR_MODES} from '../colors';
 import CartogramPlot from './table-cartogram';
@@ -74,7 +75,8 @@ export default class IterativeDisplay extends React.Component {
       accessor = d => d,
       layout,
       dims = {height: 1, width: 1},
-      technique
+      technique,
+      computeAnnotationBoxBy = false
     } = this.props;
     const startTime = (new Date()).getTime();
     const {gons, error, stepsTaken, maxError} = tableCartogramAdaptive({
@@ -94,7 +96,8 @@ export default class IterativeDisplay extends React.Component {
       loaded: true,
       stepsTaken,
       runningMode: 'finished',
-      maxError
+      maxError,
+      annotationBoxes: computeAnnotationBoxBy && fusePolygons(gons, computeAnnotationBoxBy)
     });
   }
 
@@ -105,7 +108,8 @@ export default class IterativeDisplay extends React.Component {
       stepSize,
       accessor = d => d,
       layout,
-      dims = {height: 1, width: 1}
+      dims = {height: 1, width: 1},
+      computeAnnotationBoxBy = false
     } = this.props;
     const cartogram = tableCartogramWithUpdate({
       data,
@@ -135,7 +139,8 @@ export default class IterativeDisplay extends React.Component {
         loaded: true,
         stepsTaken: this.state.stepsTaken + stepSize,
         errorLog: this.state.errorLog.concat([{x: this.state.stepsTaken, y: error, z: maxError}]),
-        previousValueAndCount
+        previousValueAndCount,
+        annotationBoxes: computeAnnotationBoxBy && fusePolygons(gons, computeAnnotationBoxBy)
       });
       const converged = previousValueAndCount.value < CONVERGENCE_BARRIER;
       const halted = previousValueAndCount.count > CONVERGENCE_THRESHOLD;
@@ -157,7 +162,8 @@ export default class IterativeDisplay extends React.Component {
       technique,
       accessor = d => d,
       layout,
-      dims = {height: 1, width: 1}
+      dims = {height: 1, width: 1},
+      computeAnnotationBoxBy
     } = this.props;
     Promise.resolve()
       .then(() => {
@@ -180,7 +186,8 @@ export default class IterativeDisplay extends React.Component {
           maxError,
           runningMode: 'finished',
           loaded: true,
-          stepsTaken: iterations
+          stepsTaken: iterations,
+          annotationBoxes: computeAnnotationBoxBy && fusePolygons(gons, computeAnnotationBoxBy)
         });
       });
   }
@@ -222,8 +229,19 @@ export default class IterativeDisplay extends React.Component {
   }
 
   render() {
-    const {gons, loaded, fillMode, showLabels} = this.state;
-    const {showAxisLabels = false, xLabels = [], yLabels = [], getLabel = false} = this.props;
+    const {
+      gons,
+      loaded,
+      fillMode,
+      showLabels,
+      annotationBoxes = []
+    } = this.state;
+    const {
+      showAxisLabels = false,
+      xLabels = [],
+      yLabels = [],
+      getLabel = false
+    } = this.props;
     return (
       <div style={{display: 'flex', alignItems: 'center'}}>
         {loaded && <CartogramPlot
@@ -234,6 +252,7 @@ export default class IterativeDisplay extends React.Component {
           yLabels={yLabels}
           showAxisLabels={showAxisLabels}
           getLabel={getLabel}
+          annotationBoxes={annotationBoxes}
           />}
         {loaded && this.displayReadout()}
       </div>

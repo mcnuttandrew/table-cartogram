@@ -1,5 +1,5 @@
 import {transposeMatrix} from '../../src/utils';
-import {RV_COLORS} from '../colors';
+import {RV_COLORS} from '../../showcase/colors';
 
 // MAKE DICT INTO WAFFLE PLOT
 // https://en.wikipedia.org/wiki/List_of_regions_of_the_United_States

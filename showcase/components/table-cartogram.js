@@ -14,9 +14,10 @@ import {
 
 import {colorCell} from '../colors';
 
-
 function plot(props, setX, xFlip, yFlip) {
   const {
+    annotationBoxes,
+    annotationBoxStyle = {},
     data,
     fillMode,
     showLabels,
@@ -41,12 +42,12 @@ function plot(props, setX, xFlip, yFlip) {
   const dataWidth = xLabels.length;
   const XYprops = {
     animation: !rugMode,
-    colorType: "linear",
+    colorType: 'linear',
     yDomain: yFlip ? [0, 1] : [1, 0],
     width,
     margin: rugMode ? 0 : 50,
     height
-  }
+  };
   if (setX || clipToX) {
     XYprops.xDomain = xFlip ? [1, 0] : [0, 1];
   }
@@ -64,6 +65,19 @@ function plot(props, setX, xFlip, yFlip) {
             opacity: 0.5,
             fill: colorCell(cell, index, fillMode, valueDomain),
             ...rectStyle
+          }}/>);
+      })}
+      {annotationBoxes.length && annotationBoxes.map((box, idx) => {
+        return (<PolygonSeries
+          key={`annotation-box-${idx}`}
+          data={box.vertices}
+          className="annotation"
+          style={{
+            strokeWidth: 4,
+            stroke: '#000',
+            strokeOpacity: 0.8,
+            fillOpacity: 0,
+            ...annotationBoxStyle
           }}/>);
       })}
       {showBorder && <PolygonSeries
@@ -131,15 +145,15 @@ export default function cartogramPlot(props) {
   if (!props.rugMode) {
     return plot(props);
   }
-  
+
   return (<div style={{display: 'flex', flexDirection: 'column'}}>
-      <div style={{display: 'flex'}}>
-        {plot(props, true, false, false)}
-        {plot(props, true, true, false)}
-      </div>
-      <div style={{display: 'flex'}}>
-        {plot(props, true, false, true)}
-        {plot(props, true, true, true)}
-      </div>
-    </div>)
+    <div style={{display: 'flex'}}>
+      {plot(props, true, false, false)}
+      {plot(props, true, true, false)}
+    </div>
+    <div style={{display: 'flex'}}>
+      {plot(props, true, false, true)}
+      {plot(props, true, true, true)}
+    </div>
+  </div>);
 }

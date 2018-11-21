@@ -13,6 +13,8 @@ import CartogramPlot from './components/table-cartogram';
 import ZionExperiment from './components/zion-experiment';
 import Sunburst from './components/arrests-sunburst';
 
+import {fusePolygons} from '../src/utils';
+
 function App() {
   const tables = [
     // ...require('../examples/large-examples/element-examples')
@@ -49,10 +51,11 @@ function App() {
       stepSize: 10,
       computeMode: 'iterative',
       showAxisLabels: true,
-      getLabel: d => `${d.count}`,
-      xLabels: ['ARREST MADE', 'NO ARREST'],
-      yLabels: ['DOMESTIC', 'NON DOMESTIC', 'DOMESTIC', 'NON DOMESTIC', 'DOMESTIC', 'NON DOMESTIC'],
+      getLabel: d => `${Math.round(d.data.count / 1000)}k`,
+      xLabels: ['NO ARREST', 'ARREST MADE'],
+      yLabels: ['OTHER', 'DOMESTIC', 'OTHER', 'DOMESTIC', 'OTHER', 'DOMESTIC'],
       accessor: d => d.count,
+      computeAnnotationBoxBy: d => d.data.zone
       // dims: {
       //   height: 0.3,
       //   width: 1
@@ -148,9 +151,6 @@ function App() {
           // <CalendarDisplay />
         }
         {
-          // <CartogramPlot data={ZION_RUN.gons} fillMode="valueHeat"/>
-        }
-        {
           // <ObjectiveFunctionVisualization />
         }
         {
@@ -160,7 +160,7 @@ function App() {
           // <ZionExperiment />
         }
         {
-          <Sunburst />
+          // <Sunburst />
         }
       </div>
     </div>

@@ -67,19 +67,19 @@ export const CHICAGO_ARRESTS = TABLE_CART_DATA;
 const SUNBURST = {children: []};
 ['CENTRAL', 'NORTH', 'SOUTH', 'WEST'].forEach((zone, idx) => {
   SUNBURST.children.push({
-    title: zone,
+    // title: zone,
     children: [],
     color: COLORS[idx]
   });
   ['DOMESTIC', 'NON_DOMESTIC'].forEach((dom, jdx) => {
     SUNBURST.children[idx].children.push({
-      title: dom,
+      // title: dom,
       children: [],
       color: COLORS[idx]
     });
     ['ARREST', 'NO_ARREST'].forEach(arrest => {
       SUNBURST.children[idx].children[jdx].children.push({
-        title: arrest,
+        // title: arrest,
         size: 0,
         color: COLORS[idx]
       });
@@ -92,6 +92,7 @@ zones.forEach(row => {
   const dom = row.domestic ? 1 : 0;
   const arrest = row.arrest ? 1 : 0;
   SUNBURST.children[zone].children[dom].children[arrest].size += row.count;
+  SUNBURST.children[zone].children[dom].children[arrest].label = `${Math.round(row.count / 1000)}k`;
 });
 console.log(SUNBURST)
 export const SUNBURST_DATA = SUNBURST;
