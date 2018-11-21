@@ -26,7 +26,7 @@ const COLORS = [
   '#88572C',
   '#FF991F',
   '#F15C17',
-  '#223F9A',
+  '#223F9A'
 ];
 
 const zones = [
@@ -41,7 +41,7 @@ const zones = [
   {zone: 'WEST', domestic: false, arrest: false, count: 826649, color: COLORS[3]},
   {zone: 'WEST', domestic: false, arrest: true, count: 488395, color: COLORS[3]},
   {zone: 'WEST', domestic: true, arrest: false, count: 161632, color: COLORS[3]},
-  {zone: 'WEST', domestic: true, arrest: true, count: 39931, color: COLORS[3]},
+  {zone: 'WEST', domestic: true, arrest: true, count: 39931, color: COLORS[3]}
   // {zone: 'CENTRAL', domestic: false, arrest: false, count: 275964, color: COLORS[0]},
   // {zone: 'CENTRAL', domestic: false, arrest: true, count: 107770, color: COLORS[0]},
   // {zone: 'CENTRAL', domestic: true, arrest: false, count: 13312, color: COLORS[0]},
@@ -94,5 +94,5 @@ zones.forEach(row => {
   SUNBURST.children[zone].children[dom].children[arrest].size += row.count;
   SUNBURST.children[zone].children[dom].children[arrest].label = `${Math.round(row.count / 1000)}k`;
 });
-console.log(SUNBURST)
+
 export const SUNBURST_DATA = SUNBURST;

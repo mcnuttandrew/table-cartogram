@@ -1,12 +1,31 @@
-Table Cartograms!
+# Table Cartograms
+
+Table cartograms are a novel way to represent tabular information. Tabular information comes in all shapes and sizes and so do the associated table cartograms.
+
+In this library we provide an iteration based approach to creating table cartograms. We follow a very simple optimization approach in which we select from a library of initializations, also allowing for custom ones, and then iteratively adjust the vertices via gradient descent until a satisfactory condition is reached.
 
 
-To run, have yarn installed. Run yarn, then yarn start, this will open the test suite page.
+### API
 
+TODO
 
-ohare data from
-https://www.meteoblue.com/en/weather/archive/export/chicago-o%27hare-international-airport_united-states-of-america_4887479
+### Local Development
 
-Suggested citation: United Nations, Department of Economic and Social Affairs. Population Division (2017). Trends in International Migrant Stock: The 2017 revision (United Nations database, POP/DB/MIG/Stock/Rev.2017
+1. Have Yarn/Node/Npm Installed
+2. Install our deps
+```sh
+yarn
+```
+3. Start up the development sandbox
+```sh
+yarn start
+```
 
-chicago moving violation data from
+After you've developed things, make sure that code passes the tests:
+
+```sh
+yarn lint
+yarn test
+```
+
+And then you're good!

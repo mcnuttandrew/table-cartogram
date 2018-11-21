@@ -261,8 +261,10 @@ const REGION_STRIKES = strikeCounts.reduce((acc, row) => {
   return acc;
 }, {});
 
+/* eslint-disable */
 console.log(JSON.stringify(OTHER, null, 2));
 console.log(JSON.stringify(REGION_STRIKES, null, 2));
+/* eslint-enable */
 
 // PROVINENCE IS MILDLY UNCLEAR
 // STARTS FEB 1990

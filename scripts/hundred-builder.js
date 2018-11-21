@@ -1,6 +1,6 @@
 const fs = require('fs');
 import {tableCartogramAdaptive} from '../';
-import {stateMigration as data, ZION_VISITORS_WITH_ANNOTATION} from '../examples/examples';
+import {ZION_VISITORS_WITH_ANNOTATION} from '../examples/examples';
 // import data from '../test/tenByten.json';
 // import data from '../test/hundredByHundred.json';
 

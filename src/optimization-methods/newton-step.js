@@ -28,9 +28,11 @@ function newtonInnerLoop(objFunc, currentVec, stepSize, table, dims) {
     const objVal = objFunc(currentVec);
     const currTable = translateVectorToTable(currentVec, table, dims.height, dims.width);
     const searchIndices = getIndicesInVectorOfInterest(currTable, phases[phase]);
+    /* eslint-disable */
     if (!searchIndices.length) {
       continue;
     }
+    /* eslint-enable */
     const gradient = finiteDiferenceForIndices(objFunc, currentVec, stepSize, searchIndices);
     const hessian = computeHessianForIndices(objFunc, currentVec, stepSize, searchIndices);
     const invHessian = invDiagon(hessian);
@@ -61,7 +63,9 @@ export function newtonStepBoth(objFunc, candidateVector, numIterations, table, d
     const newtonVec = currentVec.slice();
     newtonInnerLoop(objFunc, newtonVec, newtonStepSize, table, dims);
     const newtonScore = objFunc(newtonVec);
-    console.log(newtonScore < coordScore ? 'newton' : 'coord')
+    /* eslint-disable no-console */
+    console.log(newtonScore < coordScore ? 'newton' : 'coord');
+    /* eslint-enable no-console */
     currentVec = (newtonScore < coordScore) ? newtonVec : coordDescentVec;
   }
   return currentVec;

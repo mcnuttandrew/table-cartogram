@@ -5,15 +5,13 @@ import React from 'react';
 // import HUNDRED_BY_HUNDRED from '../test/tenByten.json';
 // import COMPLETED_RUN_DATA from '../scripts/hundred-run-data-1010.json';
 
-import EXAMPLES from '../examples/examples';
+// import EXAMPLES from '../examples/examples';
 import IterativeDisplay from './components/iterative-display';
-import CalendarDisplay from './components/calendar-example';
-import HourCalendar from './components/hour-calendar';
-import CartogramPlot from './components/table-cartogram';
-import ZionExperiment from './components/zion-experiment';
-import Sunburst from './components/arrests-sunburst';
-
-import {fusePolygons} from '../src/utils';
+// import CalendarDisplay from './components/calendar-example';
+// import HourCalendar from './components/hour-calendar';
+// import CartogramPlot from './components/table-cartogram';
+// import ZionExperiment from './components/zion-experiment';
+// import Sunburst from './components/arrests-sunburst';
 
 function App() {
   const tables = [
@@ -60,7 +58,7 @@ function App() {
       //   height: 0.3,
       //   width: 1
       // }
-    },
+    }
 
     // {
     //   data: require('../examples/large-examples/bird-strikes').BIRD_STRIKES,

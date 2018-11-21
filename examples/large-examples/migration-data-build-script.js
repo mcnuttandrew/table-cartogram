@@ -1,9 +1,10 @@
 const fs = require('fs');
 
+/* eslint-disable no-console */
 // DATA FROM CENSUS
 fs.readFile('./examples/large-examples/migration-data-raw.json', (err, strData) => {
   if (err) {
-    console.log(err)
+    console.log(err);
     return;
   }
   const data = JSON.parse(strData).map(row => {
@@ -22,7 +23,9 @@ fs.readFile('./examples/large-examples/migration-data-raw.json', (err, strData) 
     if (error) {
       console.log('error', error);
     } else {
-      console.log('file written')
+      console.log('file written');
     }
   });
 });
+
+/* eslint-enable no-console */
