@@ -1,3 +1,2 @@
-// import './cartogram-tests';
 import './utils-tests';
-import './iterative-tests';
+import './api-tests';
