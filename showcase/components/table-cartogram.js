@@ -90,7 +90,7 @@ function plot(props, setX, xFlip, yFlip) {
         data={[{x: 0, y: 0}, {x: 0, y: 1}, {x: 1, y: 1}, {x: 1, y: 0}]} />}
       {showLabels && <LabelSeries data={data.map((cell, index) => ({
         ...geoCenter(cell.vertices),
-        label: getLabel ? getLabel(cell) : `${cell.value}`,
+        label: `${getLabel ? getLabel(cell) : cell.value}`,
         style: {
           textAnchor: 'middle',
           alignmentBaseline: 'middle'
@@ -102,7 +102,7 @@ function plot(props, setX, xFlip, yFlip) {
           return ({
             x,
             y: -0.01,
-            label: xLabels[index],
+            label: `${xLabels[index]}`,
             style: {
               textAnchor: 'middle',
               alignmentBaseline: 'middle',
@@ -116,7 +116,7 @@ function plot(props, setX, xFlip, yFlip) {
             return ({
               x: -0.01,
               y,
-              label: yLabels[index],
+              label: `${yLabels[index]}`,
               style: {
                 textAnchor: 'end',
                 alignmentBaseline: 'middle',

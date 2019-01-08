@@ -14,7 +14,7 @@ fs.readFile('./examples/large-examples/migration-data-raw.json', (err, strData) 
         return acc;
       }
       const isZeroOrNaN = Number(cell[1]) === 0 || !isFinite(Number(cell[1]));
-      acc[cell[0]] = !isZeroOrNaN ? (Number(cell[1]) + 1) : 1;
+      acc[cell[0]] = !isZeroOrNaN ? (Number(cell[1])) : 0;
       return acc;
     }, {});
   });

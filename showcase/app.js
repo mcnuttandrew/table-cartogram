@@ -5,7 +5,7 @@ import React from 'react';
 // import HUNDRED_BY_HUNDRED from '../test/tenByten.json';
 // import COMPLETED_RUN_DATA from '../scripts/hundred-run-data-1010.json';
 
-// import EXAMPLES from '../examples/examples';
+import EXAMPLES from '../examples/examples';
 import IterativeDisplay from './components/iterative-display';
 // import CalendarDisplay from './components/calendar-example';
 // import HourCalendar from './components/hour-calendar';
@@ -43,22 +43,22 @@ function App() {
     //   }
     // },
 
-    {
-      data: require('../examples/large-examples/chicago-arrests').CHICAGO_ARRESTS,
-      technique: 'coordinate',
-      stepSize: 10,
-      computeMode: 'iterative',
-      showAxisLabels: true,
-      getLabel: d => `${Math.round(d.data.count / 1000)}k`,
-      xLabels: ['NO ARREST', 'ARREST MADE'],
-      yLabels: ['OTHER', 'DOMESTIC', 'OTHER', 'DOMESTIC', 'OTHER', 'DOMESTIC'],
-      accessor: d => d.count,
-      computeAnnotationBoxBy: d => d.data.zone
-      // dims: {
-      //   height: 0.3,
-      //   width: 1
-      // }
-    }
+    // {
+    //   data: require('../examples/large-examples/chicago-arrests').CHICAGO_ARRESTS,
+    //   technique: 'coordinate',
+    //   stepSize: 10,
+    //   computeMode: 'iterative',
+    //   showAxisLabels: true,
+    //   getLabel: d => `${Math.round(d.data.count / 1000)}k`,
+    //   xLabels: ['NO ARREST', 'ARREST MADE'],
+    //   yLabels: ['OTHER', 'DOMESTIC', 'OTHER', 'DOMESTIC', 'OTHER', 'DOMESTIC'],
+    //   accessor: d => d.count,
+    //   computeAnnotationBoxBy: d => d.data.zone
+    //   // dims: {
+    //   //   height: 0.3,
+    //   //   width: 1
+    //   // }
+    // },
 
     // {
     //   data: require('../examples/large-examples/bird-strikes').BIRD_STRIKES,
@@ -98,7 +98,11 @@ function App() {
     //   xLabels: ['Lawful', 'Neutral', 'Chaotic'],
     //   yLabels: ['Good', 'Neutral', 'Evil'],
     //   showAxisLabels: true,
-    //   getLabel: d => `${d.data.percent}%`
+    //   getLabel: d => `${d.data.percent}%`,
+    //   dims: {
+    //     height: 0.26,
+    //     width: 1
+    //   }
     // },
 
     // {
@@ -119,15 +123,63 @@ function App() {
     //     width: 1
     //   }
     // },
+    // {
+    //   data: EXAMPLES.AHNB_SURVEY_RESULTS,
+    //   technique: 'coordinate',
+    //   stepSize: 5,
+    //   computeMode: 'iterative',
+    //   accessor: d => d,
+    //   xLabels: ['P1', 'P2', 'P3'],
+    //   yLabels: ['Q1', 'Q3', 'Q5', 'Q7', 'Q9', 'Q2', 'Q4', 'Q6', 'Q8', 'Q10'],
+    //   showAxisLabels: true,
+    //   getLabel: d => {
+    //     console.log(d)
+    //     const labels = ['STRONGLY DISAGREE', 'DISAGREE', 'NEUTRAL', 'AGREE', 'STRONGLY AGREE'];
+    //     return labels[d.data - 1];
+    //   },
+    //   // getLabel: d => `${Math.floor(d.data.val / (152 * 10) * 1000) / 1000}`,
+    //   dims: {
+    //     height: 1,
+    //     width: 3
+    //   },
+    //   showBorder: false
+    // },
+    // {
+    //   data: require('../examples/large-examples/state-migration-network').MIGRATION_REGION_TO_REGION,
+    //   technique: 'coordinate',
+    //   stepSize: 5,
+    //   computeMode: 'iterative',
+    //   accessor: d => d.value,
+    //   xLabels: require('../examples/large-examples/state-migration-network').namedRegions,
+    //   yLabels: require('../examples/large-examples/state-migration-network').namedRegions,
+    //   showAxisLabels: true,
+    //   // getLabel: d => d.value,
+    //   getLabel: d => `${Math.floor(d.value / 1000)}k`,
+    //   // dims: {
+    //   //   height: 1,
+    //   //   width: 3
+    //   // },
+    //   showBorder: false
+    // },
     // {data: EXAMPLES.SYSTEMS_TIMING, technique: 'coordinate', stepSize: 5, computeMode: 'iterative'},
     // {data: EXAMPLES.POWER_2, technique: 'coordinate', stepSize: 5, computeMode: 'iterative'},
-    // {data: EXAMPLES.POWER_3, technique: 'coordinate', stepSize: 5, computeMode: 'iterative'}
+    // {data: EXAMPLES.HAND_SYMMETRIC_OLD, technique: 'coordinate', stepSize: 5, computeMode: 'iterative'}
+    {
+      data: EXAMPLES.MULTIPLICATION_TABLE,
+      technique: 'coordinate',
+      stepSize: 5,
+      computeMode: 'iterative',
+      getLabel: d => d.value,
+      xLabels: [...new Array(10)].map((_, i) => i + 1),
+      yLabels: [...new Array(10)].map((_, i) => i + 1),
+      showAxisLabels: true,
+    }
   ]
   .map((config, idx) => (
     <IterativeDisplay
-      {...config}
       iterations={400}
-      layout={'pickBest'}
+      layout={'gridLayout'}
+      {...config}
       key={`${config.technique}-${idx}`}/>
   ));
   return (

@@ -144,6 +144,19 @@ const SYSTEMS_TIMING = [
   [4623.46108, 279.8359892, 1823.133411, 120.4488714].map(infColor)
 ];
 
+const AHNB_SURVEY_RESULTS = [
+  [5, 4, 3],
+  [4, 5, 4],
+  [4, 5, 3],
+  [5, 4, 4],
+  [4, 5, 4],
+  [1, 1, 1],
+  [3, 2, 1],
+  [1, 1, 1],
+  [1, 1, 1],
+  [2, 1, 1]
+];
+
 export default {
   BLOCKS,
   SUB_BLOCKS,
@@ -161,7 +174,7 @@ export default {
   BLACK_AND_WHITE_TABLE,
   BIG_TOP,
   BIG_BOTTOM,
-  CHECKER_BOARD: checkerBoardGenerator(5, 5, 10, 1),
+  CHECKER_BOARD: checkerBoardGenerator(5, 5, 15, 1),
   CHECKER_BOARD_SMALL: checkerBoardGenerator(4, 4, 5, 1),
   PATHOLOGICAL_2_BY,
   MULTIPLICATION_TABLE,
@@ -176,6 +189,7 @@ export default {
   DND_ALIGNMENTS,
 
   SYSTEMS_TIMING,
+  AHNB_SURVEY_RESULTS,
 
   POWER_1: applyPower(POWER_ARRANGEMENTS[0]),
   POWER_2: applyPower(POWER_ARRANGEMENTS[1]),

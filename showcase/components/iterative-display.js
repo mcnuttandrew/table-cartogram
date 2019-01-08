@@ -23,7 +23,7 @@ import {COLOR_MODES} from '../colors';
 import CartogramPlot from './table-cartogram';
 
 const CONVERGENCE_THRESHOLD = 10;
-const CONVERGENCE_BARRIER = 0.001;
+const CONVERGENCE_BARRIER = 0.0001;
 
 function decorateGonsWithErrors(data, gons, accessor, dims) {
   const tableSum = data.reduce((acc, row) => acc + row.reduce((mem, cell) => mem + accessor(cell), 0), 0);

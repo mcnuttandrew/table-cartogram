@@ -305,7 +305,7 @@ function shuffle(a) {
   }
   return a;
 }
-const DETERMINISTIC = false;
+const DETERMINISTIC = true;
 export const phaseShuffle = DETERMINISTIC ? () => [0, 1, 2, 3] : () => shuffle([0, 1, 2, 3]);
 
 export function trace(mat) {

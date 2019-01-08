@@ -26,7 +26,7 @@ const COLORS = [
   '#88572C',
   '#FF991F',
   '#F15C17',
-  '#223F9A'
+  '#19CDD7'
 ];
 
 const zones = [
@@ -42,11 +42,19 @@ const zones = [
   {zone: 'WEST', domestic: false, arrest: true, count: 488395, color: COLORS[3]},
   {zone: 'WEST', domestic: true, arrest: false, count: 161632, color: COLORS[3]},
   {zone: 'WEST', domestic: true, arrest: true, count: 39931, color: COLORS[3]}
-  // {zone: 'CENTRAL', domestic: false, arrest: false, count: 275964, color: COLORS[0]},
-  // {zone: 'CENTRAL', domestic: false, arrest: true, count: 107770, color: COLORS[0]},
-  // {zone: 'CENTRAL', domestic: true, arrest: false, count: 13312, color: COLORS[0]},
-  // {zone: 'CENTRAL', domestic: true, arrest: true, count: 2826, color: COLORS[0]},
 ];
+const CENTER = [
+  {zone: 'CENTRAL', domestic: false, arrest: false, count: 275964, color: COLORS[0]},
+  {zone: 'CENTRAL', domestic: false, arrest: true, count: 107770, color: COLORS[0]},
+  {zone: 'CENTRAL', domestic: true, arrest: false, count: 13312, color: COLORS[0]},
+  {zone: 'CENTRAL', domestic: true, arrest: true, count: 2826, color: COLORS[0]}
+];
+
+const zones1 = [...zones];
+const ADD_TO_NORTH = false;
+for (let i = 0; i < 4; i++) {
+  zones1[i + (ADD_TO_NORTH ? 4 : 0)].count += CENTER[i].count;
+}
 
 // const TABLE_CART_DATA = [
 //   [zones[0], zones[2]],
@@ -60,7 +68,7 @@ const zones = [
 // ];
 const TABLE_CART_DATA = [];
 for (let i = 0; i < zones.length / 2; i++) {
-  TABLE_CART_DATA.push([zones[2 * i + 0], zones[2 * i + 1]]);
+  TABLE_CART_DATA.push([zones1[2 * i + 0], zones1[2 * i + 1]]);
 }
 export const CHICAGO_ARRESTS = TABLE_CART_DATA;
 
@@ -71,25 +79,27 @@ const SUNBURST = {children: []};
     children: [],
     color: COLORS[idx]
   });
-  ['DOMESTIC', 'NON_DOMESTIC'].forEach((dom, jdx) => {
+  ['NON_DOMESTIC', 'DOMESTIC'].forEach((dom, jdx) => {
     SUNBURST.children[idx].children.push({
       // title: dom,
       children: [],
-      color: COLORS[idx]
+      color: COLORS[idx],
+      opacity: !jdx ? 1 : 0.5
     });
-    ['ARREST', 'NO_ARREST'].forEach(arrest => {
+    ['ARREST', 'NO_ARREST'].forEach((arrest, kdx) => {
       SUNBURST.children[idx].children[jdx].children.push({
         // title: arrest,
         size: 0,
-        color: COLORS[idx]
+        color: COLORS[idx],
+        opacity: !jdx ? (!kdx ? 1 : 0.75) : (!kdx ? 0.5 : 0.25)
       });
       // SUNBURST[zone][dom][arrest] = {};
     });
   });
 });
-zones.forEach(row => {
+zones1.forEach(row => {
   const zone = ['CENTRAL', 'NORTH', 'SOUTH', 'WEST'].findIndex(d => d === row.zone);
-  const dom = row.domestic ? 1 : 0;
+  const dom = !row.domestic ? 1 : 0;
   const arrest = row.arrest ? 1 : 0;
   SUNBURST.children[zone].children[dom].children[arrest].size += row.count;
   SUNBURST.children[zone].children[dom].children[arrest].label = `${Math.round(row.count / 1000)}k`;

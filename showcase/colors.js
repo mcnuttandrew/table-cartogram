@@ -40,6 +40,9 @@ export const COLOR_MODES = {
   valueHeatRedWhiteBlue: (cell, index, {min, max}) => {
     return interpolateRdBu(1 - ((cell.value - min) / (max - min)));
   },
+  valueHeatRedWhiteBlueReverse: (cell, index, {min, max}) => {
+    return interpolateRdBu(((cell.value - min) / (max - min)));
+  },
   errorHeat: (cell, index, {min, max}) =>
     interpolateInferno(Math.sqrt(cell.individualError)),
   plasmaHeat: (cell, index, {min, max}) =>
