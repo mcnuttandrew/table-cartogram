@@ -145,26 +145,22 @@ function App() {
     //   },
     //   showBorder: false
     // },
-    // {
-    //   data: require('../examples/large-examples/state-migration-network').MIGRATION_REGION_TO_REGION,
-    //   technique: 'coordinate',
-    //   stepSize: 5,
-    //   computeMode: 'iterative',
-    //   accessor: d => d.value,
-    //   xLabels: require('../examples/large-examples/state-migration-network').namedRegions,
-    //   yLabels: require('../examples/large-examples/state-migration-network').namedRegions,
-    //   showAxisLabels: true,
-    //   // getLabel: d => d.value,
-    //   getLabel: d => `${Math.round(d.value / 100)/10}k`,
-    //   // dims: {
-    //   //   height: 1,
-    //   //   width: 3
-    //   // },
-    //   showBorder: false
-    // },
+    {
+      data: require('../examples/large-examples/state-migration-network').MIGRATION_REGION_TO_REGION,
+      technique: 'coordinate',
+      stepSize: 5,
+      computeMode: 'iterative',
+      accessor: d => d.value,
+      xLabels: require('../examples/large-examples/state-migration-network').namedRegions,
+      yLabels: require('../examples/large-examples/state-migration-network').namedRegions,
+      showAxisLabels: true,
+      getLabel: d => `${Math.round(d.value / 100) / 10}k`,
+      showBorder: false,
+      defaultColor: 'valueHeatGreens'
+    },
     // {data: EXAMPLES.SYSTEMS_TIMING, technique: 'coordinate', stepSize: 5, computeMode: 'iterative'},
     // {data: EXAMPLES.POWER_2, technique: 'coordinate', stepSize: 5, computeMode: 'iterative'},
-    {data: EXAMPLES.USA_USA_USA, technique: 'coordinate', stepSize: 5, computeMode: 'iterative'}
+    // {data: EXAMPLES.USA_USA_USA, technique: 'coordinate', stepSize: 5, computeMode: 'iterative'}
     // {
     //   data: EXAMPLES.MULTIPLICATION_TABLE,
     //   technique: 'coordinate',

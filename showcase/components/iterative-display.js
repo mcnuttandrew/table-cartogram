@@ -55,6 +55,12 @@ export default class IterativeDisplay extends React.Component {
   }
 
   componentDidMount() {
+    if (this.props.defaultColor) {
+      console.log(this.props.defaultColor)
+      this.setState({
+        fillMode: this.props.defaultColor
+      });
+    }
     switch (this.props.computeMode) {
     case 'adaptive':
       this.adaptiveBuild();
