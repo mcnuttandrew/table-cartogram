@@ -69,7 +69,8 @@ function App() {
     //   dims: {
     //     height: 0.3,
     //     width: 1
-    //   }
+    //   },
+    //   computeAnnotationBoxBy: d => d.data.name
     // },
     // {
     //   data: require('../examples/large-examples/gdp-vs-country').NESTED_POPS,
@@ -144,41 +145,41 @@ function App() {
     //   },
     //   showBorder: false
     // },
-    // {
-    //   data: require('../examples/large-examples/state-migration-network').MIGRATION_REGION_TO_REGION,
-    //   technique: 'coordinate',
-    //   stepSize: 5,
-    //   computeMode: 'iterative',
-    //   accessor: d => d.value,
-    //   xLabels: require('../examples/large-examples/state-migration-network').namedRegions,
-    //   yLabels: require('../examples/large-examples/state-migration-network').namedRegions,
-    //   showAxisLabels: true,
-    //   // getLabel: d => d.value,
-    //   getLabel: d => `${Math.floor(d.value / 1000)}k`,
-    //   // dims: {
-    //   //   height: 1,
-    //   //   width: 3
-    //   // },
-    //   showBorder: false
-    // },
-    // {data: EXAMPLES.SYSTEMS_TIMING, technique: 'coordinate', stepSize: 5, computeMode: 'iterative'},
-    // {data: EXAMPLES.POWER_2, technique: 'coordinate', stepSize: 5, computeMode: 'iterative'},
-    // {data: EXAMPLES.HAND_SYMMETRIC_OLD, technique: 'coordinate', stepSize: 5, computeMode: 'iterative'}
     {
-      data: EXAMPLES.MULTIPLICATION_TABLE,
+      data: require('../examples/large-examples/state-migration-network').MIGRATION_REGION_TO_REGION,
       technique: 'coordinate',
       stepSize: 5,
       computeMode: 'iterative',
-      getLabel: d => d.value,
-      xLabels: [...new Array(10)].map((_, i) => i + 1),
-      yLabels: [...new Array(10)].map((_, i) => i + 1),
+      accessor: d => d.value,
+      xLabels: require('../examples/large-examples/state-migration-network').namedRegions,
+      yLabels: require('../examples/large-examples/state-migration-network').namedRegions,
       showAxisLabels: true,
-    }
+      // getLabel: d => d.value,
+      getLabel: d => `${Math.round(d.value / 100)/10}k`,
+      // dims: {
+      //   height: 1,
+      //   width: 3
+      // },
+      showBorder: false
+    },
+    // {data: EXAMPLES.SYSTEMS_TIMING, technique: 'coordinate', stepSize: 5, computeMode: 'iterative'},
+    // {data: EXAMPLES.POWER_2, technique: 'coordinate', stepSize: 5, computeMode: 'iterative'},
+    // {data: EXAMPLES.HAND_SYMMETRIC_OLD, technique: 'coordinate', stepSize: 5, computeMode: 'iterative'}
+    // {
+    //   data: EXAMPLES.MULTIPLICATION_TABLE,
+    //   technique: 'coordinate',
+    //   stepSize: 5,
+    //   computeMode: 'iterative',
+    //   getLabel: d => d.value,
+    //   xLabels: [...new Array(10)].map((_, i) => i + 1),
+    //   yLabels: [...new Array(10)].map((_, i) => i + 1),
+    //   showAxisLabels: true,
+    // }
   ]
   .map((config, idx) => (
     <IterativeDisplay
       iterations={400}
-      layout={'gridLayout'}
+      layout={'pickBest'}
       {...config}
       key={`${config.technique}-${idx}`}/>
   ));

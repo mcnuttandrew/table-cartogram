@@ -19,10 +19,12 @@ const BIRD_STRIKES_BY_REGION = {
 const BIRD_SUM = Object.values(BIRD_STRIKES_BY_REGION)
   .reduce((acc, row) => acc + row, 0);
 const BIRDS = Object.entries(BIRD_STRIKES_BY_REGION)
-  .map((row) => ({
+  .map(row => ({
     name: row[0],
     size: Math.ceil(row[1] / BIRD_SUM * WAFFLE_CELLS)
   }));
+BIRDS[0].size -= 2;
+// console.log(BIRDS, BIRDS.reduce((acc, {size}) => acc + size, 0))
 const REGION_COLOR = Object.keys(BIRD_STRIKES_BY_REGION).reduce((acc, region, idx) => {
   acc[region] = RV_COLORS[idx];
   return acc;
@@ -31,10 +33,11 @@ const REGION_COLOR = Object.keys(BIRD_STRIKES_BY_REGION).reduce((acc, region, id
 const BIRD_CELLS = BIRDS.reduce((acc, {name, size}) => {
   return acc.concat([...new Array(size)].map((_, idx) =>
     ({
-      size: 0.5 + (
-        ((size % 2) && idx === (size - 1)) ? 0.5 :
-          (!(idx % 2) ? 1.0 : 0)
-      ),
+      // size: 0.5 + (
+      //   ((size % 2) && idx === (size - 1)) ? 0.5 :
+      //     (!(idx % 2) ? 1.0 : 0)
+      // ),
+      size: BIRD_STRIKES_BY_REGION[name] / size,
       name,
       // size: 1,
       color: REGION_COLOR[name]
