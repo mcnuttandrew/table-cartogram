@@ -179,7 +179,7 @@ export default {
   PATHOLOGICAL_2_BY,
   MULTIPLICATION_TABLE,
 
-  TRI_BOARD: nStopCheckerBoardGenerator(10, 10, [5, 1, 20]),
+  TRI_BOARD: nStopCheckerBoardGenerator(12, 12, [5, 1, 20]),
 
   HAND_SYMMETRIC,
   HAND_SYMMETRIC_OLD,

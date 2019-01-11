@@ -174,7 +174,6 @@ export function gradBuildPenalties(newTable, dims) {
     }
     tableGradient.push(rowGradient);
   }
-
   return tableGradient;
 }
 
@@ -240,22 +239,27 @@ function errorGrad(newTable, targetTable) {
   return gradientTable;
 }
 
-export function buildErrorGradient(vector, targetTable, dims, searchIndices, onlyShowPenalty) {
+export function buildErrorGradient(vector, targetTable, dims, searchIndices) {
   const newTable = translateVectorToTable(vector, targetTable, dims.height, dims.width);
   const gradientTable = errorGrad(newTable, targetTable);
   const gradPenal = gradBuildPenalties(newTable, dims);
   const divisor = gradPenal.length * gradPenal[0].length;
+
   for (let i = 0; i < gradPenal.length; i++) {
     for (let j = 0; j < gradPenal[0].length; j++) {
-      if (onlyShowPenalty) {
-        gradientTable[i][j].x = gradPenal[i][j].x;
-        gradientTable[i][j].y = gradPenal[i][j].y;
-      } else {
-        gradientTable[i][j].x += gradPenal[i][j].x;
-        gradientTable[i][j].y += gradPenal[i][j].y;
-        gradientTable[i][j].x /= divisor;
-        gradientTable[i][j].y /= divisor;
-      }
+      // if (onlyShowPenalty) {
+      //   gradientTable[i][j].x = gradPenal[i][j].x;
+      //   gradientTable[i][j].y = gradPenal[i][j].y;
+      // } else {
+      // }
+      // MAGIC NUMBER?????
+      gradientTable[i][j].x += 10 * gradPenal[i][j].x;
+      gradientTable[i][j].y += 10 * gradPenal[i][j].y;
+      // if(gradPenal[i][j].x || gradPenal[i][j].y) {
+      //   console.log('test')
+      // }
+      // gradientTable[i][j].x /= divisor;
+      // gradientTable[i][j].y /= divisor;
       gradientTable[i][j].x *= -1;
       gradientTable[i][j].y *= -1;
     }

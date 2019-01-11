@@ -1,16 +1,10 @@
-// import {norm} from 'mathjs';
-import {norm2} from '../math';
+import {norm2, finiteDiferenceForIndices} from '../math';
 import {
   translateVectorToTable,
   getIndicesInVectorOfInterest,
   phaseShuffle
 } from '../utils';
-import {
-  finiteDiferenceForIndices
-} from '../math.js';
-import {
-  buildErrorGradient
-} from '../grad-penal';
+import {buildErrorGradient} from '../grad-penal';
 
 /**
  * Execute a search for the best stepSize for a given position and objective Function
@@ -48,21 +42,23 @@ function lineSearch({objFunc, stepSize, currentVec, localNorm, dx, searchIndices
   return bestStepSize;
 }
 
-export function coordinateDescentInnerLoop(objFunc, currentVec, stepSize, table, dims, lineSearchSteps) {
-  const phases = phaseShuffle();
+export function coordinateDescentInnerLoop(objFunc, currentVec, table, dims, descentParams) {
+  const {lineSearchSteps, useAnalytic, stepSize, nonDeterministic} = descentParams;
+  const phases = phaseShuffle(nonDeterministic);
   for (let phase = 0; phase < 4; phase++) {
     const currTable = translateVectorToTable(currentVec, table, dims.height, dims.width);
     const searchIndices = getIndicesInVectorOfInterest(currTable, phases[phase]);
+    // debugging stuff
     // const xdx = finiteDiferenceForIndices(objFunc, currentVec, stepSize / 10, searchIndices, true);
     // const newPen = buildErrorGradient(currentVec, table, dims, searchIndices, true);
     // if (xdx.some((v, idx) => newPen[idx] !== v)) {
-    //   console.log(searchIndices)
     //   console.log('old', xdx)
     //   console.log('new', newPen)
     //   // console.log(currentVec)
     // }
-    // const dx = buildErrorGradient(currentVec, table, dims, searchIndices);
-    const dx = finiteDiferenceForIndices(objFunc, currentVec, stepSize / 10, searchIndices);
+    const dx = useAnalytic ?
+      buildErrorGradient(currentVec, table, dims, searchIndices) :
+      finiteDiferenceForIndices(objFunc, currentVec, stepSize / 10, searchIndices);
     const localNorm = norm2(dx);
     const bestStepSize = lineSearch(
       {objFunc, stepSize, currentVec, localNorm, dx, searchIndices, lineSearchSteps});
@@ -126,10 +122,15 @@ export function coordinateDescentWithLineSearch(objFunc, candidateVector, numIte
   const currentVec = candidateVector.slice();
   /* eslint-disable max-depth */
   for (let i = 0; i < numIterations; i++) {
-    // TODO MAGIC NUMBER
-    const stepSize = Math.min(0.01);
-    // , objFunc(currentVec));
-    coordinateDescentInnerLoop(objFunc, currentVec, stepSize, table, dims, 20);
+    const descentParams = {
+      lineSearchSteps: 30,
+      useAnalytic: true,
+      // TODO MAGIC NUMBER
+      stepSize: Math.min(0.05),
+      nonDeterministic: false
+      // , objFunc(currentVec));
+    };
+    coordinateDescentInnerLoop(objFunc, currentVec, table, dims, descentParams);
   }
   /* eslint-enable max-depth */
   return currentVec;
