@@ -29,32 +29,57 @@ const COLORS = [
   '#19CDD7'
 ];
 
-const zones = [
-  {zone: 'NORTH', domestic: false, arrest: false, count: 943119, color: COLORS[1]},
-  {zone: 'NORTH', domestic: false, arrest: true, count: 256723, color: COLORS[1]},
-  {zone: 'NORTH', domestic: true, arrest: false, count: 101729, color: COLORS[1]},
-  {zone: 'NORTH', domestic: true, arrest: true, count: 31449, color: COLORS[1]},
-  {zone: 'SOUTH', domestic: false, arrest: false, count: 1749272, color: COLORS[2]},
-  {zone: 'SOUTH', domestic: false, arrest: true, count: 674192, color: COLORS[2]},
-  {zone: 'SOUTH', domestic: true, arrest: false, count: 372711, color: COLORS[2]},
-  {zone: 'SOUTH', domestic: true, arrest: true, count: 85908, color: COLORS[2]},
-  {zone: 'WEST', domestic: false, arrest: false, count: 826649, color: COLORS[3]},
-  {zone: 'WEST', domestic: false, arrest: true, count: 488395, color: COLORS[3]},
-  {zone: 'WEST', domestic: true, arrest: false, count: 161632, color: COLORS[3]},
-  {zone: 'WEST', domestic: true, arrest: true, count: 39931, color: COLORS[3]}
-];
-const CENTER = [
-  {zone: 'CENTRAL', domestic: false, arrest: false, count: 275964, color: COLORS[0]},
-  {zone: 'CENTRAL', domestic: false, arrest: true, count: 107770, color: COLORS[0]},
-  {zone: 'CENTRAL', domestic: true, arrest: false, count: 13312, color: COLORS[0]},
-  {zone: 'CENTRAL', domestic: true, arrest: true, count: 2826, color: COLORS[0]}
-];
+// PRE 2018
+const zones2012to2018 = [92082, 26386, 4253, 924, 266722, 59799, 32218, 9002, 474016, 168817, 119575, 27581, 243473, 126326, 55163, 12606]
+const zones2006to2012 = [98293, 40654, 4586, 866, 371881, 104736, 39251, 12511, 703709, 283079, 144758, 32449, 321605, 194900, 57275, 15249]
 
-const zones1 = [...zones];
-const ADD_TO_NORTH = false;
-for (let i = 0; i < 4; i++) {
-  zones1[i + (ADD_TO_NORTH ? 4 : 0)].count += CENTER[i].count;
-}
+const zones = [
+  {zone: 'CENTRAL', domestic: false, arrest: false, color: COLORS[0]},
+  {zone: 'CENTRAL', domestic: false, arrest: true, color: COLORS[0]},
+  {zone: 'CENTRAL', domestic: true, arrest: false, color: COLORS[0]},
+  {zone: 'CENTRAL', domestic: true, arrest: true, color: COLORS[0]},
+  {zone: 'NORTH', domestic: false, arrest: false, color: COLORS[1]},
+  {zone: 'NORTH', domestic: false, arrest: true, color: COLORS[1]},
+  {zone: 'NORTH', domestic: true, arrest: false, color: COLORS[1]},
+  {zone: 'NORTH', domestic: true, arrest: true, color: COLORS[1]},
+  {zone: 'SOUTH', domestic: false, arrest: false, color: COLORS[2]},
+  {zone: 'SOUTH', domestic: false, arrest: true, color: COLORS[2]},
+  {zone: 'SOUTH', domestic: true, arrest: false, color: COLORS[2]},
+  {zone: 'SOUTH', domestic: true, arrest: true, color: COLORS[2]},
+  {zone: 'WEST', domestic: false, arrest: false, color: COLORS[3]},
+  {zone: 'WEST', domestic: false, arrest: true, color: COLORS[3]},
+  {zone: 'WEST', domestic: true, arrest: false, color: COLORS[3]},
+  {zone: 'WEST', domestic: true, arrest: true, color: COLORS[3]}
+].map((d, idx) => ({...d, count: zones2006to2012[idx]}));
+
+// OLD VERSION FOR DIVIDING CITY
+//
+// const zones = [
+//   {zone: 'NORTH', domestic: false, arrest: false, count: 943119, color: COLORS[1]},
+//   {zone: 'NORTH', domestic: false, arrest: true, count: 256723, color: COLORS[1]},
+//   {zone: 'NORTH', domestic: true, arrest: false, count: 101729, color: COLORS[1]},
+//   {zone: 'NORTH', domestic: true, arrest: true, count: 31449, color: COLORS[1]},
+//   {zone: 'SOUTH', domestic: false, arrest: false, count: 1749272, color: COLORS[2]},
+//   {zone: 'SOUTH', domestic: false, arrest: true, count: 674192, color: COLORS[2]},
+//   {zone: 'SOUTH', domestic: true, arrest: false, count: 372711, color: COLORS[2]},
+//   {zone: 'SOUTH', domestic: true, arrest: true, count: 85908, color: COLORS[2]},
+//   {zone: 'WEST', domestic: false, arrest: false, count: 826649, color: COLORS[3]},
+//   {zone: 'WEST', domestic: false, arrest: true, count: 488395, color: COLORS[3]},
+//   {zone: 'WEST', domestic: true, arrest: false, count: 161632, color: COLORS[3]},
+//   {zone: 'WEST', domestic: true, arrest: true, count: 39931, color: COLORS[3]}
+// ];
+// const CENTER = [
+//   {zone: 'CENTRAL', domestic: false, arrest: false, count: 275964, color: COLORS[0]},
+//   {zone: 'CENTRAL', domestic: false, arrest: true, count: 107770, color: COLORS[0]},
+//   {zone: 'CENTRAL', domestic: true, arrest: false, count: 13312, color: COLORS[0]},
+//   {zone: 'CENTRAL', domestic: true, arrest: true, count: 2826, color: COLORS[0]}
+// ];
+//
+// const zones1 = [...zones];
+// const ADD_TO_NORTH = false;
+// for (let i = 0; i < 4; i++) {
+//   zones1[i + (ADD_TO_NORTH ? 4 : 0)].count += CENTER[i].count;
+// }
 
 // const TABLE_CART_DATA = [
 //   [zones[0], zones[2]],
@@ -68,7 +93,7 @@ for (let i = 0; i < 4; i++) {
 // ];
 const TABLE_CART_DATA = [];
 for (let i = 0; i < zones.length / 2; i++) {
-  TABLE_CART_DATA.push([zones1[2 * i + 0], zones1[2 * i + 1]]);
+  TABLE_CART_DATA.push([zones[2 * i + 0], zones[2 * i + 1]]);
 }
 export const CHICAGO_ARRESTS = TABLE_CART_DATA;
 
@@ -97,7 +122,7 @@ const SUNBURST = {children: []};
     });
   });
 });
-zones1.forEach(row => {
+zones.forEach(row => {
   const zone = ['CENTRAL', 'NORTH', 'SOUTH', 'WEST'].findIndex(d => d === row.zone);
   const dom = !row.domestic ? 1 : 0;
   const arrest = row.arrest ? 1 : 0;

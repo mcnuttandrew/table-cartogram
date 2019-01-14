@@ -43,22 +43,20 @@ function App() {
     //   }
     // },
 
-    // {
-    //   data: require('../examples/large-examples/chicago-arrests').CHICAGO_ARRESTS,
-    //   technique: 'coordinate',
-    //   stepSize: 10,
-    //   computeMode: 'iterative',
-    //   showAxisLabels: true,
-    //   getLabel: d => `${Math.round(d.data.count / 1000)}k`,
-    //   xLabels: ['NO ARREST', 'ARREST MADE'],
-    //   yLabels: ['OTHER', 'DOMESTIC', 'OTHER', 'DOMESTIC', 'OTHER', 'DOMESTIC'],
-    //   accessor: d => d.count,
-    //   computeAnnotationBoxBy: d => d.data.zone
-    //   // dims: {
-    //   //   height: 0.3,
-    //   //   width: 1
-    //   // }
-    // },
+    {
+      data: require('../examples/large-examples/chicago-arrests').CHICAGO_ARRESTS,
+      technique: 'coordinate',
+      stepSize: 10,
+      computeMode: 'iterative',
+      showAxisLabels: true,
+      getLabel: d => `${Math.round(d.data.count / 1000)}k`,
+      xLabels: ['NO ARREST', 'ARREST MADE'],
+      yLabels: [...new Array(4)].map(_ => ['OTHER', 'DOMESTIC']).reduce((a, b) => a.concat(b), []),
+      accessor: d => d.count,
+      computeAnnotationBoxBy: d => d.data.zone,
+      defaultColor: 'valueHeatReds'
+      // defaultColor: 'byDataColor'
+    },
 
     // {
     //   data: require('../examples/large-examples/bird-strikes').BIRD_STRIKES,
@@ -145,19 +143,19 @@ function App() {
     //   },
     //   showBorder: false
     // },
-    {
-      data: require('../examples/large-examples/state-migration-network').MIGRATION_REGION_TO_REGION,
-      technique: 'coordinate',
-      stepSize: 5,
-      computeMode: 'iterative',
-      accessor: d => d.value,
-      xLabels: require('../examples/large-examples/state-migration-network').namedRegions,
-      yLabels: require('../examples/large-examples/state-migration-network').namedRegions,
-      showAxisLabels: true,
-      getLabel: d => `${Math.round(d.value / 100) / 10}k`,
-      showBorder: false,
-      defaultColor: 'valueHeatGreens'
-    },
+    // {
+    //   data: require('../examples/large-examples/state-migration-network').MIGRATION_REGION_TO_REGION,
+    //   technique: 'coordinate',
+    //   stepSize: 5,
+    //   computeMode: 'iterative',
+    //   accessor: d => d.value,
+    //   xLabels: require('../examples/large-examples/state-migration-network').namedRegions,
+    //   yLabels: require('../examples/large-examples/state-migration-network').namedRegions,
+    //   showAxisLabels: true,
+    //   getLabel: d => `${Math.round(d.value / 100) / 10}k`,
+    //   showBorder: false,
+    //   defaultColor: 'valueHeatGreens'
+    // },
     // {data: EXAMPLES.SYSTEMS_TIMING, technique: 'coordinate', stepSize: 5, computeMode: 'iterative'},
     // {data: EXAMPLES.POWER_2, technique: 'coordinate', stepSize: 5, computeMode: 'iterative'},
     // {data: EXAMPLES.USA_USA_USA, technique: 'coordinate', stepSize: 5, computeMode: 'iterative'}

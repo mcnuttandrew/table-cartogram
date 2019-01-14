@@ -126,7 +126,7 @@ export function coordinateDescentWithLineSearch(objFunc, candidateVector, numIte
       lineSearchSteps: 30,
       useAnalytic: true,
       // TODO MAGIC NUMBER
-      stepSize: Math.min(0.05),
+      stepSize: Math.min(0.1),
       nonDeterministic: false
       // , objFunc(currentVec));
     };

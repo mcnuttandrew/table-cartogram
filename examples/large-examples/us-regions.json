@@ -6,69 +6,69 @@
       "Maine",
       "Massachusetts",
       "New Hampshire",
-      "Rhode Island",
-      "Vermont",
       "New Jersey",
       "New York",
-      "Pennsylvania"
+      "Pennsylvania",
+      "Rhode Island",
+      "Vermont"
     ]
   },
   {
     "name": "Midwest",
     "states": [
-      "Illinois",
       "Indiana",
-      "Michigan",
-      "Ohio",
-      "Wisconsin",
+      "Illinois",
       "Iowa",
       "Kansas",
+      "Michigan",
       "Minnesota",
       "Missouri",
       "Nebraska",
       "North Dakota",
-      "South Dakota"
+      "Ohio",
+      "South Dakota",
+      "Wisconsin"
     ]
   },
 
   {
     "name": "South",
     "states": [
+      "Arkansas",
+      "Alabama",
       "Delaware",
+      "DC",
+      "District of Columbia",
       "Florida",
       "Georgia",
-      "Maryland",
-      "North Carolina",
-      "South Carolina",
-      "Virginia",
-      "District of Columbia",
-      "DC",
-      "West Virginia",
-      "Alabama",
       "Kentucky",
-      "Mississippi",
-      "Tennessee",
-      "Arkansas",
       "Louisiana",
+      "Maryland",
+      "Mississippi",
+      "North Carolina",
       "Oklahoma",
-      "Texas"
+      "South Carolina",
+      "Tennessee",
+      "Texas",
+      "Virginia",
+      "West Virginia"
     ]
   },
   {
     "name": "West",
     "states": [
+      "Alaska",
       "Arizona",
+      "California",
       "Colorado",
       "Idaho",
       "Montana",
-      "Nevada",
       "New Mexico",
-      "Utah",
-      "Wyoming",
-      "Alaska",
-      "California",
+      "Nevada",
       "Oregon",
-      "Washington"
+      "Utah",
+      "Washington",
+      "Wyoming"
     ]
   },
   {
@@ -89,9 +89,9 @@
     "name": "US Islands",
     "states": [
       "Hawaii",
-      "Virgin Islands",
+      "Philippines",
       "Puerto Rico",
-      "Philippines"
+      "Virgin Islands"
     ]
   }
 ]
