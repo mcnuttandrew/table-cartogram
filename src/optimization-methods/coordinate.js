@@ -124,9 +124,9 @@ export function coordinateDescentWithLineSearch(objFunc, candidateVector, numIte
   for (let i = 0; i < numIterations; i++) {
     const descentParams = {
       lineSearchSteps: 30,
-      useAnalytic: true,
+      useAnalytic: false,
       // TODO MAGIC NUMBER
-      stepSize: Math.min(0.1),
+      stepSize: Math.min(0.01),
       nonDeterministic: false
       // , objFunc(currentVec));
     };

@@ -86,11 +86,13 @@ export default class IterativeDisplay extends React.Component {
     } = this.props;
     const startTime = (new Date()).getTime();
     const {gons, error, stepsTaken, maxError} = tableCartogramAdaptive({
+      accessor,
       data,
       layout,
       targetAccuracy: CONVERGENCE_BARRIER,
       technique,
-      logging: true,
+      logging: false,
+      maxNumberOfSteps: Infinity,
       ...dims
     });
     const endTime = (new Date()).getTime();
@@ -118,10 +120,10 @@ export default class IterativeDisplay extends React.Component {
       computeAnnotationBoxBy = false
     } = this.props;
     const cartogram = tableCartogramWithUpdate({
-      data,
-      technique,
       accessor,
+      data,
       layout,
+      technique,
       ...dims
     });
     const startTime = (new Date()).getTime();
@@ -175,11 +177,11 @@ export default class IterativeDisplay extends React.Component {
       .then(() => {
         const startTime = (new Date()).getTime();
         const gons = tableCartogram({
-          data,
-          technique,
-          layout,
-          iterations,
           accessor,
+          data,
+          iterations,
+          layout,
+          technique,
           ...dims
         });
         const endTime = (new Date()).getTime();

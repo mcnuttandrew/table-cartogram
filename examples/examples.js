@@ -157,6 +157,18 @@ const AHNB_SURVEY_RESULTS = [
   [2, 1, 1]
 ];
 
+const WIKI_CONFUSION_GRAM = [
+  [{size: 1.5, show: 5},	{size: 1.373938769, show: 2},	{size: 1.0, show: 0}],
+  [{size: 1.5, show: 3},	{size: 1.5, show: 3},	{size: 1.373938769, show: 2}],
+  [{size: 1.0, show: 0},	{size: 1.238313555, show: 1},	{size: 1.373938769, show: 1}]
+];
+
+const WIKI_CONFUSION_GRAM_2 = [
+  [{size: 1.0, show: 8}, {size: 1.891805812, show: 6}, {size: 3.266785285, show: 13}],
+  [{size: 1.0, show: 0}, {size: 1.891805812, show: 0}, {size: 1.0, show: 0}],
+  [{size: 1.0, show: 0}, {size: 1.0, show: 0}, {size: 3.266785285, show: 0}]
+];
+
 export default {
   BLOCKS,
   SUB_BLOCKS,
@@ -190,6 +202,9 @@ export default {
 
   SYSTEMS_TIMING,
   AHNB_SURVEY_RESULTS,
+
+  WIKI_CONFUSION_GRAM,
+  WIKI_CONFUSION_GRAM_2,
 
   POWER_1: applyPower(POWER_ARRANGEMENTS[0]),
   POWER_2: applyPower(POWER_ARRANGEMENTS[1]),

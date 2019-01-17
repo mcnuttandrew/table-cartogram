@@ -1,6 +1,12 @@
 import ReactDOM from 'react-dom';
 import React from 'react';
 
+// import {
+//   interpolateRdBu,
+//   interpolateGreens
+// } from 'd3-scale-chromatic';
+
+
 // import FLAT_DATA from '../test/tenByten.json';
 // import HUNDRED_BY_HUNDRED from '../test/tenByten.json';
 // import COMPLETED_RUN_DATA from '../scripts/hundred-run-data-1010.json';
@@ -11,8 +17,11 @@ import IterativeDisplay from './components/iterative-display';
 // import HourCalendar from './components/hour-calendar';
 // import CartogramPlot from './components/table-cartogram';
 // import ZionExperiment from './components/zion-experiment';
+// import ZionSpiral from './components/zion-spiral';
 // import Sunburst from './components/arrests-sunburst';
+// import SankeyRegionRegion from './components/sankey-region-region';
 
+// const zionDomain = require('../examples/large-examples/zion-slice').ZION_VISITORS_WITH_ANNOTATION_DOMAIN;
 function App() {
   const tables = [
     // ...require('../examples/large-examples/element-examples')
@@ -42,21 +51,44 @@ function App() {
     //     width: 1
     //   }
     // },
+    // {
+    //   data: require('../examples/large-examples/zion-slice').ZION_VISITORS_WITH_ANNOTATION.map(row => {
+    //     return row.map(d => ({
+    //       ...d,
+    //       color: interpolateRdBu(1 - ((d.value - zionDomain.min) / (zionDomain.max - zionDomain.min))),
+    //       value: 1,
+    //       printVal: `${Math.floor(d.value / 1000)}k`
+    //     }))
+    //   }),
+    //   technique: 'coordinate',
+    //   stepSize: 10,
+    //   computeMode: 'iterative',
+    //   accessor: d => Number(d.value),
+    //   defaultColor: 'byDataColor',
+    //   dims: {
+    //     height: 0.6,
+    //     width: 1
+    //   },
+    //   xLabels: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
+    //   yLabels: [...new Array(10)].map((_, idx) => `${2016 - idx}`),
+    //   showAxisLabels: true,
+    //   getLabel: d => d.data.printVal,
+    // },
 
-    {
-      data: require('../examples/large-examples/chicago-arrests').CHICAGO_ARRESTS,
-      technique: 'coordinate',
-      stepSize: 10,
-      computeMode: 'iterative',
-      showAxisLabels: true,
-      getLabel: d => `${Math.round(d.data.count / 1000)}k`,
-      xLabels: ['NO ARREST', 'ARREST MADE'],
-      yLabels: [...new Array(4)].map(_ => ['OTHER', 'DOMESTIC']).reduce((a, b) => a.concat(b), []),
-      accessor: d => d.count,
-      computeAnnotationBoxBy: d => d.data.zone,
-      defaultColor: 'valueHeatReds'
-      // defaultColor: 'byDataColor'
-    },
+    // {
+    //   data: require('../examples/large-examples/chicago-arrests').CHICAGO_ARRESTS,
+    //   technique: 'coordinate',
+    //   stepSize: 10,
+    //   computeMode: 'iterative',
+    //   showAxisLabels: true,
+    //   getLabel: d => `${Math.round(d.data.count / 1000)}k`,
+    //   xLabels: ['NO ARREST', 'ARREST MADE'],
+    //   yLabels: [...new Array(4)].map(_ => ['OTHER', 'DOMESTIC']).reduce((a, b) => a.concat(b), []),
+    //   accessor: d => d.count,
+    //   computeAnnotationBoxBy: d => d.data.zone,
+    //   defaultColor: 'valueHeatReds'
+    //   // defaultColor: 'byDataColor'
+    // },
 
     // {
     //   data: require('../examples/large-examples/bird-strikes').BIRD_STRIKES,
@@ -144,7 +176,14 @@ function App() {
     //   showBorder: false
     // },
     // {
-    //   data: require('../examples/large-examples/state-migration-network').MIGRATION_REGION_TO_REGION,
+    //   data: require('../examples/large-examples/state-migration-network').MIGRATION_REGION_TO_REGION.map(row => {
+    //     return row.map(d => ({
+    //       ...d,
+    //       color: interpolateGreens(1 - Math.sqrt(1 - (d.value - 63) / (40165 - 63))),
+    //       // value: 1,
+    //       printVal: `${Math.floor(d.value / 100) / 10}k`
+    //     }))
+    //   }),
     //   technique: 'coordinate',
     //   stepSize: 5,
     //   computeMode: 'iterative',
@@ -152,12 +191,29 @@ function App() {
     //   xLabels: require('../examples/large-examples/state-migration-network').namedRegions,
     //   yLabels: require('../examples/large-examples/state-migration-network').namedRegions,
     //   showAxisLabels: true,
-    //   getLabel: d => `${Math.round(d.value / 100) / 10}k`,
+    //   getLabel: d => d.data.printVal,
     //   showBorder: false,
-    //   defaultColor: 'valueHeatGreens'
+    //   defaultColor: 'byDataColor'
     // },
+    {
+      data: EXAMPLES.WIKI_CONFUSION_GRAM,
+      technique: 'coordinate',
+      stepSize: 5,
+      computeMode: 'iterative',
+      accessor: d => d.size,
+      xLabels: ['Cat', 'Dog', 'Rabbit'],
+      yLabels: ['Cat', 'Dog', 'Rabbit'],
+      showAxisLabels: true,
+      getLabel: d => d.data.show,
+      // getLabel: d => `${Math.floor(d.data.val / (152 * 10) * 1000) / 1000}`,
+      dims: {
+        height: 1,
+        width: 1
+      },
+      showBorder: false
+    },
     // {data: EXAMPLES.SYSTEMS_TIMING, technique: 'coordinate', stepSize: 5, computeMode: 'iterative'},
-    // {data: EXAMPLES.POWER_2, technique: 'coordinate', stepSize: 5, computeMode: 'iterative'},
+    // {data: EXAMPLES.WIKI_CONFUSION_GRAM, technique: 'coordinate', stepSize: 10, computeMode: 'adaptive'},
     // {data: EXAMPLES.USA_USA_USA, technique: 'coordinate', stepSize: 5, computeMode: 'iterative'}
     // {
     //   data: EXAMPLES.MULTIPLICATION_TABLE,
@@ -173,7 +229,7 @@ function App() {
   .map((config, idx) => (
     <IterativeDisplay
       iterations={400}
-      layout={'pickBest'}
+      layout={'gridLayout'}
       {...config}
       key={`${config.technique}-${idx}`}/>
   ));

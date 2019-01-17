@@ -37,6 +37,7 @@ const NICKNAMES = {
   'US Islands': 'Islands'
 };
 export const namedRegions = Object.keys(NICKNAMES);
+export const REGION_NET = REGION_TO_REGION;
 export const MIGRATION_REGION_TO_REGION = namedRegions.map(fromRegion => {
   return namedRegions.map(toRegion => ({
     value: REGION_TO_REGION[fromRegion][toRegion],

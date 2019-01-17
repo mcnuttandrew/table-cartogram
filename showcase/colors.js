@@ -35,8 +35,10 @@ export const COLOR_MODES = {
     interpolateInferno(1 - ((cell.value - min) / (max - min))),
   valueHeatReds: (cell, index, {min, max}) =>
     interpolateReds(1 - Math.sqrt(1 - (cell.value - min) / (max - min))),
-  valueHeatGreens: (cell, index, {min, max}) =>
-    interpolateGreens(1 - Math.sqrt(1 - (cell.value - min) / (max - min))),
+  valueHeatGreens: (cell, index, {min, max}) => {
+    console.log(min, max)
+    return interpolateGreens(1 - Math.sqrt(1 - (cell.value - min) / (max - min)));
+  },
   valueHeatRedWhiteBlue: (cell, index, {min, max}) => {
     return interpolateRdBu(1 - ((cell.value - min) / (max - min)));
   },
