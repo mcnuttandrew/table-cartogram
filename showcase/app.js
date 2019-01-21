@@ -18,7 +18,7 @@ import IterativeDisplay from './components/iterative-display';
 // import CartogramPlot from './components/table-cartogram';
 // import ZionExperiment from './components/zion-experiment';
 // import ZionSpiral from './components/zion-spiral';
-// import Sunburst from './components/arrests-sunburst';
+import Sunburst from './components/arrests-sunburst';
 // import SankeyRegionRegion from './components/sankey-region-region';
 
 // const zionDomain = require('../examples/large-examples/zion-slice').ZION_VISITORS_WITH_ANNOTATION_DOMAIN;
@@ -195,41 +195,45 @@ function App() {
     //   showBorder: false,
     //   defaultColor: 'byDataColor'
     // },
-    {
-      data: EXAMPLES.WIKI_CONFUSION_GRAM,
-      technique: 'coordinate',
-      stepSize: 5,
-      computeMode: 'iterative',
-      accessor: d => d.size,
-      xLabels: ['Cat', 'Dog', 'Rabbit'],
-      yLabels: ['Cat', 'Dog', 'Rabbit'],
-      showAxisLabels: true,
-      getLabel: d => d.data.show,
-      // getLabel: d => `${Math.floor(d.data.val / (152 * 10) * 1000) / 1000}`,
-      dims: {
-        height: 1,
-        width: 1
-      },
-      showBorder: false
-    },
-    // {data: EXAMPLES.SYSTEMS_TIMING, technique: 'coordinate', stepSize: 5, computeMode: 'iterative'},
-    // {data: EXAMPLES.WIKI_CONFUSION_GRAM, technique: 'coordinate', stepSize: 10, computeMode: 'adaptive'},
-    // {data: EXAMPLES.USA_USA_USA, technique: 'coordinate', stepSize: 5, computeMode: 'iterative'}
     // {
-    //   data: EXAMPLES.MULTIPLICATION_TABLE,
+    //   data: EXAMPLES.WIKI_CONFUSION_GRAM,
     //   technique: 'coordinate',
     //   stepSize: 5,
     //   computeMode: 'iterative',
-    //   getLabel: d => d.value,
-    //   xLabels: [...new Array(10)].map((_, i) => i + 1),
-    //   yLabels: [...new Array(10)].map((_, i) => i + 1),
+    //   accessor: d => d.size,
+    //   xLabels: ['Cat', 'Dog', 'Rabbit'],
+    //   yLabels: ['Cat', 'Dog', 'Rabbit'],
     //   showAxisLabels: true,
-    // }
+    //   getLabel: d => d.data.show,
+    //   // getLabel: d => `${Math.floor(d.data.val / (152 * 10) * 1000) / 1000}`,
+    //   dims: {
+    //     height: 1,
+    //     width: 1
+    //   },
+    //   showBorder: false
+    // },
+    // {data: EXAMPLES.SYSTEMS_TIMING, technique: 'coordinate', stepSize: 5, computeMode: 'iterative'},
+    // {data: EXAMPLES.WIKI_CONFUSION_GRAM, technique: 'coordinate', stepSize: 10, computeMode: 'adaptive'},
+    // {data: EXAMPLES.USA_USA_USA, technique: 'coordinate', stepSize: 5, computeMode: 'iterative'}
+    {
+      data: EXAMPLES.MULTIPLICATION_TABLE,
+      technique: 'coordinate',
+      stepSize: 5,
+      computeMode: 'iterative',
+      getLabel: d => d.value,
+      xLabels: [...new Array(10)].map((_, i) => i + 1),
+      yLabels: [...new Array(10)].map((_, i) => i + 1),
+      showAxisLabels: true,
+      computeAnnotationBoxBy: d => {
+        const sqrt = Math.sqrt(d.value);
+        return Math.floor(sqrt) === sqrt ? `${d.value}${Math.random()}` : 'ignore';
+      }
+    }
   ]
   .map((config, idx) => (
     <IterativeDisplay
       iterations={400}
-      layout={'gridLayout'}
+      layout={'pickBest'}
       {...config}
       key={`${config.technique}-${idx}`}/>
   ));

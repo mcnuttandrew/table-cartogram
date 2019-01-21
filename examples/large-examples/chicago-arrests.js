@@ -52,6 +52,8 @@ const zones = [
   {zone: 'WEST', domestic: true, arrest: true, color: COLORS[3]}
 ].map((d, idx) => ({...d, count: zones2006to2012[idx]}));
 
+export const PREPPED_ZONES = zones;
+
 // OLD VERSION FOR DIVIDING CITY
 //
 // const zones = [
