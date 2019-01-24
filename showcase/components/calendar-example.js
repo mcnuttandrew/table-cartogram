@@ -222,8 +222,7 @@ class CalendarDisplay extends React.Component {
             targetAccuracy: 0.001,
             maxNumberOfSteps: Infinity,
             accessor: d => d.count,
-            logging: false,
-            technique: 'coordinate'
+            logging: false
           });
           this.setState({
             [MONTH_NAMES[month]]: decorateGonsWithData(MONTHS[month], gons)

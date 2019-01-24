@@ -53,8 +53,7 @@ const measureCheckerBoardPerformance = () => {
       for (let j = lowerBound; j < upperBound; j++) {
         const result = timer(() => tableCartogramAdaptive({
           data: nStopCheckerBoardGenerator(i, j, [1, 5]),
-          layout,
-          technique: 'coordinate'
+          layout
         }));
         result.width = i;
         result.height = j;

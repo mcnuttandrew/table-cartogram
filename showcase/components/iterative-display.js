@@ -81,7 +81,6 @@ export default class IterativeDisplay extends React.Component {
       accessor = d => d,
       layout,
       dims = {height: 1, width: 1},
-      technique,
       computeAnnotationBoxBy = false
     } = this.props;
     const startTime = (new Date()).getTime();
@@ -90,7 +89,6 @@ export default class IterativeDisplay extends React.Component {
       data,
       layout,
       targetAccuracy: CONVERGENCE_BARRIER,
-      technique,
       logging: false,
       maxNumberOfSteps: Infinity,
       ...dims
@@ -112,7 +110,6 @@ export default class IterativeDisplay extends React.Component {
   iterativeBuild() {
     const {
       data,
-      technique,
       stepSize,
       accessor = d => d,
       layout,
@@ -123,7 +120,6 @@ export default class IterativeDisplay extends React.Component {
       accessor,
       data,
       layout,
-      technique,
       ...dims
     });
     const startTime = (new Date()).getTime();
@@ -167,7 +163,6 @@ export default class IterativeDisplay extends React.Component {
     const {
       data,
       iterations,
-      technique,
       accessor = d => d,
       layout,
       dims = {height: 1, width: 1},
@@ -181,7 +176,6 @@ export default class IterativeDisplay extends React.Component {
           data,
           iterations,
           layout,
-          technique,
           ...dims
         });
         const endTime = (new Date()).getTime();
@@ -201,12 +195,12 @@ export default class IterativeDisplay extends React.Component {
   }
 
   displayReadout() {
-    const {computeMode, technique} = this.props;
+    const {computeMode} = this.props;
     const {errorLog, error, maxError, endTime, startTime, stepsTaken, runningMode, fillMode} = this.state;
     return (
       <div style={{display: 'flex', flexDirection: 'column'}}>
         <p>
-          {`${technique.toUpperCase()} - ${runningMode.toUpperCase()}`} <br/>
+          {`${runningMode.toUpperCase()}`} <br/>
           {`COMPUTE MODE: ${computeMode.toUpperCase()}`} <br/>
           {`Steps taken ${stepsTaken}`} <br/>
           {`AVERAGE ERROR ${Math.floor(error * Math.pow(10, 7)) / Math.pow(10, 5)} %`} <br/>

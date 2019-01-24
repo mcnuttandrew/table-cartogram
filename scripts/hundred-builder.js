@@ -33,7 +33,6 @@ const measureCheckerBoardPerformance = () => {
     maxNumberOfSteps: Infinity,
     targetAccuracy: 0.001,
     iterationStepSize: 100,
-    technique: 'coordinate',
     logging: true,
     accessor: d => d.value
   }));

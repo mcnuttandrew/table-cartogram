@@ -32,8 +32,7 @@ export default class HourCalendar extends React.Component {
         const {gons} = tableCartogramAdaptive({
           data: houredData,
           targetAccuracy: 0.01,
-          accessor: d => Number(d.Temperature),
-          technique: 'coordinate'
+          accessor: d => Number(d.Temperature)
         });
         const xLabels = gons.slice(0, 8).map((cell, index) => {
           const DAYS = ['S', 'Su', 'M', 'T', 'W', 'Th', 'F'];

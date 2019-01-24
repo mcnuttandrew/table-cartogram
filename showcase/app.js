@@ -29,7 +29,6 @@ function App() {
       .ELEMENT_TABLES.map(key => {
         return {
           data: require('../examples/large-examples/element-examples')[key],
-          technique: 'coordinate',
           stepSize: 10,
           computeMode: 'iterative',
           accessor: cell => cell.value,
@@ -43,7 +42,6 @@ function App() {
       })
     // {
     //   data: require('../examples/large-examples/senate').SENATORS,
-    //   technique: 'coordinate',
     //   stepSize: 10,
     //   computeMode: 'iterative',
     //   accessor: d => d.yearsInOffice,
@@ -61,7 +59,6 @@ function App() {
     //       printVal: `${Math.floor(d.value / 1000)}k`
     //     }))
     //   }),
-    //   technique: 'coordinate',
     //   stepSize: 10,
     //   computeMode: 'iterative',
     //   accessor: d => Number(d.value),
@@ -78,7 +75,6 @@ function App() {
 
     // {
     //   data: require('../examples/large-examples/chicago-arrests').CHICAGO_ARRESTS,
-    //   technique: 'coordinate',
     //   stepSize: 10,
     //   computeMode: 'iterative',
     //   showAxisLabels: true,
@@ -93,7 +89,6 @@ function App() {
 
     // {
     //   data: require('../examples/large-examples/bird-strikes').BIRD_STRIKES,
-    //   technique: 'coordinate',
     //   stepSize: 10,
     //   computeMode: 'iterative',
     //   accessor: d => d.size,
@@ -105,7 +100,6 @@ function App() {
     // },
     // {
     //   data: require('../examples/large-examples/gdp-vs-country').NESTED_POPS,
-    //   technique: 'coordinate',
     //   stepSize: 10,
     //   computeMode: 'iterative',
     //   accessor: d => d.GDP / d.pop,
@@ -116,14 +110,12 @@ function App() {
     // },
     // {
     //   data: EXAMPLES.USA_USA_USA_LABELS,
-    //   technique: 'newtonStep',
     //   stepSize: 10,
     //   computeMode: 'iterative',
     //   accessor: d => d[1]
     // },
     // {
     //   data: EXAMPLES.DND_ALIGNMENTS,
-    //   technique: 'coordinate',
     //   stepSize: 10,
     //   computeMode: 'iterative',
     //   accessor: d => d.percent,
@@ -139,7 +131,6 @@ function App() {
 
     // {
     //   data: EXAMPLES.SYSTEMS_TIMING.map(row => row.filter((d, i) => (i % 2))),
-    //   technique: 'coordinate',
     //   stepSize: 5,
     //   computeMode: 'iterative',
     //   accessor: d => 166 / d.val,
@@ -157,7 +148,6 @@ function App() {
     // },
     // {
     //   data: EXAMPLES.AHNB_SURVEY_RESULTS,
-    //   technique: 'coordinate',
     //   stepSize: 5,
     //   computeMode: 'iterative',
     //   accessor: d => d,
@@ -185,7 +175,6 @@ function App() {
     //       printVal: `${Math.floor(d.value / 100) / 10}k`
     //     }))
     //   }),
-    //   technique: 'coordinate',
     //   stepSize: 5,
     //   computeMode: 'iterative',
     //   accessor: d => d.value,
@@ -200,7 +189,6 @@ function App() {
     //   // data: EXAMPLES.WIKI_CONFUSION_GRAM_PERFECT_CLASSIFIER,
     //   // data: EXAMPLES.WIKI_CONFUSION_GRAM_OK_CLASSIFIER,
     //   data: EXAMPLES.WIKI_CONFUSION_GRAM_BAD_CLASSIFIER,
-    //   technique: 'coordinate',
     //   stepSize: 5,
     //   computeMode: 'iterative',
     //   accessor: d => d.size,
@@ -216,17 +204,16 @@ function App() {
     //   defaultColor: 'confusiongramHardCode',
     //   showBorder: false
     // },
-    // {data: EXAMPLES.SYSTEMS_TIMING, technique: 'coordinate', stepSize: 5, computeMode: 'iterative'},
-    // {data: EXAMPLES.WIKI_CONFUSION_GRAM, technique: 'coordinate', stepSize: 10, computeMode: 'adaptive'},
-    // {data: EXAMPLES.USA_USA_USA, technique: 'coordinate', stepSize: 5, computeMode: 'iterative'},
+    // {data: EXAMPLES.SYSTEMS_TIMING, stepSize: 5, computeMode: 'iterative'},
+    // {data: EXAMPLES.WIKI_CONFUSION_GRAM, stepSize: 10, computeMode: 'adaptive'},
+    // {data: EXAMPLES.USA_USA_USA, stepSize: 5, computeMode: 'iterative'},
     // {
     //   data: require('../examples/large-examples/state-migration-network').stateMigration
     //     .map(row => row.map(d => d + 1)),
-    //   technique: 'coordinate', stepSize: 5, computeMode: 'iterative'
+    //   stepSize: 5, computeMode: 'iterative'
     //  }
     // {
     //   data: EXAMPLES.MULTIPLICATION_TABLE,
-    //   technique: 'coordinate',
     //   stepSize: 5,
     //   computeMode: 'iterative',
     //   getLabel: d => d.value,
@@ -244,7 +231,7 @@ function App() {
       iterations={400}
       layout={'pickBest'}
       {...config}
-      key={`${config.technique}-${idx}`}/>
+      key={`table-${idx}`}/>
   ));
   return (
     <div>

@@ -17,7 +17,6 @@ tape('test tableCartogram computation', t => {
   const TEST_TABLE = [[{x: 1}, {x: 2}], [{x: 2}, {x: 1}]];
   const directResults = tableCartogram({
     data: TEST_TABLE,
-    technique: 'coordinate',
     layout: 'gridLayout',
     iterations: 300,
     accessor: d => d.x,
@@ -51,7 +50,6 @@ tape('test tableCartogramAdaptive computation', t => {
   const TEST_TABLE = [[{x: 1}, {x: 2}], [{x: 2}, {x: 1}]];
   const adaptive = tableCartogramAdaptive({
     data: TEST_TABLE,
-    technique: 'coordinate',
     layout: 'gridLayout',
     iterations: 300,
     accessor: d => d.x,
@@ -88,7 +86,6 @@ tape('test tableCartogramWithUpdate computation', t => {
   const TEST_TABLE = [[{x: 1}, {x: 2}], [{x: 2}, {x: 1}]];
   const resultsBuilder = tableCartogramWithUpdate({
     data: TEST_TABLE,
-    technique: 'coordinate',
     layout: 'gridLayout',
     iterations: 300,
     accessor: d => d.x,

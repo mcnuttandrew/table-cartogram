@@ -160,7 +160,6 @@ export default function AlphaTableBuilder(props) {
         iterations: 400,
         // layout: 'pickBest',
         layout: 'gridLayout',
-        technique: 'coordinate',
         computeMode: 'iterative',
         // computeMode: 'adaptive',
         stepSize: 5,
