@@ -81,6 +81,7 @@ export default class IterativeDisplay extends React.Component {
       accessor = d => d,
       layout,
       dims = {height: 1, width: 1},
+      optimizationParams,
       computeAnnotationBoxBy = false
     } = this.props;
     const startTime = (new Date()).getTime();
@@ -91,6 +92,7 @@ export default class IterativeDisplay extends React.Component {
       targetAccuracy: CONVERGENCE_BARRIER,
       logging: false,
       maxNumberOfSteps: Infinity,
+      optimizationParams,
       ...dims
     });
     const endTime = (new Date()).getTime();
@@ -114,12 +116,14 @@ export default class IterativeDisplay extends React.Component {
       accessor = d => d,
       layout,
       dims = {height: 1, width: 1},
+      optimizationParams,
       computeAnnotationBoxBy = false
     } = this.props;
     const cartogram = tableCartogramWithUpdate({
       accessor,
       data,
       layout,
+      optimizationParams,
       ...dims
     });
     const startTime = (new Date()).getTime();
@@ -166,6 +170,7 @@ export default class IterativeDisplay extends React.Component {
       accessor = d => d,
       layout,
       dims = {height: 1, width: 1},
+      optimizationParams,
       computeAnnotationBoxBy
     } = this.props;
     Promise.resolve()
@@ -176,6 +181,7 @@ export default class IterativeDisplay extends React.Component {
           data,
           iterations,
           layout,
+          optimizationParams,
           ...dims
         });
         const endTime = (new Date()).getTime();

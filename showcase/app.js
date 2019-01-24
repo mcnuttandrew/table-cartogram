@@ -73,19 +73,22 @@ function App() {
     //   getLabel: d => d.data.printVal,
     // },
 
-    // {
-    //   data: require('../examples/large-examples/chicago-arrests').CHICAGO_ARRESTS,
-    //   stepSize: 10,
-    //   computeMode: 'iterative',
-    //   showAxisLabels: true,
-    //   getLabel: d => `${Math.round(d.data.count / 1000)}k`,
-    //   xLabels: ['NO ARREST', 'ARREST MADE'],
-    //   yLabels: [...new Array(4)].map(_ => ['OTHER', 'DOMESTIC']).reduce((a, b) => a.concat(b), []),
-    //   accessor: d => d.count,
-    //   computeAnnotationBoxBy: d => d.data.zone,
-    //   defaultColor: 'valueHeatReds'
-    //   // defaultColor: 'byDataColor'
-    // },
+    {
+      data: require('../examples/large-examples/chicago-arrests').CHICAGO_ARRESTS,
+      stepSize: 10,
+      computeMode: 'iterative',
+      showAxisLabels: true,
+      getLabel: d => `${Math.round(d.data.count / 1000)}k`,
+      xLabels: ['NO ARREST', 'ARREST MADE'],
+      yLabels: [...new Array(4)].map(_ => ['OTHER', 'DOMESTIC']).reduce((a, b) => a.concat(b), []),
+      accessor: d => d.count,
+      computeAnnotationBoxBy: d => d.data.zone,
+      defaultColor: 'valueHeatReds',
+      // defaultColor: 'byDataColor'
+      optimizationParams: {
+        stepSize: 0.01
+      }
+    },
 
     // {
     //   data: require('../examples/large-examples/bird-strikes').BIRD_STRIKES,
@@ -206,7 +209,7 @@ function App() {
     // },
     // {data: EXAMPLES.SYSTEMS_TIMING, stepSize: 5, computeMode: 'iterative'},
     // {data: EXAMPLES.WIKI_CONFUSION_GRAM, stepSize: 10, computeMode: 'adaptive'},
-    {data: EXAMPLES.TEST_TABLE, stepSize: 5, computeMode: 'iterative'},
+    // {data: EXAMPLES.TEST_TABLE, stepSize: 5, computeMode: 'iterative'},
     // {
     //   data: require('../examples/large-examples/state-migration-network').stateMigration
     //     .map(row => row.map(d => d + 1)),

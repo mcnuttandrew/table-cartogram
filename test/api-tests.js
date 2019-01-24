@@ -41,6 +41,7 @@ tape('test tableCartogram computation', t => {
     const i = Math.floor(idx / 2);
     const HEIGHT = 0.5;
     const DELTA = area(cell.vertices) - HEIGHT * TEST_TABLE[i][j].x / TABLE_SUM;
+    console.log(DELTA, area(cell.vertices), HEIGHT * TEST_TABLE[i][j].x / TABLE_SUM)
     t.ok(Math.abs(DELTA) < 0.00001, `cell (${j},${i}) has correct area`);
   });
   t.end();
@@ -87,27 +88,27 @@ tape('test tableCartogramWithUpdate computation', t => {
   const resultsBuilder = tableCartogramWithUpdate({
     data: TEST_TABLE,
     layout: 'gridLayout',
-    iterations: 300,
+    numIterations: 300,
     accessor: d => d.x,
     height: 0.5
   });
 
   t.equal(typeof resultsBuilder, 'function', 'should get a function back from the updatable version');
-  const directResults = resultsBuilder(300);
-  t.ok(directResults.every((cell, idx) => {
+  const withUpdateResults = resultsBuilder(300);
+  t.ok(withUpdateResults.every((cell, idx) => {
     const j = idx % 2;
     const i = Math.floor(idx / 2);
     return cell.value === TEST_TABLE[i][j].x;
   }), 'all cells have correct value decorated');
 
-  t.ok(directResults.every((cell, idx) => {
+  t.ok(withUpdateResults.every((cell, idx) => {
     const j = idx % 2;
     const i = Math.floor(idx / 2);
     return JSON.stringify(cell.data) === JSON.stringify(TEST_TABLE[i][j]);
   }), 'all cells have correct data decorated');
 
   const TABLE_SUM = 6;
-  directResults.forEach((cell, idx) => {
+  withUpdateResults.forEach((cell, idx) => {
     const j = idx % 2;
     const i = Math.floor(idx / 2);
     const HEIGHT = 0.5;
