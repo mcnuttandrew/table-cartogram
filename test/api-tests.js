@@ -112,6 +112,7 @@ tape('test tableCartogramWithUpdate computation', t => {
     const i = Math.floor(idx / 2);
     const HEIGHT = 0.5;
     const DELTA = area(cell.vertices) - HEIGHT * TEST_TABLE[i][j].x / TABLE_SUM;
+    console.log(DELTA, area(cell.vertices), HEIGHT * TEST_TABLE[i][j].x / TABLE_SUM)
     t.ok(Math.abs(DELTA) < 0.00001, `cell (${j},${i}) has correct area`);
   });
   t.end();

@@ -116,24 +116,16 @@ export function descent(objFunc, candidateVector, numIterations, table, dims) {
  *
  * @param  {Function} objFunc - The objective function for executing the optimization
  * @param  {Array of Numbers} candidateVector - The vector to optimize against the objective function
- * @param  {Number} numIterations - The number of iterations in the optimization process
+ * @param  {TODO} optimizationParams - The hyper parameters for tuning the optimization
  * @param  {Array of Array of Numbers} table - The input data
  * @param  {{height: Number, width: Number}} dims - The size of the output layout
  * @return {Array of Numbers} The optimized vector
  */
-export function descentWithLineSearch(objFunc, candidateVector, numIterations, table, dims) {
+export function descentWithLineSearch(objFunc, candidateVector, optimizationParams, table, dims) {
   const currentVec = candidateVector.slice();
   /* eslint-disable max-depth */
-  for (let i = 0; i < numIterations; i++) {
-    const descentParams = {
-      lineSearchSteps: 30,
-      useAnalytic: false,
-      // TODO MAGIC NUMBER
-      stepSize: Math.min(0.01),
-      nonDeterministic: false
-      // , objFunc(currentVec));
-    };
-    descentInnerLoop(objFunc, currentVec, table, dims, descentParams);
+  for (let i = 0; i < optimizationParams.numIterations; i++) {
+    descentInnerLoop(objFunc, currentVec, table, dims, optimizationParams);
   }
   /* eslint-enable max-depth */
   return currentVec;
@@ -146,17 +138,17 @@ export function descentWithLineSearch(objFunc, candidateVector, numIterations, t
  * @param  {Function} objFunc - The function to optimize against
  * @param  {Array of Numbers} candidateVector - The initial position
  * @param  {Array of Array of Numbers} table - the input data
- * @param  {Number} numIterations - The number of iterations to perform
+ * @param  {Number} optimizationParams - The number of iterations to perform
  * @param  {Object: {height: Number, width: Number}} dims
  *  - The dimensions of the table cartogram being assembled
  * @return {Array of Array of {x: Number, y: Number}} - The optimzed table of positions
  */
-export function executeOptimization(objFunc, candidateVector, table, numIterations, dims) {
-  if (!numIterations) {
+export function executeOptimization(objFunc, candidateVector, table, optimizationParams, dims) {
+  if (!optimizationParams.numIterations) {
     return translateVectorToTable(candidateVector, table, dims.height, dims.width);
   }
 
-  const result = descentWithLineSearch(objFunc, candidateVector, numIterations, table, dims);
+  const result = descentWithLineSearch(objFunc, candidateVector, optimizationParams, table, dims);
   return translateVectorToTable(result, table, dims.height, dims.width);
 }
 
@@ -168,7 +160,7 @@ export function executeOptimization(objFunc, candidateVector, table, numIteratio
  *  - The dimensions of the table cartogram being assembled
  * @return {Function(Number)} - A function to execute optimization with
  */
-export function buildIterativeCartogram(table, layout = 'pickBest', dims) {
+export function buildIterativeCartogram(table, layout = 'pickBest', dims, optimizationParams) {
   const nowCols = table[0].length;
   const numRows = table.length;
 
@@ -182,7 +174,7 @@ export function buildIterativeCartogram(table, layout = 'pickBest', dims) {
     if (!numIterations) {
       return translateVectorToTable(candidateVector, table, dims.height, dims.width);
     }
-    const resultTable = executeOptimization(objFunc, candidateVector, table, numIterations, dims);
+    const resultTable = executeOptimization(objFunc, candidateVector, table, optimizationParams, dims);
     candidateVector = translateTableToVector(resultTable);
     return resultTable;
   };

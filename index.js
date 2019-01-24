@@ -1,6 +1,16 @@
 import {buildIterativeCartogram} from './src/optimization';
 import {prepareRects, computeErrors, error, log} from './src/utils';
 
+const defaultOptimzationParams = {
+  lineSearchSteps: 30,
+  useAnalytic: false,
+  // TODO MAGIC NUMBER
+  stepSize: Math.min(0.01),
+  nonDeterministic: false,
+
+  numIterations: 10
+};
+
 const inputTableIsInvalid = table => {
   const someValuesAreBad = !table.every(row => row && row.every(cell => cell));
 
@@ -25,14 +35,15 @@ export function tableCartogram(params) {
     iterations = MAX_ITERATIONS,
     accessor = d => d,
     height = 1,
-    width = 1
+    width = 1,
+    optimizationParams = defaultOptimzationParams
   } = params;
   const localTable = data.map(row => row.map(cell => accessor(cell)));
   if (inputTableIsInvalid(localTable)) {
     error('INVALID INPUT TABLE', data);
     return [];
   }
-  const updateFunction = buildIterativeCartogram(localTable, layout, {height, width});
+  const updateFunction = buildIterativeCartogram(localTable, layout, {height, width}, optimizationParams);
   return prepareRects(updateFunction(iterations), data, accessor);
 }
 
@@ -48,14 +59,15 @@ export function tableCartogramWithUpdate(params) {
     accessor = d => d,
     layout = 'pickBest',
     height = 1,
-    width = 1
+    width = 1,
+    optimizationParams = defaultOptimzationParams
   } = params;
   const localTable = data.map(row => row.map(cell => accessor(cell)));
   if (inputTableIsInvalid(data)) {
     error('INVALID INPUT TABLE', data);
     return [];
   }
-  const updateFunction = buildIterativeCartogram(localTable, layout, {height, width});
+  const updateFunction = buildIterativeCartogram(localTable, layout, {height, width}, optimizationParams);
   return numIterations => prepareRects(updateFunction(numIterations), data, accessor);
 }
 
@@ -74,7 +86,8 @@ export function tableCartogramAdaptive(params) {
     accessor = d => d,
     logging = false,
     height = 1,
-    width = 1
+    width = 1,
+    optimizationParams = defaultOptimzationParams
   } = params;
   if (inputTableIsInvalid(data)) {
     error('INVALID INPUT TABLE', data);
@@ -86,7 +99,7 @@ export function tableCartogramAdaptive(params) {
     };
   }
   const localTable = data.map(row => row.map(cell => accessor(cell)));
-  const updateFunction = buildIterativeCartogram(localTable, layout, {height, width});
+  const updateFunction = buildIterativeCartogram(localTable, layout, {height, width}, optimizationParams);
   const boundUpdate = numIterations => prepareRects(updateFunction(numIterations), data, accessor);
 
   let stillRunning = true;

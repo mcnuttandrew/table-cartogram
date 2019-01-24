@@ -25,21 +25,21 @@ import PivotogramAlts from './components/pivotogram-alts';
 // const zionDomain = require('../examples/large-examples/zion-slice').ZION_VISITORS_WITH_ANNOTATION_DOMAIN;
 function App() {
   const tables = [
-    ...require('../examples/large-examples/element-examples')
-      .ELEMENT_TABLES.map(key => {
-        return {
-          data: require('../examples/large-examples/element-examples')[key],
-          stepSize: 10,
-          computeMode: 'iterative',
-          accessor: cell => cell.value,
-          getLabel: cell => cell.data.symbol,
-          showAxisLabels: false,
-          dims: {
-            height: 0.5,
-            width: 1
-          }
-        };
-      })
+    // ...require('../examples/large-examples/element-examples')
+    //   .ELEMENT_TABLES.map(key => {
+    //     return {
+    //       data: require('../examples/large-examples/element-examples')[key],
+    //       stepSize: 10,
+    //       computeMode: 'iterative',
+    //       accessor: cell => cell.value,
+    //       getLabel: cell => cell.data.symbol,
+    //       showAxisLabels: false,
+    //       dims: {
+    //         height: 0.5,
+    //         width: 1
+    //       }
+    //     };
+    //   })
     // {
     //   data: require('../examples/large-examples/senate').SENATORS,
     //   stepSize: 10,
@@ -206,7 +206,7 @@ function App() {
     // },
     // {data: EXAMPLES.SYSTEMS_TIMING, stepSize: 5, computeMode: 'iterative'},
     // {data: EXAMPLES.WIKI_CONFUSION_GRAM, stepSize: 10, computeMode: 'adaptive'},
-    // {data: EXAMPLES.USA_USA_USA, stepSize: 5, computeMode: 'iterative'},
+    {data: EXAMPLES.TEST_TABLE, stepSize: 5, computeMode: 'iterative'},
     // {
     //   data: require('../examples/large-examples/state-migration-network').stateMigration
     //     .map(row => row.map(d => d + 1)),
@@ -239,7 +239,7 @@ function App() {
       <div>
         <div style={{display: 'flex', flexWrap: 'wrap'}}>
           {
-            // tables
+            tables
           }
         </div>
         <div>
@@ -267,7 +267,7 @@ function App() {
           // <ContinuousLegend />
         }
         {
-          <AlphaTableBuilder/>
+          // <AlphaTableBuilder/>
         }
       </div>
     </div>
