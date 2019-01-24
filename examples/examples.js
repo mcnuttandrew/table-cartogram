@@ -33,10 +33,10 @@ EXAMPLE_TABLE_SLIGHT_DIFF[1][1] = 10;
 EXAMPLE_TABLE_SLIGHT_DIFF[2][3] = 8;
 
 const BLACK_AND_WHITE_TABLE = [
-  [4.5, 4.5, 16, 2.5],
-  [4, 3, 4.5, 3],
-  [2.5, 6, 4.5, 10.5],
-  [7, 9, 9, 6]
+  [4.50, 4.50, 16.0, 2.50],
+  [4.00, 3.00, 4.50, 3.00],
+  [2.50, 6.00, 4.50, 10.5],
+  [7.00, 9.00, 9.00, 6.00]
 ];
 
 const HAND_SYMMETRIC_OLD = [
@@ -157,16 +157,22 @@ const AHNB_SURVEY_RESULTS = [
   [2, 1, 1]
 ];
 
-const WIKI_CONFUSION_GRAM = [
-  [{size: 1.5, show: 5},	{size: 1.373938769, show: 2},	{size: 1.0, show: 0}],
-  [{size: 1.5, show: 3},	{size: 1.5, show: 3},	{size: 1.373938769, show: 2}],
+const WIKI_CONFUSION_GRAM_OK_CLASSIFIER = [
+  [{size: 1.5, show: 5},	{size: 1.373938769, show: 2},	{size: 1.000000000, show: 0}],
+  [{size: 1.5, show: 3},	{size: 1.500000000, show: 3},	{size: 1.373938769, show: 2}],
   [{size: 1.0, show: 0},	{size: 1.238313555, show: 1},	{size: 1.373938769, show: 1}]
 ];
 
-const WIKI_CONFUSION_GRAM_2 = [
+const WIKI_CONFUSION_GRAM_BAD_CLASSIFIER = [
   [{size: 1.0, show: 8}, {size: 1.891805812, show: 6}, {size: 3.266785285, show: 13}],
-  [{size: 1.0, show: 0}, {size: 1.891805812, show: 0}, {size: 1.0, show: 0}],
-  [{size: 1.0, show: 0}, {size: 1.0, show: 0}, {size: 3.266785285, show: 0}]
+  [{size: 1.0, show: 0}, {size: 1.891805812, show: 0}, {size: 1.000000000, show: 0}],
+  [{size: 1.0, show: 0}, {size: 1.000000000, show: 0}, {size: 3.266785285, show: 0}]
+];
+
+const WIKI_CONFUSION_GRAM_PERFECT_CLASSIFIER = [
+  [{size: 1.0, show: 8}, {size: 1.0, show: 0}, {size: 1.0, show: 0}],
+  [{size: 1.0, show: 0}, {size: 1.0, show: 6}, {size: 1.0, show: 0}],
+  [{size: 1.0, show: 0}, {size: 1.0, show: 0}, {size: 1.0, show: 13}]
 ];
 
 export default {
@@ -203,8 +209,9 @@ export default {
   SYSTEMS_TIMING,
   AHNB_SURVEY_RESULTS,
 
-  WIKI_CONFUSION_GRAM,
-  WIKI_CONFUSION_GRAM_2,
+  WIKI_CONFUSION_GRAM_OK_CLASSIFIER,
+  WIKI_CONFUSION_GRAM_BAD_CLASSIFIER,
+  WIKI_CONFUSION_GRAM_PERFECT_CLASSIFIER,
 
   POWER_1: applyPower(POWER_ARRANGEMENTS[0]),
   POWER_2: applyPower(POWER_ARRANGEMENTS[1]),

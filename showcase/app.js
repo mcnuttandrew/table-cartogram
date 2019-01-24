@@ -10,36 +10,37 @@ import React from 'react';
 // import FLAT_DATA from '../test/tenByten.json';
 // import HUNDRED_BY_HUNDRED from '../test/tenByten.json';
 // import COMPLETED_RUN_DATA from '../scripts/hundred-run-data-1010.json';
-
+import AlphaTableBuilder from './components/alpha-table-builder';
 import EXAMPLES from '../examples/examples';
 import IterativeDisplay from './components/iterative-display';
+import ContinuousLegend from './components/continuous-legend';
 // import CalendarDisplay from './components/calendar-example';
 // import HourCalendar from './components/hour-calendar';
 // import CartogramPlot from './components/table-cartogram';
 // import ZionExperiment from './components/zion-experiment';
 // import ZionSpiral from './components/zion-spiral';
-import Sunburst from './components/arrests-sunburst';
+import PivotogramAlts from './components/pivotogram-alts';
 // import SankeyRegionRegion from './components/sankey-region-region';
 
 // const zionDomain = require('../examples/large-examples/zion-slice').ZION_VISITORS_WITH_ANNOTATION_DOMAIN;
 function App() {
   const tables = [
-    // ...require('../examples/large-examples/element-examples')
-    //   .ELEMENT_TABLES.map(key => {
-    //     return {
-    //       data: require('../examples/large-examples/element-examples')[key],
-    //       technique: 'coordinate',
-    //       stepSize: 10,
-    //       computeMode: 'iterative',
-    //       accessor: cell => cell.value,
-    //       getLabel: cell => cell.data.symbol,
-    //       showAxisLabels: true,
-    //       dims: {
-    //         height: 0.3,
-    //         width: 1
-    //       }
-    //     };
-    //   })
+    ...require('../examples/large-examples/element-examples')
+      .ELEMENT_TABLES.map(key => {
+        return {
+          data: require('../examples/large-examples/element-examples')[key],
+          technique: 'coordinate',
+          stepSize: 10,
+          computeMode: 'iterative',
+          accessor: cell => cell.value,
+          getLabel: cell => cell.data.symbol,
+          showAxisLabels: false,
+          dims: {
+            height: 0.5,
+            width: 1
+          }
+        };
+      })
     // {
     //   data: require('../examples/large-examples/senate').SENATORS,
     //   technique: 'coordinate',
@@ -196,7 +197,9 @@ function App() {
     //   defaultColor: 'byDataColor'
     // },
     // {
-    //   data: EXAMPLES.WIKI_CONFUSION_GRAM,
+    //   // data: EXAMPLES.WIKI_CONFUSION_GRAM_PERFECT_CLASSIFIER,
+    //   // data: EXAMPLES.WIKI_CONFUSION_GRAM_OK_CLASSIFIER,
+    //   data: EXAMPLES.WIKI_CONFUSION_GRAM_BAD_CLASSIFIER,
     //   technique: 'coordinate',
     //   stepSize: 5,
     //   computeMode: 'iterative',
@@ -210,25 +213,31 @@ function App() {
     //     height: 1,
     //     width: 1
     //   },
+    //   defaultColor: 'confusiongramHardCode',
     //   showBorder: false
     // },
     // {data: EXAMPLES.SYSTEMS_TIMING, technique: 'coordinate', stepSize: 5, computeMode: 'iterative'},
     // {data: EXAMPLES.WIKI_CONFUSION_GRAM, technique: 'coordinate', stepSize: 10, computeMode: 'adaptive'},
-    // {data: EXAMPLES.USA_USA_USA, technique: 'coordinate', stepSize: 5, computeMode: 'iterative'}
-    {
-      data: EXAMPLES.MULTIPLICATION_TABLE,
-      technique: 'coordinate',
-      stepSize: 5,
-      computeMode: 'iterative',
-      getLabel: d => d.value,
-      xLabels: [...new Array(10)].map((_, i) => i + 1),
-      yLabels: [...new Array(10)].map((_, i) => i + 1),
-      showAxisLabels: true,
-      computeAnnotationBoxBy: d => {
-        const sqrt = Math.sqrt(d.value);
-        return Math.floor(sqrt) === sqrt ? `${d.value}${Math.random()}` : 'ignore';
-      }
-    }
+    // {data: EXAMPLES.USA_USA_USA, technique: 'coordinate', stepSize: 5, computeMode: 'iterative'},
+    // {
+    //   data: require('../examples/large-examples/state-migration-network').stateMigration
+    //     .map(row => row.map(d => d + 1)),
+    //   technique: 'coordinate', stepSize: 5, computeMode: 'iterative'
+    //  }
+    // {
+    //   data: EXAMPLES.MULTIPLICATION_TABLE,
+    //   technique: 'coordinate',
+    //   stepSize: 5,
+    //   computeMode: 'iterative',
+    //   getLabel: d => d.value,
+    //   xLabels: [...new Array(10)].map((_, i) => i + 1),
+    //   yLabels: [...new Array(10)].map((_, i) => i + 1),
+    //   showAxisLabels: true,
+    //   computeAnnotationBoxBy: d => {
+    //     const sqrt = Math.sqrt(d.value);
+    //     return Math.floor(sqrt) === sqrt ? `${d.value}${Math.random()}` : 'ignore';
+    //   }
+    // }
   ]
   .map((config, idx) => (
     <IterativeDisplay
@@ -243,7 +252,7 @@ function App() {
       <div>
         <div style={{display: 'flex', flexWrap: 'wrap'}}>
           {
-            tables
+            // tables
           }
         </div>
         <div>
@@ -265,7 +274,13 @@ function App() {
           // <ZionExperiment />
         }
         {
-          // <Sunburst />
+          // <PivotogramAlts />
+        }
+        {
+          // <ContinuousLegend />
+        }
+        {
+          <AlphaTableBuilder/>
         }
       </div>
     </div>

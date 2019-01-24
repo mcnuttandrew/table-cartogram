@@ -14,6 +14,19 @@ const ElementsOfInterest = [[
 ], [
   'La', 'Hf', 'Ta', 'W', 'Re', 'Os', 'Ir', 'Pr', 'Au', 'Hg'
 ]].map(row => row.map(symbol => elementLookUp[symbol]));
+
+// Some bugs in here for some of the tables
+export const ElementsOfInterest2 = [[
+  'B', 'C', 'N', 'O', 'F', 'Ne'
+], [
+  'Al', 'Si', 'P', 'S', 'Cl', 'Ar'
+], [
+  'Ga', 'Ge', 'As', 'Se', 'Br', 'Kr'
+], [
+  'In', 'Sn', 'Sb', 'Te', 'I', 'Xe'
+], [
+  'Tl', 'Pb', 'Bi', 'Po', 'At', 'Rn'
+]].map(row => row.map(symbol => elementLookUp[symbol]));
 const generateElementTable = key =>
   ElementsOfInterest.map(row => row.map(cell =>
     ({symbol: cell.Symbol, value: Number(cell[key])})
@@ -31,5 +44,5 @@ export const ELEMENT_TABLES = [
   'ELELMENTS_DENSITY',
   'ELELMENTS_BOIL',
   'ELELMENTS_MASS',
-  'ELELMENTS_UNIT'
+  'ELELMENTS_UNIT',
 ];

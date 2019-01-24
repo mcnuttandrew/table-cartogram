@@ -36,8 +36,13 @@ export const COLOR_MODES = {
   valueHeatReds: (cell, index, {min, max}) =>
     interpolateReds(1 - Math.sqrt(1 - (cell.value - min) / (max - min))),
   valueHeatGreens: (cell, index, {min, max}) => {
-    console.log(min, max)
     return interpolateGreens(1 - Math.sqrt(1 - (cell.value - min) / (max - min)));
+  },
+  confusiongramHardCode: (cell, index) => {
+    const [min, max] = [1, 2];
+    const clamp = v => isFinite(v) ? Math.min(Math.max(v, 0), 1) : 1;
+    const val = 1 - (1 - (cell.value - min) / (max - min));
+    return interpolateReds(clamp(val));
   },
   valueHeatRedWhiteBlue: (cell, index, {min, max}) => {
     return interpolateRdBu(1 - ((cell.value - min) / (max - min)));
@@ -54,9 +59,8 @@ export const COLOR_MODES = {
   byDataColor: (cell, index, domain) =>
     cell.data.color || '#fff',
   none: (cell, index, domain) => 'rgba(255, 255, 255, 0)',
-  periodicColors: (cell, index, domain) =>
-    RV_COLORS[(index + 3) % RV_COLORS.length]
+  periodicColors: (cell, index, domain) => RV_COLORS[(index + 3) % RV_COLORS.length]
 };
 
 export const colorCell = (cell, index, fillMode, domain) =>
-  (COLOR_MODES[fillMode] || COLOR_MODES.node)(cell, fillMode, domain);
+  (COLOR_MODES[fillMode] || COLOR_MODES.node)(cell, index, domain);

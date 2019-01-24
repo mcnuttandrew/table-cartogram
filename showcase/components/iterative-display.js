@@ -55,10 +55,10 @@ export default class IterativeDisplay extends React.Component {
   }
 
   componentDidMount() {
-    if (this.props.defaultColor) {
-      console.log(this.props.defaultColor)
+    if (this.props.defaultColor || this.props.showLabelsByDefault) {
       this.setState({
-        fillMode: this.props.defaultColor
+        fillMode: this.props.defaultColor,
+        showLabels: this.props.showLabelsByDefault
       });
     }
     switch (this.props.computeMode) {

@@ -93,7 +93,8 @@ function plot(props, setX, xFlip, yFlip) {
         label: `${getLabel ? getLabel(cell) : cell.value}`,
         style: {
           textAnchor: 'middle',
-          alignmentBaseline: 'middle'
+          alignmentBaseline: 'middle',
+          fontFamily: 'GillSans'
         }
       }))} />}
       {showAxisLabels && <LabelSeries
@@ -106,7 +107,8 @@ function plot(props, setX, xFlip, yFlip) {
             style: {
               textAnchor: 'middle',
               alignmentBaseline: 'middle',
-              fontSize: 11
+              fontSize: 11,
+              fontFamily: 'GillSans'
             }
           });
         })} />}
@@ -120,7 +122,8 @@ function plot(props, setX, xFlip, yFlip) {
               style: {
                 textAnchor: 'end',
                 alignmentBaseline: 'middle',
-                fontSize: 11
+                fontSize: 11,
+                fontFamily: 'GillSans'
               }
             });
           })} />
@@ -133,7 +136,8 @@ function plot(props, setX, xFlip, yFlip) {
           style: {
             transform: 'translate(0, 15)',
             textAnchor: 'middle',
-            alignmentBaseline: 'middle'
+            alignmentBaseline: 'middle',
+            fontFamily: 'GillSans'
           }
         };
       })} />}
