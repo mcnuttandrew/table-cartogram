@@ -129,13 +129,13 @@ const alphas = {
 const TABLES = [
   /* eslint-disable comma-dangle */
 
-  // {alpha: 'TRANSPOSE', dataset: dataSets.BLACK_AND_WHITE},
-  // {alpha: 'RANDOMLY_VARY_ALL_CELLS', dataset: dataSets.REGION_TO_REGION},
-  // {alpha: 'JUST_NOTICABLE_CHANGE', dataset: dataSets.REGION_TO_REGION},
-  // {alpha: 'BIG_CHANGE', dataset: dataSets.REGION_TO_REGION},
-  // {alpha: 'REVERSE_ROW', dataset: dataSets.REGION_TO_REGION},
-  // {alpha: 'SWAP_ROWS', dataset: dataSets.BLACK_AND_WHITE},
-  // {alpha: 'SWAP_COLUMNS', dataset: dataSets.REGION_TO_REGION},
+  {alpha: 'TRANSPOSE', dataset: dataSets.BLACK_AND_WHITE},
+  {alpha: 'RANDOMLY_VARY_ALL_CELLS', dataset: dataSets.REGION_TO_REGION},
+  {alpha: 'JUST_NOTICABLE_CHANGE', dataset: dataSets.REGION_TO_REGION},
+  {alpha: 'BIG_CHANGE', dataset: dataSets.REGION_TO_REGION},
+  {alpha: 'REVERSE_ROW', dataset: dataSets.REGION_TO_REGION},
+  {alpha: 'SWAP_ROWS', dataset: dataSets.BLACK_AND_WHITE},
+  {alpha: 'SWAP_COLUMNS', dataset: dataSets.REGION_TO_REGION},
   {alpha: 'RESCALE', dataset: dataSets.REGION_TO_REGION},
   {alpha: 'SWAP_MIN_MAX', dataset: dataSets.REGION_TO_REGION},
   {alpha: 'SET_MAX_TO_AVERAGE', dataset: dataSets.REGION_TO_REGION},
@@ -158,8 +158,8 @@ export default function AlphaTableBuilder(props) {
     {TABLES.map((pair, idx) => {
       const commonProps = {
         iterations: 400,
-        // layout: 'pickBest',
-        layout: 'gridLayout',
+        layout: 'pickBest',
+        // layout: 'zigZagOnX',
         computeMode: 'iterative',
         // computeMode: 'adaptive',
         stepSize: 5,

@@ -242,7 +242,7 @@ function App() {
       <div>
         <div style={{display: 'flex', flexWrap: 'wrap'}}>
           {
-            tables
+            // tables
           }
         </div>
         <div>
@@ -270,7 +270,7 @@ function App() {
           // <ContinuousLegend />
         }
         {
-          // <AlphaTableBuilder/>
+          <AlphaTableBuilder/>
         }
       </div>
     </div>
