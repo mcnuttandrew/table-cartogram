@@ -10,15 +10,16 @@ import React from 'react';
 // import FLAT_DATA from '../test/tenByten.json';
 // import HUNDRED_BY_HUNDRED from '../test/tenByten.json';
 // import COMPLETED_RUN_DATA from '../scripts/hundred-run-data-1010.json';
-
+import AlphaTableBuilder from './components/alpha-table-builder';
 import EXAMPLES from '../examples/examples';
 import IterativeDisplay from './components/iterative-display';
+import ContinuousLegend from './components/continuous-legend';
 // import CalendarDisplay from './components/calendar-example';
 // import HourCalendar from './components/hour-calendar';
 // import CartogramPlot from './components/table-cartogram';
 // import ZionExperiment from './components/zion-experiment';
 // import ZionSpiral from './components/zion-spiral';
-import Sunburst from './components/arrests-sunburst';
+import PivotogramAlts from './components/pivotogram-alts';
 // import SankeyRegionRegion from './components/sankey-region-region';
 
 // const zionDomain = require('../examples/large-examples/zion-slice').ZION_VISITORS_WITH_ANNOTATION_DOMAIN;
@@ -28,21 +29,19 @@ function App() {
     //   .ELEMENT_TABLES.map(key => {
     //     return {
     //       data: require('../examples/large-examples/element-examples')[key],
-    //       technique: 'coordinate',
     //       stepSize: 10,
     //       computeMode: 'iterative',
     //       accessor: cell => cell.value,
     //       getLabel: cell => cell.data.symbol,
-    //       showAxisLabels: true,
+    //       showAxisLabels: false,
     //       dims: {
-    //         height: 0.3,
+    //         height: 0.5,
     //         width: 1
     //       }
     //     };
     //   })
     // {
     //   data: require('../examples/large-examples/senate').SENATORS,
-    //   technique: 'coordinate',
     //   stepSize: 10,
     //   computeMode: 'iterative',
     //   accessor: d => d.yearsInOffice,
@@ -60,7 +59,6 @@ function App() {
     //       printVal: `${Math.floor(d.value / 1000)}k`
     //     }))
     //   }),
-    //   technique: 'coordinate',
     //   stepSize: 10,
     //   computeMode: 'iterative',
     //   accessor: d => Number(d.value),
@@ -75,24 +73,25 @@ function App() {
     //   getLabel: d => d.data.printVal,
     // },
 
-    // {
-    //   data: require('../examples/large-examples/chicago-arrests').CHICAGO_ARRESTS,
-    //   technique: 'coordinate',
-    //   stepSize: 10,
-    //   computeMode: 'iterative',
-    //   showAxisLabels: true,
-    //   getLabel: d => `${Math.round(d.data.count / 1000)}k`,
-    //   xLabels: ['NO ARREST', 'ARREST MADE'],
-    //   yLabels: [...new Array(4)].map(_ => ['OTHER', 'DOMESTIC']).reduce((a, b) => a.concat(b), []),
-    //   accessor: d => d.count,
-    //   computeAnnotationBoxBy: d => d.data.zone,
-    //   defaultColor: 'valueHeatReds'
-    //   // defaultColor: 'byDataColor'
-    // },
+    {
+      data: require('../examples/large-examples/chicago-arrests').CHICAGO_ARRESTS,
+      stepSize: 10,
+      computeMode: 'iterative',
+      showAxisLabels: true,
+      getLabel: d => `${Math.round(d.data.count / 1000)}k`,
+      xLabels: ['NO ARREST', 'ARREST MADE'],
+      yLabels: [...new Array(4)].map(_ => ['OTHER', 'DOMESTIC']).reduce((a, b) => a.concat(b), []),
+      accessor: d => d.count,
+      computeAnnotationBoxBy: d => d.data.zone,
+      defaultColor: 'valueHeatReds',
+      // defaultColor: 'byDataColor'
+      optimizationParams: {
+        stepSize: 0.01
+      }
+    },
 
     // {
     //   data: require('../examples/large-examples/bird-strikes').BIRD_STRIKES,
-    //   technique: 'coordinate',
     //   stepSize: 10,
     //   computeMode: 'iterative',
     //   accessor: d => d.size,
@@ -104,7 +103,6 @@ function App() {
     // },
     // {
     //   data: require('../examples/large-examples/gdp-vs-country').NESTED_POPS,
-    //   technique: 'coordinate',
     //   stepSize: 10,
     //   computeMode: 'iterative',
     //   accessor: d => d.GDP / d.pop,
@@ -115,14 +113,12 @@ function App() {
     // },
     // {
     //   data: EXAMPLES.USA_USA_USA_LABELS,
-    //   technique: 'newtonStep',
     //   stepSize: 10,
     //   computeMode: 'iterative',
     //   accessor: d => d[1]
     // },
     // {
     //   data: EXAMPLES.DND_ALIGNMENTS,
-    //   technique: 'coordinate',
     //   stepSize: 10,
     //   computeMode: 'iterative',
     //   accessor: d => d.percent,
@@ -138,7 +134,6 @@ function App() {
 
     // {
     //   data: EXAMPLES.SYSTEMS_TIMING.map(row => row.filter((d, i) => (i % 2))),
-    //   technique: 'coordinate',
     //   stepSize: 5,
     //   computeMode: 'iterative',
     //   accessor: d => 166 / d.val,
@@ -156,7 +151,6 @@ function App() {
     // },
     // {
     //   data: EXAMPLES.AHNB_SURVEY_RESULTS,
-    //   technique: 'coordinate',
     //   stepSize: 5,
     //   computeMode: 'iterative',
     //   accessor: d => d,
@@ -184,7 +178,6 @@ function App() {
     //       printVal: `${Math.floor(d.value / 100) / 10}k`
     //     }))
     //   }),
-    //   technique: 'coordinate',
     //   stepSize: 5,
     //   computeMode: 'iterative',
     //   accessor: d => d.value,
@@ -196,8 +189,9 @@ function App() {
     //   defaultColor: 'byDataColor'
     // },
     // {
-    //   data: EXAMPLES.WIKI_CONFUSION_GRAM,
-    //   technique: 'coordinate',
+    //   // data: EXAMPLES.WIKI_CONFUSION_GRAM_PERFECT_CLASSIFIER,
+    //   // data: EXAMPLES.WIKI_CONFUSION_GRAM_OK_CLASSIFIER,
+    //   data: EXAMPLES.WIKI_CONFUSION_GRAM_BAD_CLASSIFIER,
     //   stepSize: 5,
     //   computeMode: 'iterative',
     //   accessor: d => d.size,
@@ -210,32 +204,37 @@ function App() {
     //     height: 1,
     //     width: 1
     //   },
+    //   defaultColor: 'confusiongramHardCode',
     //   showBorder: false
     // },
-    // {data: EXAMPLES.SYSTEMS_TIMING, technique: 'coordinate', stepSize: 5, computeMode: 'iterative'},
-    // {data: EXAMPLES.WIKI_CONFUSION_GRAM, technique: 'coordinate', stepSize: 10, computeMode: 'adaptive'},
-    // {data: EXAMPLES.USA_USA_USA, technique: 'coordinate', stepSize: 5, computeMode: 'iterative'}
-    {
-      data: EXAMPLES.MULTIPLICATION_TABLE,
-      technique: 'coordinate',
-      stepSize: 5,
-      computeMode: 'iterative',
-      getLabel: d => d.value,
-      xLabels: [...new Array(10)].map((_, i) => i + 1),
-      yLabels: [...new Array(10)].map((_, i) => i + 1),
-      showAxisLabels: true,
-      computeAnnotationBoxBy: d => {
-        const sqrt = Math.sqrt(d.value);
-        return Math.floor(sqrt) === sqrt ? `${d.value}${Math.random()}` : 'ignore';
-      }
-    }
+    // {data: EXAMPLES.SYSTEMS_TIMING, stepSize: 5, computeMode: 'iterative'},
+    // {data: EXAMPLES.WIKI_CONFUSION_GRAM, stepSize: 10, computeMode: 'adaptive'},
+    // {data: EXAMPLES.TEST_TABLE, stepSize: 5, computeMode: 'iterative'},
+    // {
+    //   data: require('../examples/large-examples/state-migration-network').stateMigration
+    //     .map(row => row.map(d => d + 1)),
+    //   stepSize: 5, computeMode: 'iterative'
+    //  }
+    // {
+    //   data: EXAMPLES.MULTIPLICATION_TABLE,
+    //   stepSize: 5,
+    //   computeMode: 'iterative',
+    //   getLabel: d => d.value,
+    //   xLabels: [...new Array(10)].map((_, i) => i + 1),
+    //   yLabels: [...new Array(10)].map((_, i) => i + 1),
+    //   showAxisLabels: true,
+    //   computeAnnotationBoxBy: d => {
+    //     const sqrt = Math.sqrt(d.value);
+    //     return Math.floor(sqrt) === sqrt ? `${d.value}${Math.random()}` : 'ignore';
+    //   }
+    // }
   ]
   .map((config, idx) => (
     <IterativeDisplay
       iterations={400}
       layout={'pickBest'}
       {...config}
-      key={`${config.technique}-${idx}`}/>
+      key={`table-${idx}`}/>
   ));
   return (
     <div>
@@ -243,7 +242,7 @@ function App() {
       <div>
         <div style={{display: 'flex', flexWrap: 'wrap'}}>
           {
-            tables
+            // tables
           }
         </div>
         <div>
@@ -265,7 +264,13 @@ function App() {
           // <ZionExperiment />
         }
         {
-          // <Sunburst />
+          // <PivotogramAlts />
+        }
+        {
+          // <ContinuousLegend />
+        }
+        {
+          <AlphaTableBuilder/>
         }
       </div>
     </div>

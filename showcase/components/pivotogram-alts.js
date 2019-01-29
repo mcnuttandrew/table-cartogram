@@ -21,6 +21,7 @@ function labelData(node) {
 
 export default function ArrestsSunburst() {
   const data = require('../../examples/large-examples/chicago-arrests').PREPPED_ZONES;
+  // BAR CHART
   return (
     <div style={{display: 'flex', maxWidth: 1100, flexWrap: 'wrap'}}>
       {
@@ -32,6 +33,7 @@ export default function ArrestsSunburst() {
         ].map(({domestic, arrest}, idx) => {
           return (
             <XYPlot
+              yDomain={[0, 703709]}
               key={`bar-s-${idx}`}
               xType="ordinal"
               xDomain={['CENTRAL', 'NORTH', 'SOUTH', 'WEST']}
@@ -60,6 +62,7 @@ export default function ArrestsSunburst() {
       }
     </div>
   );
+  // SUNBURST
   // const data = require('../../examples/large-examples/chicago-arrests').SUNBURST_DATA;
   // labelData(data);
   // return (
