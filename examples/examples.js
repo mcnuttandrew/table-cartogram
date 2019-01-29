@@ -196,6 +196,7 @@ export default {
   CHECKER_BOARD_SMALL: checkerBoardGenerator(4, 4, 5, 1),
   PATHOLOGICAL_2_BY,
   MULTIPLICATION_TABLE,
+  TEST_TABLE: [[1, 2], [2, 1]],
 
   TRI_BOARD: nStopCheckerBoardGenerator(12, 12, [5, 1, 20]),
 

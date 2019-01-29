@@ -2,67 +2,129 @@ import {objectiveFunction} from './objective-function';
 import {generateInitialTable} from './layouts';
 import {
   translateVectorToTable,
-  translateTableToVector
+  translateTableToVector,
+  getIndicesInVectorOfInterest,
+  phaseShuffle
 } from './utils';
-import {coordinateDescentWithLineSearch} from './optimization-methods/coordinate';
-import {gradientDescent} from './optimization-methods/gradient';
-import {monteCarloOptimization} from './optimization-methods/monte-carlo';
-import {newtonStepBoth} from './optimization-methods/newton-step';
+import {norm2, finiteDiferenceForIndices} from './math';
+import {buildErrorGradient} from './grad-penal';
 
-const techniqueMap = {
-  newtonStep: newtonStepBoth,
-  gradient: gradientDescent,
-  coordinate: coordinateDescentWithLineSearch,
-  monteCarlo: monteCarloOptimization
-};
+// REDO TYPES
+function lineSearch({objFunc, stepSize, currentVec, localNorm, dx, searchIndices, lineSearchSteps}) {
+  if (!lineSearchSteps) {
+    return stepSize;
+  }
+  let trialStepSize = stepSize;
+  let bestStepSize = stepSize;
+  let bestScore = objFunc(currentVec);
+  // TODO should this be done using bisection, ala NOCEDAL?
+  for (let i = 0; i < lineSearchSteps; i++) {
+    const tempVec = currentVec.slice();
+    for (let jdx = 0; jdx < dx.length; jdx++) {
+      if (dx[jdx] && localNorm) {
+        tempVec[searchIndices[jdx]] += -dx[jdx] / localNorm * trialStepSize;
+      }
+    }
+    const newScore = objFunc(tempVec);
+    if (newScore < bestScore) {
+      bestScore = newScore;
+      bestStepSize = trialStepSize;
+    }
+    trialStepSize *= 0.4;
+  }
+  return bestStepSize;
+}
 
-/**
- * Router for executing optimizations
- * All optimization are executing the exact number of iterations specified,
- * adaptive control is handled at a higher level
- * @param  {Function} objFunc - The function to optimize against
- * @param  {Array of Numbers} candidateVector - The initial position
- * @param  {String} technique - the type of optimization to perform
- * @param  {Array of Array of Numbers} table - the input data
- * @param  {Number} numIterations - The number of iterations to perform
- * @param  {Object: {height: Number, width: Number}} dims
- *  - The dimensions of the table cartogram being assembled
- * @return {Array of Array of {x: Number, y: Number}} - The optimzed table of positions
- */
-export function executeOptimization(objFunc, candidateVector, technique, table, numIterations, dims) {
-  if (!numIterations) {
+export function descentInnerLoop(objFunc, currentVec, table, dims, descentParams) {
+  const {lineSearchSteps, useAnalytic, stepSize, nonDeterministic} = descentParams;
+  const phases = phaseShuffle(nonDeterministic);
+  for (let phase = 0; phase < 4; phase++) {
+    const currTable = translateVectorToTable(currentVec, table, dims.height, dims.width);
+    const searchIndices = getIndicesInVectorOfInterest(currTable, phases[phase]);
+    // debugging stuff
+    // const xdx = finiteDiferenceForIndices(objFunc, currentVec, stepSize / 10, searchIndices, true);
+    // const newPen = buildErrorGradient(currentVec, table, dims, searchIndices, true);
+    // if (xdx.some((v, idx) => newPen[idx] !== v)) {
+    //   console.log('old', xdx)
+    //   console.log('new', newPen)
+    //   // console.log(currentVec)
+    // }
+    const dx = useAnalytic ?
+      buildErrorGradient(currentVec, table, dims, searchIndices) :
+      finiteDiferenceForIndices(objFunc, currentVec, stepSize / 10, searchIndices);
+    const localNorm = norm2(dx);
+    const bestStepSize = lineSearch(
+      {objFunc, stepSize, currentVec, localNorm, dx, searchIndices, lineSearchSteps});
+    for (let jdx = 0; jdx < dx.length; jdx++) {
+      if (dx[jdx] && localNorm) {
+        currentVec[searchIndices[jdx]] += -dx[jdx] / localNorm * bestStepSize;
+      }
+    }
+  }
+}
+
+// REDO TYPES
+export function descent(objFunc, candidateVector, iterations, table, dims) {
+  const currentVec = candidateVector.slice();
+  /* eslint-disable max-depth */
+  for (let i = 0; i < iterations; i++) {
+    // janky adaptive step
+    const phases = phaseShuffle();
+    const stepSize = Math.min(0.001, objFunc(currentVec));
+    for (let phase = 0; phase < 4; phase++) {
+      const currTable = translateVectorToTable(currentVec, table, dims.height, dims.width);
+      const searchIndices = getIndicesInVectorOfInterest(currTable, phases[phase]);
+      const dx = finiteDiferenceForIndices(objFunc, currentVec, stepSize / 10, searchIndices);
+      const computednorm = norm2(dx);
+      for (let jdx = 0; jdx < dx.length; jdx++) {
+        if (dx[jdx] && computednorm) {
+          currentVec[searchIndices[jdx]] += -dx[jdx] / computednorm * stepSize;
+        }
+      }
+    }
+  }
+  /* eslint-enable max-depth */
+  return currentVec;
+}
+
+// REDO TYPES
+export function descentWithLineSearch(objFunc, candidateVector, optimizationParams, table, dims, iterations) {
+  const currentVec = candidateVector.slice();
+  /* eslint-disable max-depth */
+  for (let i = 0; i < iterations; i++) {
+    descentInnerLoop(objFunc, currentVec, table, dims, optimizationParams);
+  }
+  /* eslint-enable max-depth */
+  return currentVec;
+}
+
+// REDO TYPES
+export function executeOptimization(objFunc, candidateVector, table, optimizationParams, dims, iterations) {
+  if (!iterations) {
     return translateVectorToTable(candidateVector, table, dims.height, dims.width);
   }
 
-  const techniqueFunc = techniqueMap[technique] || coordinateDescentWithLineSearch;
-  const result = techniqueFunc(objFunc, candidateVector, numIterations, table, dims);
+  const result = descentWithLineSearch(objFunc, candidateVector, optimizationParams, table, dims, iterations);
   return translateVectorToTable(result, table, dims.height, dims.width);
 }
 
-/**
- * [buildIterativeCartogram description]
- * @param  {Array of Array of Numbers} table - the input data
- * @param  {String} technique - the type of optimization to perform
- * @param  {String} [layout='pickBest'] - The initialization layout technique
- * @param  {Object: {height: Number, width: Number}} dims
- *  - The dimensions of the table cartogram being assembled
- * @return {Function(Number)} - A function to execute optimization with
- */
-export function buildIterativeCartogram(table, technique, layout = 'pickBest', dims) {
+// REDO TYPES
+export function buildIterativeCartogram(table, layout = 'pickBest', dims, optimizationParams) {
   const nowCols = table[0].length;
   const numRows = table.length;
 
-  const objFunc = (vec, onlyShowPenalty) => objectiveFunction(vec, table, technique, dims, onlyShowPenalty);
+  const objFunc = (vec, onlyShowPenalty) => objectiveFunction(vec, table, dims, onlyShowPenalty);
   const newTable = typeof layout === 'string' ?
     generateInitialTable(numRows, nowCols, table, objFunc, layout, dims) :
     layout;
   let candidateVector = translateTableToVector(newTable);
 
-  return (numIterations = 10) => {
-    if (!numIterations) {
+  return (iterations = 10) => {
+    if (!iterations) {
       return translateVectorToTable(candidateVector, table, dims.height, dims.width);
     }
-    const resultTable = executeOptimization(objFunc, candidateVector, technique, table, numIterations, dims);
+    const resultTable = executeOptimization(
+      objFunc, candidateVector, table, optimizationParams, dims, iterations);
     candidateVector = translateTableToVector(resultTable);
     return resultTable;
   };

@@ -285,77 +285,6 @@ export function continuousBuildPenalties(newTable, dims) {
   return penalties;
 }
 
-function discreteOverlapPenalty(rects, cell) {
-  const insideViolation = rects.some(points => {
-    if (points.some(d => d[0] === cell.x && d[1] === cell.y)) {
-      return false;
-    }
-    return pointInPolygon([cell.x, cell.y], points);
-  });
-  return (insideViolation) ? 500 : 0;
-}
-
-function discreteOrderPenalty(newTable, cell, i, j) {
-  const {
-    inFirstRow,
-    inLeftColumn,
-    inRightColumn,
-    inLastRow,
-    inCorner
-  } = computeEdges(newTable, i, j);
-  // don't allow values to move out of correct order
-  let violates = false;
-  const evalFunc = ({val, dim, lessThan}) => lessThan ? cell[dim] > val : cell[dim] < val;
-  if (inCorner) {
-    // no penaltys for corners, they are not manipualted
-  } else if (inFirstRow || inLastRow) {
-    violates = ![
-      {lessThan: true, dim: 'x', val: newTable[i][j - 1].x},
-      {lessThan: false, dim: 'x', val: newTable[i][j + 1].x},
-      {lessThan: !inFirstRow, dim: 'y', val: newTable[i + (inFirstRow ? 1 : -1)][j].y}
-    ].every(evalFunc);
-  } else if (inLeftColumn || inRightColumn) {
-    violates = ![
-      {lessThan: true, dim: 'y', val: newTable[i - 1][j].y},
-      {lessThan: false, dim: 'y', val: newTable[i + 1][j].y},
-      {lessThan: !inLeftColumn, dim: 'x', val: newTable[i][j + (inLeftColumn ? 1 : -1)].x}
-    ].every(evalFunc);
-  } else {
-    violates = ![
-      {lessThan: true, dim: 'y', val: newTable[i - 1][j].y},
-      {lessThan: false, dim: 'y', val: newTable[i + 1][j].y},
-      {lessThan: true, dim: 'x', val: newTable[i][j - 1].x},
-      {lessThan: false, dim: 'x', val: newTable[i][j + 1].x}
-    ].every(evalFunc);
-  }
-  return violates ? 1000 : 0;
-}
-
-/**
- * Construct penalities for a evaluations not requiring
- * @param  {Array of Array of {x: Number, y: Number}} newTable - the table to be evaluaated
- * @return {Number} The evaluated penalties
- */
-export function buildPenalties(newTable, dims) {
-  let penalties = 0;
-  const rects = getRectsFromTable(newTable)
-    .reduce((acc, row) => acc.concat(row))
-    .map(row => row.map(({x, y}) => [x, y]));
-  for (let i = 0; i < newTable.length; i++) {
-    for (let j = 0; j < newTable[0].length; j++) {
-      const cell = newTable[i][j];
-      // dont allow the values to move outside of the box
-      if (cell.x > dims.width || cell.x < 0 || cell.y > dims.height || cell.y < 0) {
-        penalties += 2000;
-      }
-
-      penalties += discreteOrderPenalty(newTable, cell, i, j);
-      penalties += discreteOverlapPenalty(rects, cell);
-    }
-  }
-  return penalties;
-}
-
 /**
  * Determine how table-cartogram ish a vector is
  * Computes average relative error of computed real value
@@ -367,11 +296,10 @@ export function buildPenalties(newTable, dims) {
  * so small changes matter and require delicacy.
  * @param  {Array of Numbers} vector - vector to be evaluated
  * @param  {Array of Array of Numbers} targetTable - Bound input data table
- * @param  {String} technique   Either monteCarlo or something else
  * @return {Number} Score
  */
 export function objectiveFunction(
-  vector, targetTable, technique, dims = {height: 1, width: 1}, onlyShowPenalty) {
+  vector, targetTable, dims = {height: 1, width: 1}, onlyShowPenalty) {
   const newTable = translateVectorToTable(vector, targetTable, dims.height, dims.width);
   const rects = getRectsFromTable(newTable);
   // sum up the relative amount of "error"
@@ -388,7 +316,7 @@ export function objectiveFunction(
     }
   }
 
-  const penal = (technique === 'monteCarlo' ? buildPenalties : continuousBuildPenalties)(newTable, dims);
+  const penal = continuousBuildPenalties(newTable, dims);
   // const concavePenalty = rects.reduce((acc, row) =>
   //     acc + row.reduce((mem, rect) => mem + (checkForConcaveAngles(rect) ? 1 : 0), 0), 0)
   if (onlyShowPenalty) {

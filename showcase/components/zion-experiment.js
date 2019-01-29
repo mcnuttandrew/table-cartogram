@@ -32,7 +32,7 @@ export default class ZionExperiment extends React.Component {
   componentDidMount() {
     Promise.resolve()
       .then(() => {
-        const basic = {targetAccuracy: 0.001, technique: 'coordinate', layout: 'psuedoCartogramLayout'};
+        const basic = {targetAccuracy: 0.001, layout: 'psuedoCartogramLayout'};
         this.setState({
           gons: tableCartogramAdaptive({
             ...basic,

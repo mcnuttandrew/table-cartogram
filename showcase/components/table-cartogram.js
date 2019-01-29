@@ -67,7 +67,7 @@ function plot(props, setX, xFlip, yFlip) {
             ...rectStyle
           }}/>);
       })}
-      {annotationBoxes.length && annotationBoxes.map((box, idx) => {
+      {(annotationBoxes || []).map((box, idx) => {
         return (<PolygonSeries
           key={`annotation-box-${idx}`}
           data={box.vertices}

@@ -158,9 +158,8 @@ export default function AlphaTableBuilder(props) {
     {TABLES.map((pair, idx) => {
       const commonProps = {
         iterations: 400,
-        // layout: 'pickBest',
-        layout: 'gridLayout',
-        technique: 'coordinate',
+        layout: 'pickBest',
+        // layout: 'zigZagOnX',
         computeMode: 'iterative',
         // computeMode: 'adaptive',
         stepSize: 5,

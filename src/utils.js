@@ -149,13 +149,8 @@ export function getRectsFromTable(table) {
   return rects;
 }
 
-export function findSumForTable(areas) {
-  return areas.reduce((sum, row) => row.reduce((acc, cell) => acc + cell, sum), 0);
-}
-
-export function findMaxForTable(areas) {
-  return areas.reduce((max, row) => row.reduce((acc, cell) => Math.max(acc, cell), max), -Infinity);
-}
+export const findSumForTable = areas =>
+  areas.reduce((sum, row) => row.reduce((acc, cell) => acc + cell, sum), 0);
 
 const diffVecs = (a, b) => ({x: a.x - b.x, y: a.y - b.y});
 const dotVecs = (a, b) => a.x * b.x + a.y * b.y;
