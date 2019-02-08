@@ -313,6 +313,7 @@ export function objectiveFunction(
   for (let i = 0; i < rects.length; i++) {
     for (let j = 0; j < rects[0].length; j++) {
       errorSum += Math.pow(targetTable[i][j] - sumRatio * areas[i][j], 2) / targetTable[i][j];
+      // errorSum += Math.pow(targetTable[i][j] - sumRatio * areas[i][j], 2) / Math.pow(targetTable[i][j], 2);
     }
   }
 

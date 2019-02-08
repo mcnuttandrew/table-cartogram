@@ -248,7 +248,8 @@ export default class IterativeDisplay extends React.Component {
       showAxisLabels = false,
       xLabels = [],
       yLabels = [],
-      getLabel = false
+      getLabel = false,
+      getSubLabel = false
     } = this.props;
     return (
       <div style={{display: 'flex', alignItems: 'center'}}>
@@ -260,6 +261,7 @@ export default class IterativeDisplay extends React.Component {
           yLabels={yLabels}
           showAxisLabels={showAxisLabels}
           getLabel={getLabel}
+          getSubLabel={getSubLabel}
           annotationBoxes={annotationBoxes}
           />}
         {loaded && this.displayReadout()}

@@ -20,6 +20,7 @@ function plot(props, setX, xFlip, yFlip) {
     annotationBoxStyle = {},
     data,
     fillMode,
+    getSubLabel,
     showLabels,
     height = 600,
     width = 600,
@@ -129,10 +130,11 @@ function plot(props, setX, xFlip, yFlip) {
           })} />
       }
 
-      {showLabels && !getLabel && <LabelSeries data={data.map((cell, index) => {
+      {showLabels && (!getLabel || getSubLabel) && <LabelSeries data={data.map((cell, index) => {
+        const label = getSubLabel ? getSubLabel(cell) : `${round(area(cell.vertices), Math.pow(10, 6))}`;
         return {
           ...geoCenter(cell.vertices),
-          label: `${round(area(cell.vertices), Math.pow(10, 6))}`,
+          label,
           style: {
             transform: 'translate(0, 15)',
             textAnchor: 'middle',

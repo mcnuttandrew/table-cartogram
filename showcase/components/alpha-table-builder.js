@@ -2,6 +2,7 @@ import React from 'react';
 import IterativeDisplay from './iterative-display';
 import {transposeMatrix} from '../../src/utils';
 import EXAMPLES from '../../examples/examples';
+import {ELELMENTS_DENSITY} from '../../examples/large-examples/element-examples';
 
 // UTILS
 const makeLocalCopy = table => table.map(row =>
@@ -75,6 +76,34 @@ const dataSets = {
         return table;
       }
     }
+  },
+
+  USA: {
+    data: EXAMPLES.USA_USA_USA_LABELS,
+    config: {
+      accessor: d => d[1],
+      getLabel: d => d.data[0],
+      setter: (table, y, x, d) => {
+        table[y][x][1] = d;
+        return table;
+      }
+    }
+  },
+
+  ELELMENTS: {
+    data: ELELMENTS_DENSITY,
+    config: {
+      getLabel: d => `${d.data.symbol}`,
+      accessor: d => d.value,
+      setter: (table, y, x, d) => {
+        table[y][x].value = d;
+        return table;
+      },
+      dims: {
+        height: 0.3,
+        width: 1
+      }
+    }
   }
 };
 
@@ -93,7 +122,7 @@ const alphas = {
       )));
     return table;
   },
-  JUST_NOTICABLE_CHANGE: (table, {setter, accessor}) => setter(table, 1, 1, accessor(table[1][1]) * 1.1),
+  SMALL_CHANGE: (table, {setter, accessor}) => setter(table, 1, 1, accessor(table[1][1]) * 1.1),
   BIG_CHANGE: (table, {setter, accessor}) => setter(table, 3, 1, accessor(table[3][1]) * 2),
   REVERSE_ROW: (table, config) => {
     table[2].reverse();
@@ -103,6 +132,20 @@ const alphas = {
   SWAP_ROWS: swapRows,
   RESCALE: (table, {setter, accessor}) => {
     table.forEach((row, y) => row.forEach((d, x) => setter(table, y, x, 100 * accessor(d))));
+    return table;
+  },
+  CHANGE_ALL_IN_COLUMN_BUT_ONE: (table, {setter, accessor}) => {
+    const column = table[0].length - 2;
+    table.forEach((row, y) => {
+      if (y === column) {
+        return;
+      }
+      setter(table, y, column, 3 * accessor(row[column]));
+    });
+    return table;
+  },
+  RECIPROCAL: (table, {setter, accessor}) => {
+    table.forEach((row, y) => row.forEach((d, x) => setter(table, y, x, 1 / accessor(d))));
     return table;
   },
   SWAP_MIN_MAX: (table, config) => {
@@ -126,22 +169,47 @@ const alphas = {
   }
 };
 
-const TABLES = [
-  /* eslint-disable comma-dangle */
+const ALL_ALPHAS = [
+  'TRANSPOSE',
+  'RANDOMLY_VARY_ALL_CELLS',
+  'SMALL_CHANGE',
+  'BIG_CHANGE',
+  'REVERSE_ROW',
+  'SWAP_ROWS',
+  'SWAP_COLUMNS',
+  'RESCALE',
+  'SWAP_MIN_MAX',
+  'SET_MAX_TO_AVERAGE',
+  'RECIPROCAL'
+].reduce((acc, alpha) =>
+  acc.concat([
+    'USA',
+    // 'BLACK_AND_WHITE',
+    // 'REGION_TO_REGION',
+    // 'ELELMENTS'
+  ]
+    .map(dataset => ({alpha, dataset: dataSets[dataset]}))), []);
 
+const SUBSET_ALPHAS = [
+  /* eslint-disable comma-dangle */
+  {alpha: 'CHANGE_ALL_IN_COLUMN_BUT_ONE', dataset: dataSets.BLACK_AND_WHITE},
+  {alpha: 'CHANGE_ALL_IN_COLUMN_BUT_ONE', dataset: dataSets.ELELMENTS},
+  {alpha: 'CHANGE_ALL_IN_COLUMN_BUT_ONE', dataset: dataSets.REGION_TO_REGION},
   // {alpha: 'TRANSPOSE', dataset: dataSets.BLACK_AND_WHITE},
   // {alpha: 'RANDOMLY_VARY_ALL_CELLS', dataset: dataSets.REGION_TO_REGION},
-  // {alpha: 'JUST_NOTICABLE_CHANGE', dataset: dataSets.REGION_TO_REGION},
+  // {alpha: 'SMALL_CHANGE', dataset: dataSets.REGION_TO_REGION},
   // {alpha: 'BIG_CHANGE', dataset: dataSets.REGION_TO_REGION},
   // {alpha: 'REVERSE_ROW', dataset: dataSets.REGION_TO_REGION},
   // {alpha: 'SWAP_ROWS', dataset: dataSets.BLACK_AND_WHITE},
   // {alpha: 'SWAP_COLUMNS', dataset: dataSets.REGION_TO_REGION},
-  {alpha: 'RESCALE', dataset: dataSets.REGION_TO_REGION},
-  {alpha: 'SWAP_MIN_MAX', dataset: dataSets.REGION_TO_REGION},
-  {alpha: 'SET_MAX_TO_AVERAGE', dataset: dataSets.REGION_TO_REGION},
+  // {alpha: 'RESCALE', dataset: dataSets.REGION_TO_REGION},
+  // {alpha: 'SWAP_MIN_MAX', dataset: dataSets.ELELMENTS},
+  // {alpha: 'SET_MAX_TO_AVERAGE', dataset: dataSets.REGION_TO_REGION},
 
   /* eslint-enable comma-dangle */
-]
+];
+
+const TABLES = ALL_ALPHAS
 .map(({alpha, dataset}) => ({alpha: alphas[alpha], dataset, name: alpha}))
 .map(({alpha, dataset, name}) => ({
   name,

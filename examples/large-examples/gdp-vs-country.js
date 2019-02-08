@@ -1,4 +1,4 @@
-import {transposeMatrix} from '../src/utils';
+import {transposeMatrix} from '../../src/utils';
 
 const countries = [
   {country: 'USA',	GDP: 19390, color: '#e41a1c', pop: 330},

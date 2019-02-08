@@ -1,5 +1,6 @@
 import StateMigration from './state-migration-data.json';
 import REGIONS from './us-regions.json';
+export const originalMigrationStuff = StateMigration;
 const StatesNames = StateMigration.map(d => d['State of residence']);
 
 const STATE_TO_REGION = REGIONS.reduce((acc, region) => {
