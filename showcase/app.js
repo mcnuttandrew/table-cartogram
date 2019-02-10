@@ -21,7 +21,7 @@ function App() {
   const tables = [
 
     // ...createElementTableWithTranspose()
-    {data: EXAMPLES.BLACK_AND_WHITE_TABLE, stepSize: 5, computeMode: 'iterative'},
+    // {data: EXAMPLES.BLACK_AND_WHITE_TABLE, stepSize: 5, computeMode: 'iterative'},
   ]
   .map((config, idx) => (
     <IterativeDisplay
@@ -64,7 +64,7 @@ function App() {
           // <ContinuousLegend />
         }
         {
-          // <AlphaTableBuilder/>
+          <AlphaTableBuilder/>
         }
       </div>
     </div>
