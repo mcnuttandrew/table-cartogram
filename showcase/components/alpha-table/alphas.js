@@ -3,7 +3,7 @@ import {transposeMatrix} from '../../../src/utils';
 const getLast = list => list[list.length - 1];
 
 const swapFromIdx = 1;
-const swapToIdx = 2;
+const swapToIdx = 3;
 const swapRows = table => {
   const temp = table[swapFromIdx];
   table[swapFromIdx] = table[swapToIdx];
@@ -87,7 +87,7 @@ const buildSmallChange = () => {
   return new Alpha(transform);
 };
 const buildBigChange = () => {
-  const transform = (table, {setter, accessor}) => setter(table, 2, 1, accessor(table[2][1]) * 2);
+  const transform = (table, {setter, accessor}) => setter(table, 3, 1, accessor(table[3][1]) * 2);
   return new Alpha(transform);
 };
 const buildReverseRow = () => {

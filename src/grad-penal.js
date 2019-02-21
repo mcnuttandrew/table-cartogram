@@ -144,8 +144,13 @@ function gradOverlapPenalty(props) {
   return {x: 0, y: 0};
 }
 
-export function gradBuildPenalties(newTable, dims) {
+export function gradBuildPenalties(newTable, dims, optimizationParams) {
   const tableGradient = [];
+  const {
+    borderPenalty,
+    orderPenalty,
+    overlapPenalty
+  } = optimizationParams;
   for (let i = 0; i < newTable.length; i++) {
     const rowGradient = [];
     for (let j = 0; j < newTable[0].length; j++) {
@@ -154,10 +159,10 @@ export function gradBuildPenalties(newTable, dims) {
 
       // boundary penalties
       // dont allow the values to move outside of the box
-      grad.x += derivPenalty(dims.width - cell.x);
-      grad.x += -derivPenalty(cell.x);
-      grad.y += derivPenalty(dims.height - cell.y);
-      grad.y += -derivPenalty(cell.y);
+      grad.x += borderPenalty * derivPenalty(dims.width - cell.x);
+      grad.x += -borderPenalty * derivPenalty(cell.x);
+      grad.y += borderPenalty * derivPenalty(dims.height - cell.y);
+      grad.y += -borderPenalty * derivPenalty(cell.y);
       const penalArgs = {
         ...computeEdges(newTable, i, j),
         cell,
@@ -165,11 +170,11 @@ export function gradBuildPenalties(newTable, dims) {
         i, j
       };
       const orderGrad = gradOrderPenalty(penalArgs);
-      grad.x += orderGrad.x;
-      grad.y += orderGrad.y;
+      grad.x += orderPenalty * orderGrad.x;
+      grad.y += orderPenalty * orderGrad.y;
       const overlapGrad = gradOverlapPenalty(penalArgs);
-      grad.x += overlapGrad.x * 4;
-      grad.y += overlapGrad.y * 4;
+      grad.x += overlapPenalty * overlapGrad.x;
+      grad.y += overlapPenalty * overlapGrad.y;
       rowGradient.push(grad);
     }
     tableGradient.push(rowGradient);
@@ -239,10 +244,11 @@ function errorGrad(newTable, targetTable) {
   return gradientTable;
 }
 
-export function buildErrorGradient(vector, targetTable, dims, searchIndices) {
+// TODO TYPES
+export function buildErrorGradient(vector, targetTable, dims, searchIndices, optimizationParams) {
   const newTable = translateVectorToTable(vector, targetTable, dims.height, dims.width);
   const gradientTable = errorGrad(newTable, targetTable);
-  const gradPenal = gradBuildPenalties(newTable, dims);
+  const gradPenal = gradBuildPenalties(newTable, dims, optimizationParams);
   const divisor = gradPenal.length * gradPenal[0].length;
 
   for (let i = 0; i < gradPenal.length; i++) {

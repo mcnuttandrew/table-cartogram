@@ -217,14 +217,17 @@ function contOrderPenalty(props) {
 
 /**
  * Construct penalities for a evaluations requiring continuity
+ * TODO REDO TYPES
  * @param  {Array of Array of {x: Number, y: Number}} newTable - the table to be evaluaated
  * @return {Number} The evaluated penalties
  */
-export function continuousBuildPenalties(newTable, dims) {
+export function continuousBuildPenalties(newTable, dims, optimizationParams) {
   let penalties = 0;
-  // const rects = getRectsFromTable(newTable)
-  //   .reduce((acc, row) => acc.concat(row))
-  //   .map(row => row.map(({x, y}) => [x, y]));
+  const {
+    orderPenalty,
+    borderPenalty,
+    overlapPenalty
+  } = optimizationParams;
   for (let i = 0; i < newTable.length; i++) {
     for (let j = 0; j < newTable[0].length; j++) {
       const {
@@ -238,11 +241,11 @@ export function continuousBuildPenalties(newTable, dims) {
 
       // boundary penalties
       // dont allow the values to move outside of the box
-      penalties += expPenalty(dims.width - cell.x);
-      penalties += expPenalty(cell.x);
-      penalties += expPenalty(dims.height - cell.y);
-      penalties += expPenalty(cell.y);
-      penalties += contOrderPenalty({
+      penalties += borderPenalty * expPenalty(dims.width - cell.x);
+      penalties += borderPenalty * expPenalty(cell.x);
+      penalties += borderPenalty * expPenalty(dims.height - cell.y);
+      penalties += borderPenalty * expPenalty(cell.y);
+      penalties += orderPenalty * contOrderPenalty({
         cell,
         inFirstRow,
         inLastRow,
@@ -253,7 +256,7 @@ export function continuousBuildPenalties(newTable, dims) {
         i, j
       });
 
-      penalties += 4 * continOverlapPenalty({
+      penalties += overlapPenalty * continOverlapPenalty({
         cell,
         newTable,
         inCorner,
@@ -264,21 +267,6 @@ export function continuousBuildPenalties(newTable, dims) {
         inLeftColumn,
         inRightColumn
       });
-
-      // inside penalties
-      // OLD OVERLAP PENALTY, NOT SURE HOW TO MAINTAIN THIS AS IT REQUIRES
-      // for (let idx = 0; idx < rects.length; idx++) {
-      //   const points = rects[idx];
-      //   if (
-      //     // dont penalize a point for being part of a rectangle
-      //     !points.some(d => d[0] === cell.x && d[1] === cell.y) &&
-      //     // do penalize it for being inside of a rectange it's not a part of
-      //     pointInPolygon([cell.x, cell.y], points)
-      //   ) {
-      //     const minDist = computeMinDist(points, cell);
-      //     penalties += expPenalty(-(isFinite(minDist) ? minDist : 0));
-      //   }
-      // }
     }
   }
 
@@ -294,12 +282,13 @@ export function continuousBuildPenalties(newTable, dims) {
  * this is because monte carlo has big jumps and doesnt compute a deriviative.
  * In contrast coordinate descent and gradient descent each optimze with fine gradients
  * so small changes matter and require delicacy.
+ * TODO REDO TYPES
  * @param  {Array of Numbers} vector - vector to be evaluated
  * @param  {Array of Array of Numbers} targetTable - Bound input data table
  * @return {Number} Score
  */
 export function objectiveFunction(
-  vector, targetTable, dims = {height: 1, width: 1}, onlyShowPenalty) {
+  vector, targetTable, dims = {height: 1, width: 1}, onlyShowPenalty, optimizationParams) {
   const newTable = translateVectorToTable(vector, targetTable, dims.height, dims.width);
   const rects = getRectsFromTable(newTable);
   // sum up the relative amount of "error"
@@ -312,12 +301,16 @@ export function objectiveFunction(
   let errorSum = 0;
   for (let i = 0; i < rects.length; i++) {
     for (let j = 0; j < rects[0].length; j++) {
-      errorSum += Math.pow(targetTable[i][j] - sumRatio * areas[i][j], 2) / targetTable[i][j];
-      // errorSum += Math.pow(targetTable[i][j] - sumRatio * areas[i][j], 2) / Math.pow(targetTable[i][j], 2);
+      const denom = Math.pow(targetTable[i][j] - sumRatio * areas[i][j], 2);
+      if (optimizationParams.useGreedy) {
+        errorSum += denom / targetTable[i][j];
+      } else {
+        errorSum += denom / Math.pow(targetTable[i][j], 2);
+      }
     }
   }
 
-  const penal = continuousBuildPenalties(newTable, dims);
+  const penal = continuousBuildPenalties(newTable, dims, optimizationParams);
   // const concavePenalty = rects.reduce((acc, row) =>
   //     acc + row.reduce((mem, rect) => mem + (checkForConcaveAngles(rect) ? 1 : 0), 0), 0)
   if (onlyShowPenalty) {

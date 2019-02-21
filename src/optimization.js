@@ -35,8 +35,8 @@ function lineSearch({objFunc, stepSize, currentVec, localNorm, dx, searchIndices
   return bestStepSize;
 }
 
-export function descentInnerLoop(objFunc, currentVec, table, dims, descentParams) {
-  const {lineSearchSteps, useAnalytic, stepSize, nonDeterministic} = descentParams;
+export function descentInnerLoop(objFunc, currentVec, table, dims, optimizationParams) {
+  const {lineSearchSteps, useAnalytic, stepSize, nonDeterministic} = optimizationParams;
   const phases = phaseShuffle(nonDeterministic);
   for (let phase = 0; phase < 4; phase++) {
     const currTable = translateVectorToTable(currentVec, table, dims.height, dims.width);
@@ -50,13 +50,14 @@ export function descentInnerLoop(objFunc, currentVec, table, dims, descentParams
     //   // console.log(currentVec)
     // }
     const dx = useAnalytic ?
-      buildErrorGradient(currentVec, table, dims, searchIndices) :
+      buildErrorGradient(currentVec, table, dims, searchIndices, optimizationParams) :
       finiteDiferenceForIndices(objFunc, currentVec, stepSize / 10, searchIndices);
     const localNorm = norm2(dx);
     const bestStepSize = lineSearch(
       {objFunc, stepSize, currentVec, localNorm, dx, searchIndices, lineSearchSteps});
     for (let jdx = 0; jdx < dx.length; jdx++) {
       if (dx[jdx] && localNorm) {
+        // TODO enable perturbation
         currentVec[searchIndices[jdx]] += -dx[jdx] / localNorm * bestStepSize;
       }
     }
@@ -88,24 +89,15 @@ export function descent(objFunc, candidateVector, iterations, table, dims) {
 }
 
 // REDO TYPES
-export function descentWithLineSearch(objFunc, candidateVector, optimizationParams, table, dims, iterations) {
-  const currentVec = candidateVector.slice();
-  /* eslint-disable max-depth */
-  for (let i = 0; i < iterations; i++) {
-    descentInnerLoop(objFunc, currentVec, table, dims, optimizationParams);
-  }
-  /* eslint-enable max-depth */
-  return currentVec;
-}
-
-// REDO TYPES
 export function executeOptimization(objFunc, candidateVector, table, optimizationParams, dims, iterations) {
   if (!iterations) {
     return translateVectorToTable(candidateVector, table, dims.height, dims.width);
   }
-
-  const result = descentWithLineSearch(objFunc, candidateVector, optimizationParams, table, dims, iterations);
-  return translateVectorToTable(result, table, dims.height, dims.width);
+  const currentVec = candidateVector.slice();
+  for (let i = 0; i < iterations; i++) {
+    descentInnerLoop(objFunc, currentVec, table, dims, optimizationParams);
+  }
+  return translateVectorToTable(currentVec, table, dims.height, dims.width);
 }
 
 // REDO TYPES
@@ -113,7 +105,8 @@ export function buildIterativeCartogram(table, layout = 'pickBest', dims, optimi
   const nowCols = table[0].length;
   const numRows = table.length;
 
-  const objFunc = (vec, onlyShowPenalty) => objectiveFunction(vec, table, dims, onlyShowPenalty);
+  const objFunc = (vec, onlyShowPenalty) => objectiveFunction(
+      vec, table, dims, onlyShowPenalty, optimizationParams);
   const newTable = typeof layout === 'string' ?
     generateInitialTable(numRows, nowCols, table, objFunc, layout, dims) :
     layout;

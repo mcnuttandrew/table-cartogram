@@ -23,9 +23,9 @@ const ALL_ALPHAS = [
 ].reduce((acc, alpha) =>
   acc.concat([
     // 'ZION',
-    'USA',
+    // 'USA',
     // 'BLACK_AND_WHITE',
-    // 'REGION_TO_REGION',
+    'REGION_TO_REGION',
     // 'ELELMENTS'
   ]
     .map(dataset => ({alpha, dataset: dataSets[dataset]}))), []);
@@ -62,11 +62,16 @@ export default function AlphaTableBuilder(props) {
     {TABLES.map(({name, data, config}, idx) => {
       const commonProps = {
         iterations: 400,
-        layout: 'pickBest',
+        optimizationParams: {
+          stepSize: 0.01,
+          nonDeterministic: true
+          // useAnalytic: true
+        },
+        // layout: 'pickWorst',
         // layout: 'gridLayout',
-        // layout: 'zigZagOnX',
-        computeMode: 'iterative',
-        // computeMode: 'adaptive',
+        // layout: 'zigZagOnXY',
+        // computeMode: 'iterative',
+        computeMode: 'adaptive',
         stepSize: 5,
         defaultColor: 'periodicColors',
         showLabelsByDefault: true,

@@ -6,7 +6,11 @@ const defaultOptimzationParams = {
   useAnalytic: false,
   // TODO MAGIC NUMBER
   stepSize: Math.min(0.01),
-  nonDeterministic: false
+  nonDeterministic: false,
+  useGreedy: true,
+  orderPenalty: 1,
+  borderPenalty: 1,
+  overlapPenalty: 10
 };
 
 const inputTableIsInvalid = table => {
