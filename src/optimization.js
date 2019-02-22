@@ -57,39 +57,40 @@ export function descentInnerLoop(objFunc, currentVec, table, dims, optimizationP
       {objFunc, stepSize, currentVec, localNorm, dx, searchIndices, lineSearchSteps});
     for (let jdx = 0; jdx < dx.length; jdx++) {
       if (dx[jdx] && localNorm) {
-        // TODO enable perturbation
+        // TODO enable perturbation?
         currentVec[searchIndices[jdx]] += -dx[jdx] / localNorm * bestStepSize;
       }
     }
   }
 }
 
+// TODO DELETE
 // REDO TYPES
-export function descent(objFunc, candidateVector, iterations, table, dims) {
-  const currentVec = candidateVector.slice();
-  /* eslint-disable max-depth */
-  for (let i = 0; i < iterations; i++) {
-    // janky adaptive step
-    const phases = phaseShuffle();
-    const stepSize = Math.min(0.001, objFunc(currentVec));
-    for (let phase = 0; phase < 4; phase++) {
-      const currTable = translateVectorToTable(currentVec, table, dims.height, dims.width);
-      const searchIndices = getIndicesInVectorOfInterest(currTable, phases[phase]);
-      const dx = finiteDiferenceForIndices(objFunc, currentVec, stepSize / 10, searchIndices);
-      const computednorm = norm2(dx);
-      for (let jdx = 0; jdx < dx.length; jdx++) {
-        if (dx[jdx] && computednorm) {
-          currentVec[searchIndices[jdx]] += -dx[jdx] / computednorm * stepSize;
-        }
-      }
-    }
-  }
-  /* eslint-enable max-depth */
-  return currentVec;
-}
+// export function descent(objFunc, candidateVector, iterations, table, dims) {
+//   const currentVec = candidateVector.slice();
+//   /* eslint-disable max-depth */
+//   for (let i = 0; i < iterations; i++) {
+//     // janky adaptive step
+//     const phases = phaseShuffle();
+//     const stepSize = Math.min(0.001, objFunc(currentVec));
+//     for (let phase = 0; phase < 4; phase++) {
+//       const currTable = translateVectorToTable(currentVec, table, dims.height, dims.width);
+//       const searchIndices = getIndicesInVectorOfInterest(currTable, phases[phase]);
+//       const dx = finiteDiferenceForIndices(objFunc, currentVec, stepSize / 10, searchIndices);
+//       const computednorm = norm2(dx);
+//       for (let jdx = 0; jdx < dx.length; jdx++) {
+//         if (dx[jdx] && computednorm) {
+//           currentVec[searchIndices[jdx]] += -dx[jdx] / computednorm * stepSize;
+//         }
+//       }
+//     }
+//   }
+//   /* eslint-enable max-depth */
+//   return currentVec;
+// }
 
 // REDO TYPES
-export function executeOptimization(objFunc, candidateVector, table, optimizationParams, dims, iterations) {
+export function descent(objFunc, candidateVector, table, optimizationParams, dims, iterations) {
   if (!iterations) {
     return translateVectorToTable(candidateVector, table, dims.height, dims.width);
   }
@@ -116,9 +117,12 @@ export function buildIterativeCartogram(table, layout = 'pickBest', dims, optimi
     if (!iterations) {
       return translateVectorToTable(candidateVector, table, dims.height, dims.width);
     }
-    const resultTable = executeOptimization(
+    // compute resulting table for determined number of iterations
+    const resultTable = descent(
       objFunc, candidateVector, table, optimizationParams, dims, iterations);
+    // update the local candidate within the closure
     candidateVector = translateTableToVector(resultTable);
+    // return the result table to the user
     return resultTable;
   };
 }

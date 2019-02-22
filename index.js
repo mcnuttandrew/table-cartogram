@@ -10,7 +10,7 @@ const defaultOptimzationParams = {
   useGreedy: true,
   orderPenalty: 1,
   borderPenalty: 1,
-  overlapPenalty: 10
+  overlapPenalty: 4
 };
 
 const inputTableIsInvalid = table => {

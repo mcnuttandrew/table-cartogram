@@ -32,7 +32,7 @@ StateMigration.forEach(fromState => {
     REGION_TO_REGION[fromRegion][toRegion] += num || 0;
   });
 });
-console.log(REGION_TO_REGION)
+
 const NICKNAMES = {
   Northeast: 'NE',
   Midwest: 'MW',

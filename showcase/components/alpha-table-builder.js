@@ -25,7 +25,8 @@ const ALL_ALPHAS = [
     // 'ZION',
     // 'USA',
     // 'BLACK_AND_WHITE',
-    'REGION_TO_REGION',
+    // 'REGION_TO_REGION',
+    'REGION_TO_REGION_FLATS'
     // 'ELELMENTS'
   ]
     .map(dataset => ({alpha, dataset: dataSets[dataset]}))), []);
@@ -70,8 +71,8 @@ export default function AlphaTableBuilder(props) {
         // layout: 'pickWorst',
         // layout: 'gridLayout',
         // layout: 'zigZagOnXY',
-        // computeMode: 'iterative',
-        computeMode: 'adaptive',
+        computeMode: 'iterative',
+        // computeMode: 'adaptive',
         stepSize: 5,
         defaultColor: 'periodicColors',
         showLabelsByDefault: true,

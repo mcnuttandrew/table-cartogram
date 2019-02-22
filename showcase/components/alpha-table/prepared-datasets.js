@@ -42,7 +42,37 @@ export const dataSets = {
       yLabels: namedRegions,
       showAxisLabels: true,
       getLabel: d => `${Math.floor(d.value / 100) / 10}k`,
-      defaultColor: 'valueHeatGreens'
+      defaultColor: 'valueHeatGreens',
+      layout: 'zigZagOnXY',
+      optimizationParams: {
+        // stepSize: 0.01,
+        stepSize: 0.005,
+        orderPenalty: 10,
+        borderPenalty: 10,
+        overlapPenalty: 10,
+        useGreedy: false,
+        // nonDeterministic: true,
+        // useAnalytic: true
+      }
+    }
+  },
+  // produces heatmaps of the heatmap
+  REGION_TO_REGION_FLATS: {
+    data: MIGRATION_REGION_TO_REGION,
+    config: {
+      accessor: d => d.value,
+      setter: (table, y, x, d) => {
+        table[y][x].value = d;
+        return table;
+      },
+      xLabels: namedRegions,
+      yLabels: namedRegions,
+      showAxisLabels: true,
+      getLabel: d => `${Math.floor(d.value / 100) / 10}k`,
+      defaultColor: 'valueHeatGreens',
+      computeMode: 'direct',
+      iterations: 0,
+      layout: 'gridLayout'
     }
   },
 
@@ -107,7 +137,7 @@ export const dataSets = {
       showAxisLabels: true,
       layout: 'gridLayout',
       optimizationParams: {
-        stepSize: 0.005,
+        stepSize: 0.005
         // useAnalytic: true
       }
     }
