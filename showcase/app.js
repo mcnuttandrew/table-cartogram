@@ -9,7 +9,8 @@ import IterativeDisplay from './components/iterative-display';
 // import CartogramPlot from './components/table-cartogram';
 // import ZionExperiment from './components/zion-experiment';
 // import ZionSpiral from './components/zion-spiral';
-import PivotogramAlts from './components/pivotogram-alts';
+// import PivotogramAlts from './components/pivotogram-alts';
+// import Map from './components/map';
 // import SankeyRegionRegion from './components/sankey-region-region';
 
 import {
@@ -59,13 +60,16 @@ function App() {
           // <ZionExperiment />
         }
         {
-          <PivotogramAlts />
+          // <PivotogramAlts />
         }
         {
           // <ContinuousLegend />
         }
         {
           // <AlphaTableBuilder/>
+        }
+        {
+          // <Map />
         }
       </div>
     </div>
