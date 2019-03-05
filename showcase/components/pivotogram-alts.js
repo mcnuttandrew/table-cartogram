@@ -19,9 +19,8 @@ function labelData(node) {
   return childrenSum;
 }
 
-export default function ArrestsSunburst() {
+function barChart() {
   const data = require('../../examples/large-examples/chicago-arrests').PREPPED_ZONES;
-  // BAR CHART
   return (
     <div style={{display: 'flex', maxWidth: 1100, flexWrap: 'wrap'}}>
       {
@@ -62,21 +61,31 @@ export default function ArrestsSunburst() {
       }
     </div>
   );
+}
+
+function sunburst() {
+  const data = require('../../examples/large-examples/chicago-arrests').SUNBURST_DATA;
+  labelData(data);
+  return (
+    <Sunburst
+      data={data}
+      hideRootNode
+      style={{
+        stroke: 'white',
+        strokeOpacity: 1,
+        strokeWidth: '0.8'
+      }}
+      colorType="literal"
+      getLabel={d => !d.title && d.radius0 ? '' : `${Math.round(d.title / 1000)}k`}
+      width={500}
+      height={500}/>
+  );
+}
+
+export default function PivotogramAlts() {
+
+  // BAR CHART
+  // return barChart();
   // SUNBURST
-  // const data = require('../../examples/large-examples/chicago-arrests').SUNBURST_DATA;
-  // labelData(data);
-  // return (
-  //   <Sunburst
-  //     data={data}
-  //     hideRootNode
-  //     style={{
-  //       stroke: 'white',
-  //       strokeOpacity: 1,
-  //       strokeWidth: '0.8'
-  //     }}
-  //     colorType="literal"
-  //     getLabel={d => !d.title && d.radius0 ? '' : `${Math.round(d.title / 1000)}k`}
-  //     width={500}
-  //     height={500}/>
-  // );
+  return sunburst();
 }

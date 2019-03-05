@@ -120,8 +120,13 @@ export function chicagoArrests() {
     computeAnnotationBoxBy: d => d.data.zone,
     defaultColor: 'valueHeatReds',
     // defaultColor: 'byDataColor'
+    layout: 'pickBest',
     optimizationParams: {
-      stepSize: 0.01
+      stepSize: 0.005,
+      // useAnalytic: true,
+      // nonDeterministic: true,
+      useGreedy: false,
+      overlapPenalty: 20
     }
   };
 }

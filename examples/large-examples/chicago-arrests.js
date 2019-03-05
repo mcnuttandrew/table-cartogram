@@ -52,6 +52,17 @@ const zones = [
   {zone: 'WEST', domestic: true, arrest: true, color: COLORS[3]}
 ].map((d, idx) => ({...d, count: zones2006to2012[idx]}));
 
+// this doubles the number of arrests made during the time period under conisderation
+// important for the alpha simulation figure
+const MODIFY_ARRESTS_PROPTION = false;
+if (MODIFY_ARRESTS_PROPTION) {
+  for (let i = 0; i < zones.length; i++) {
+    if (zones[i].arrest) {
+      zones[i].count *= 2;
+    }
+  }
+}
+
 export const PREPPED_ZONES = zones;
 
 // OLD VERSION FOR DIVIDING CITY

@@ -14,12 +14,13 @@ import PivotogramAlts from './components/pivotogram-alts';
 
 import {
   createElementTableWithTranspose,
-  stateToStateFullNetwork
+  stateToStateFullNetwork,
+  chicagoArrests
 } from './figure-setups';
 
 function App() {
   const tables = [
-
+    chicagoArrests()
     // ...createElementTableWithTranspose()
     // {data: EXAMPLES.USA_USA_USA, stepSize: 5, computeMode: 'iterative'},
   ]
@@ -36,7 +37,7 @@ function App() {
       <div>
         <div style={{display: 'flex', flexWrap: 'wrap'}}>
           {
-            tables
+            // tables
           }
         </div>
         <div>
@@ -58,13 +59,13 @@ function App() {
           // <ZionExperiment />
         }
         {
-          // <PivotogramAlts />
+          <PivotogramAlts />
         }
         {
           // <ContinuousLegend />
         }
         {
-          <AlphaTableBuilder/>
+          // <AlphaTableBuilder/>
         }
       </div>
     </div>
