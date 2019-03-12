@@ -236,10 +236,9 @@ export function ahnbSurveyResults() {
 }
 
 export function confusiongram() {
-  return {
+  const common = {
     // data: EXAMPLES.WIKI_CONFUSION_GRAM_PERFECT_CLASSIFIER,
     // data: EXAMPLES.WIKI_CONFUSION_GRAM_OK_CLASSIFIER,
-    data: EXAMPLES.WIKI_CONFUSION_GRAM_BAD_CLASSIFIER,
     stepSize: 5,
     computeMode: 'iterative',
     accessor: d => d.size,
@@ -252,9 +251,15 @@ export function confusiongram() {
       height: 1,
       width: 1
     },
+    showLabelsByDefault: true,
     defaultColor: 'confusiongramHardCode',
     showBorder: false
   };
+  return [
+    {...common, data: EXAMPLES.WIKI_CONFUSION_GRAM_PERFECT_CLASSIFIER},
+    {...common, data: EXAMPLES.WIKI_CONFUSION_GRAM_OK_CLASSIFIER},
+    {...common, data: EXAMPLES.WIKI_CONFUSION_GRAM_BAD_CLASSIFIER}
+  ];
 }
 
 export function stateToStateFullNetwork() {

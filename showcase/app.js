@@ -16,14 +16,16 @@ import IterativeDisplay from './components/iterative-display';
 import {
   createElementTableWithTranspose,
   stateToStateFullNetwork,
-  chicagoArrests
+  chicagoArrests,
+  confusiongram
 } from './figure-setups';
 
 function App() {
   const tables = [
-    chicagoArrests()
+    // chicagoArrests()
     // ...createElementTableWithTranspose()
-    // {data: EXAMPLES.USA_USA_USA, stepSize: 5, computeMode: 'iterative'},
+    {data: EXAMPLES.USA_USA_USA, stepSize: 5, computeMode: 'iterative'},
+    // ...confusiongram()
   ]
   .map((config, idx) => (
     <IterativeDisplay
@@ -38,7 +40,7 @@ function App() {
       <div>
         <div style={{display: 'flex', flexWrap: 'wrap'}}>
           {
-            // tables
+            tables
           }
         </div>
         <div>

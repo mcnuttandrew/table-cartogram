@@ -39,9 +39,11 @@ export const COLOR_MODES = {
     return interpolateGreens(1 - Math.sqrt(1 - (cell.value - min) / (max - min)));
   },
   confusiongramHardCode: (cell, index) => {
-    const [min, max] = [1, 2];
+    console.log(cell)
+    const [min, max] = [0, 13];
     const clamp = v => isFinite(v) ? Math.min(Math.max(v, 0), 1) : 1;
-    const val = 1 - (1 - (cell.value - min) / (max - min));
+    // const val = 1 - (1 - (cell.value - min) / (max - min));
+    const val = (cell.data.show - min) / (max - min);
     return interpolateReds(clamp(val));
   },
   valueHeatRedWhiteBlue: (cell, index, {min, max}) => {
