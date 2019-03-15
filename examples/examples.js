@@ -175,6 +175,39 @@ const WIKI_CONFUSION_GRAM_PERFECT_CLASSIFIER = [
   [{size: 1.0, show: 0}, {size: 1.0, show: 0}, {size: 1.0, show: 13}]
 ];
 
+// XAXIS HAIR COLOR: BLACK/BROWN/RED/BLOND
+const FRIENDLY_MOSAIC = [
+  // MALE
+  // BLUE
+  [{value: 11, sex: 'M'}, {value: 50, sex: 'M'}, {value: 10, sex: 'M'}, {value: 30, sex: 'M'}],
+  // GREEN
+  [{value: 3, sex: 'M'}, {value: 15, sex: 'M'}, {value: 7, sex: 'M'}, {value: 8, sex: 'M'}],
+  // HAZEL
+  [{value: 10, sex: 'M'}, {value: 25, sex: 'M'}, {value: 7, sex: 'M'}, {value: 5, sex: 'M'}],
+  // BROWN
+  [{value: 32, sex: 'M'}, {value: 38, sex: 'M'}, {value: 10, sex: 'M'}, {value: 3, sex: 'M'}],
+
+  // FEMALE
+  // BLUE
+  [{value: 9, sex: 'F'}, {value: 34, sex: 'F'}, {value: 7, sex: 'F'}, {value: 64, sex: 'F'}],
+  // GREEN
+  [{value: 2, sex: 'F'}, {value: 14, sex: 'F'}, {value: 7, sex: 'F'}, {value: 8, sex: 'F'}],
+  // HAZEL
+  [{value: 5, sex: 'F'}, {value: 29, sex: 'F'}, {value: 7, sex: 'F'}, {value: 5, sex: 'F'}],
+  // BROWN
+  [{value: 36, sex: 'F'}, {value: 81, sex: 'F'}, {value: 16, sex: 'F'}, {value: 4, sex: 'F'}]
+];
+
+const FRIENDLY_MOSAIC_2 = [...new Array(4)].map((_, idx) => {
+  const maleRow = FRIENDLY_MOSAIC[idx + 0];
+  const femaleRow = FRIENDLY_MOSAIC[idx + 4];
+  return maleRow
+    .reduce((acc, __, jdx) => acc
+      .concat({...maleRow[jdx], index: `${idx}-${jdx}`})
+      .concat({...femaleRow[jdx], index: `${idx}-${jdx}`}
+    ), []);
+});
+
 export default {
   BLOCKS,
   SUB_BLOCKS,
@@ -213,6 +246,9 @@ export default {
   WIKI_CONFUSION_GRAM_OK_CLASSIFIER,
   WIKI_CONFUSION_GRAM_BAD_CLASSIFIER,
   WIKI_CONFUSION_GRAM_PERFECT_CLASSIFIER,
+
+  FRIENDLY_MOSAIC,
+  FRIENDLY_MOSAIC_2,
 
   POWER_1: applyPower(POWER_ARRANGEMENTS[0]),
   POWER_2: applyPower(POWER_ARRANGEMENTS[1]),

@@ -18,8 +18,8 @@ Relevant Files:
 
 Chicago moving violation and arrests data
 SOURCE: [Chicago City Data Portal](https://data.cityofchicago.org/Transportation/Red-Light-Camera-Violations/spqx-js37)
-SECONDARY SOURCE: [KAGGLE CLOUD PROCESSING](https://www.kaggle.com/mcnutt/chicago-crimes-by-community-area)
 Relevant Files:
+- large-examples/chicago-crimes-by-community-area.ipynb
 - large-examples/speeding.json
 - large-examples/chicago-arrests.js
 - showcase/components/pivotogram-alts.js
@@ -63,4 +63,11 @@ SOURCE: [link](https://www.reddit.com/r/DnD/comments/1ejnft/alignment_survey_res
 
 USA Populations dataset
 SOURCE: Layout from [Evans et al](https://www.cs.ubc.ca/~will/papers/tablecart.pdf), [data from wikipedia: List of U.S. states by population](https://simple.wikipedia.org/wiki/List_of_U.S._states_by_population).
+Relevant Files:
 - ./example.js
+
+Around The Lake
+Source: [City List](https://en.wikipedia.org/wiki/List_of_cities_on_the_Great_Lakes) and associated wikipedia pages (and therein census data) for each of the cities
+Relevant Files:
+- ./large-examples/along-the-lake.js
+- ./large-examples/around-the-lake.json

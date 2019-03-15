@@ -24,10 +24,6 @@
     "faucet": "^0.0.1",
     "tape": "4"
   },
-  "author": {
-    "name": "Andrew McNutt",
-    "url": "mcnutt.in"
-  },
   "babel": {
     "env": {
       "production": {

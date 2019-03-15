@@ -335,3 +335,113 @@ export function multiplicationTable() {
     }
   };
 }
+
+/**
+ * Generate a pivotgram based on friendly frequnecies of hair/eye color by sex
+ */
+export function friendlyMosaicAlike() {
+  return {
+    data: EXAMPLES.FRIENDLY_MOSAIC,
+    stepSize: 5,
+    computeMode: 'iterative',
+    getLabel: d => d.value,
+    accessor: cell => cell.value,
+    xLabels: ['BLACK', 'BROWN', 'RED', 'BLOND'],
+    yLabels: ['BLUE', 'GREEN', 'HAZEL', 'BROWN', 'BLUE', 'GREEN', 'HAZEL', 'BROWN'],
+    showAxisLabels: true,
+    computeAnnotationBoxBy: d => d.data.sex,
+    showLabelsByDefault: true,
+    defaultColor: 'valueHeatGreens'
+  };
+}
+
+/**
+ * Generate a pivotgram based on friendly frequnecies of hair/eye color by sex
+ */
+export function friendlyMosaicAlike2() {
+  return {
+    data: EXAMPLES.FRIENDLY_MOSAIC_2,
+    stepSize: 5,
+    computeMode: 'iterative',
+    getLabel: d => d.value,
+    accessor: cell => cell.value,
+    xLabels: ['BLACK', 'BLACK', 'BROWN', 'BROWN', 'RED', 'RED', 'BLOND', 'BLOND'],
+    yLabels: ['BLUE', 'GREEN', 'HAZEL', 'BROWN'],
+    showAxisLabels: true,
+    computeAnnotationBoxBy: d => d.data.index,
+    showLabelsByDefault: true,
+    defaultColor: 'valueHeatGreens'
+  };
+}
+
+export function AlongTheLakeExample() {
+  const {
+    AlongTheLake,
+    AlongTheLakeXLabels,
+    AlongTheLakeYLabels
+  } = require('../examples/large-examples/along-the-lake');
+  return {
+    data: AlongTheLake.map(row => row.map(d => ({...d, value: Math.sqrt(d.value)}))),
+    stepSize: 10,
+    accessor: d => d.value,
+    computeAnnotationBoxBy: d => d.data.state,
+    computeMode: 'iterative',
+    dims: {
+      height: 0.5,
+      width: 3
+    },
+    layout: 'psuedoCartogramLayout',
+    xLabels: AlongTheLakeXLabels,
+    yLabels: AlongTheLakeYLabels,
+    showAxisLabels: true,
+    getLabel: ({value}) => `${Math.floor(value / 1000)}k`,
+    defaultColor: 'valueHeatCool',
+    optimizationParams: {
+      // stepSize: 0.005,
+      useAnalytic: true,
+      nonDeterministic: true,
+      // useGreedy: false,
+      overlapPenalty: 20
+    }
+  };
+}
+
+export function AlongTheLakeExampleMargins() {
+  const {
+    AlongTheLake,
+    AlongTheLakeXLabels,
+    AlongTheLakeYLabels
+  } = require('../examples/large-examples/along-the-lake');
+  // data: AlongTheLake.map(row => row.map(d => ({...d, value: Math.sqrt(d.value)}))),
+  const sum = row => row.reduce((acc, {value}) => acc + Math.sqrt(value), 0);
+  const yearMargin = ([AlongTheLake.map(sum)]);
+  const cityMargin = [transposeMatrix(AlongTheLake).map(sum)];
+  const common = {
+    stepSize: 10,
+    computeMode: 'iterative',
+    layout: 'psuedoCartogramLayout',
+    showAxisLabels: true,
+    getLabel: ({value}) => `${Math.floor(value / 1000)}k`,
+    defaultColor: 'valueHeatCool',
+    optimizationParams: {
+      // stepSize: 0.005,
+      useAnalytic: true,
+      nonDeterministic: true,
+      // useGreedy: false,
+      overlapPenalty: 20
+    }
+  };
+  const [size1, size2] = [0.3, 3];
+  return [{
+    ...common,
+    data: yearMargin,
+    xLabels: AlongTheLakeYLabels,
+    dims: {width: size1, height: 0.5}
+    // dims: {height: size1, width: size2}
+  }, {
+    ...common,
+    data: cityMargin,
+    xLabels: AlongTheLakeXLabels,
+    dims: {height: size1, width: size2}
+  }];
+}
