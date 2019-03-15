@@ -21,7 +21,8 @@ import {
   // confusiongram,
   // friendlyMosaicAlike2,
   AlongTheLakeExample,
-  AlongTheLakeExampleMargins
+  AlongTheLakeExampleMargins,
+  CanidateSimilarity
 } from './figure-setups';
 
 function App() {
@@ -30,7 +31,8 @@ function App() {
     // ...createElementTableWithTranspose()
     // {data: EXAMPLES.USA_USA_USA, stepSize: 5, computeMode: 'iterative'},
     // ...confusiongram()
-    AlongTheLakeExample(),
+    CanidateSimilarity()
+    // AlongTheLakeExample(),
     // ...AlongTheLakeExampleMargins()
   ]
   .map((config, idx) => (
@@ -46,14 +48,14 @@ function App() {
       <div>
         <div style={{display: 'flex', flexWrap: 'wrap'}}>
           {
-            // tables
+            tables
           }
         </div>
         {
           // <HourCalendar data={require('../examples/large-examples/ohare-temp-data.json')}/>
         }
         {
-          <PivotogramAlts/>
+          // <Map/>
         }
       </div>
     </div>

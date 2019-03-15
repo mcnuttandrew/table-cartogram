@@ -445,3 +445,25 @@ export function AlongTheLakeExampleMargins() {
     dims: {height: size1, width: size2}
   }];
 }
+
+export function CanidateSimilarity() {
+  const canidates = [
+    'Julian Castro',
+    'Elizabeth Warren',
+    'Pete Buttigieg',
+    'Andrew Yang',
+    'Tulsi Gabbard',
+    'Amy Klobuchar'
+  ];
+  return {
+    data: EXAMPLES.CANDIDATE_SIM,
+    stepSize: 5,
+    computeMode: 'iterative',
+    getLabel: ({value}) => `${Math.floor(value * 100) / 100}`,
+    xLabels: canidates,
+    yLabels: canidates,
+    defaultColor: 'valueHeatGreens',
+    showLabelsByDefault: true,
+    showAxisLabels: true
+  };
+}

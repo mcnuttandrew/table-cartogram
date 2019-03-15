@@ -1,4 +1,4 @@
-# Table Cartogram Paper Data Sources
+Candidate# Table Cartogram Paper Data Sources
 
 In the document we provide sources for the various dataset used through out this work.
 
@@ -71,3 +71,8 @@ Source: [City List](https://en.wikipedia.org/wiki/List_of_cities_on_the_Great_La
 Relevant Files:
 - ./large-examples/along-the-lake.js
 - ./large-examples/around-the-lake.json
+
+Candidate Similarity
+Source: NLTK similarity scores for a web scrape of each of the candidates websites (Run March 12 2019)
+Relevant Files:
+- ./examples.js
