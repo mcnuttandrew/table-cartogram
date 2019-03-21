@@ -26,13 +26,26 @@ const lakeDomain = AlongTheLake.reduce((acc, row) => {
   });
   return acc;
 }, {min: Infinity, max: -Infinity});
-console.log(lakeDomain)
-const setColr3 = (value) =>
-  interpolateViridis(Math.sqrt((value - lakeDomain.min) / (lakeDomain.max - lakeDomain.min)));
+
+const setColr3 = (({min, max}) => (value) =>
+  interpolateViridis(Math.sqrt((value - Math.sqrt(min)) / (Math.sqrt(max) - Math.sqrt(min)))))(lakeDomain);
 
 const data = {children: transposeMatrix(AlongTheLake).map(row => {
   return {
-    children: row.map(({value}) => ({size: Math.sqrt(value), color: setColr3(value)}))
+    children: row.map(({value, state}) => {
+      // [
+      //     'Michigan 1',
+      //     'Wisconsin 1',
+      //     'Illinois 1',
+      //     'Indiana 1',
+      //     'Michigan 2'
+      //   ]
+      return ({
+        size: Math.sqrt(value),
+        color: setColr3(Math.sqrt(value))
+        // color: state === 'Michigan 1' ? setColr3(Math.sqrt(value)) : 'transparent'
+      });
+    })
   };
 })};
 
@@ -105,7 +118,7 @@ function LineChart() {
         top: 50,
         bottom: 50
       }}
-      yDomain={[1000, 3000000]}
+      yDomain={[300, 3700000]}
       yType="log"
       height={1000}
       width={500}>

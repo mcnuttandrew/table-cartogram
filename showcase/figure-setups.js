@@ -66,8 +66,10 @@ export function buildSenateExample() {
     stepSize: 10,
     computeMode: 'iterative',
     accessor: d => d.yearsInOffice,
+    layout: 'pickWorst',
     dims: {
-      height: 0.5,
+      // height: 0.5,
+      height: 0.75,
       width: 1
     },
     getLabel: cell => {
@@ -88,7 +90,7 @@ export function zionFigure() {
       return row.map(d => ({
         ...d,
         color: interpolateRdBu(1 - ((d.value - zionDomain.min) / (zionDomain.max - zionDomain.min))),
-        value: 1,
+        value: d.value,
         printVal: `${Math.floor(d.value / 1000)}k`
       }));
     }),
@@ -96,8 +98,9 @@ export function zionFigure() {
     computeMode: 'iterative',
     accessor: d => Number(d.value),
     defaultColor: 'byDataColor',
+    layout: 'psuedoCartogramLayout',
     dims: {
-      height: 0.6,
+      height: 1,
       width: 1
     },
     xLabels: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
@@ -296,24 +299,39 @@ export function stateToStateFullNetwork() {
 export function regionToRegion() {
   const migration = require('../examples/large-examples/state-migration-network');
   const {MIGRATION_REGION_TO_REGION, namedRegions} = migration;
+  // console.log(MIGRATION_REGION_TO_REGION)
   return {
-    data: MIGRATION_REGION_TO_REGION.map(row => {
-      return row.map(d => ({
-        ...d,
-        color: interpolateGreens(1 - Math.sqrt(1 - (d.value - 63) / (40165 - 63))),
-        // value: 1,
-        printVal: `${Math.floor(d.value / 100) / 10}k`
-      }));
-    }),
+    // data: MIGRATION_REGION_TO_REGION.map(row => {
+    //   return row.map(d => ({
+    //     ...d,
+    //     color: interpolateGreens(1 - Math.sqrt(1 - (d.value - 63) / (40165 - 63))),
+    //     // value: 1,
+    //     printVal: `${Math.floor(d.value / 100) / 10}k`
+    //   }));
+    // }),
+    data: MIGRATION_REGION_TO_REGION.map(row => row.map((cell, col) => ({...cell, col}))),
     stepSize: 5,
     computeMode: 'iterative',
     accessor: d => d.value,
     xLabels: namedRegions,
     yLabels: namedRegions,
     showAxisLabels: true,
-    getLabel: d => d.data.printVal,
+    getLabel: d => `${Math.floor(d.value / 100) / 10}k`,
+    computeAnnotationBoxBy: d => d.data.col,
     showBorder: false,
-    defaultColor: 'byDataColor'
+    defaultColor: 'valueHeatGreens',
+    // defaultColor: 'byDataColor',
+    layout: 'zigZagOnXY',
+    optimizationParams: {
+      // stepSize: 0.01,
+      stepSize: 0.005,
+      orderPenalty: 10,
+      borderPenalty: 10,
+      overlapPenalty: 10,
+      useGreedy: false,
+      nonDeterministic: true,
+      // useAnalytic: true
+    }
   };
 }
 
@@ -391,6 +409,55 @@ export function AlongTheLakeExample() {
       width: 3
     },
     layout: 'psuedoCartogramLayout',
+    xLabels: AlongTheLakeXLabels,
+    yLabels: AlongTheLakeYLabels,
+    showAxisLabels: true,
+    getLabel: ({value}) => `${Math.floor(value / 1000)}k`,
+    defaultColor: 'valueHeatCool',
+    optimizationParams: {
+      // stepSize: 0.005,
+      useAnalytic: true,
+      nonDeterministic: true,
+      // useGreedy: false,
+      overlapPenalty: 20
+    }
+  };
+}
+
+export function AlongTheLakeExampleJuicing() {
+  const alpha = 1.15;
+  const {
+    AlongTheLake,
+    AlongTheLakeXLabels,
+    AlongTheLakeYLabels
+  } = require('../examples/large-examples/along-the-lake');
+  const sum = row => (row.reduce((acc, {value}) => acc + (value), 0) / row.length);
+  // const yearMargin = ([AlongTheLake.map(sum)]);
+  const cityMargin = [transposeMatrix(AlongTheLake).map(sum)];
+  // console.log(cityMargin)
+  const data = transposeMatrix(AlongTheLake).map((row, idx) => {
+    // console.log(AlongTheLake)
+    const cityAvg = cityMargin[0][idx];
+    // const cellDelta = (d.value - cityAvg);
+    // console.log(cityAvg)
+    return row.map(d => {
+      const preval = cityAvg + alpha * (d.value - cityAvg);
+      const value = Math.sqrt(preval);
+      return ({...d, value});
+    });
+  });
+
+  return {
+    data: transposeMatrix(data),
+    stepSize: 10,
+    accessor: d => d.value,
+    computeAnnotationBoxBy: d => d.data.state,
+    computeMode: 'iterative',
+    dims: {
+      height: 0.5,
+      width: 3
+    },
+    layout: 'zigZagOnXY',
     xLabels: AlongTheLakeXLabels,
     yLabels: AlongTheLakeYLabels,
     showAxisLabels: true,

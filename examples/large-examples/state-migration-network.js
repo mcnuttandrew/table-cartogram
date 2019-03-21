@@ -46,7 +46,7 @@ export const namedRegions = [
   'West',
   'Northeast',
   'Midwest',
-  'US Islands',
+  'US Islands'
 ];
 // export const namedRegions = Object.keys(NICKNAMES);
 export const REGION_NET = REGION_TO_REGION;

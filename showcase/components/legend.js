@@ -7,7 +7,7 @@ class ContinuousLegend extends React.Component {
     const canvas = this.refs.ctx;
     const ctx = canvas.getContext('2d');
     // const colorScale = scaleChromatic[this.props.d3ColorScale];
-    const colorScale = COLOR_MODES.valueHeatCool;
+    const colorScale = COLOR_MODES.plasmaHeat;
     const steps = 600;
     for (let i = 0; i <= steps; i++) {
       ctx.beginPath();

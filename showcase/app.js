@@ -4,15 +4,15 @@ import React from 'react';
 import AlphaTableBuilder from './components/alpha-table-builder';
 import EXAMPLES from '../examples/examples';
 import IterativeDisplay from './components/iterative-display';
-import ContinuousLegend from './components/legend';
-// import CalendarDisplay from './components/calendar-example';
-// import HourCalendar from './components/hour-calendar';
+import Legend from './components/legend';
+import CalendarDisplay from './components/calendar-example';
+import HourCalendar from './components/hour-calendar';
 // import CartogramPlot from './components/table-cartogram';
 // import ZionExperiment from './components/zion-experiment';
 // import ZionSpiral from './components/zion-spiral';
 import PivotogramAlts from './components/pivotogram-alts';
 // import Map from './components/map';
-// import SankeyRegionRegion from './components/sankey-region-region';
+import SankeyRegionRegion from './components/sankey-region-region';
 
 import {
   // createElementTableWithTranspose,
@@ -21,23 +21,61 @@ import {
   // confusiongram,
   // friendlyMosaicAlike2,
   AlongTheLakeExample,
-  AlongTheLakeExampleMargins,
-  CanidateSimilarity
+  // AlongTheLakeExampleMargins,
+  AlongTheLakeExampleJuicing
+  // regionToRegion
+  // buildSenateExample
 } from './figure-setups';
 
 function App() {
   const tables = [
-    // chicagoArrests()
-    // ...createElementTableWithTranspose()
-    // {data: EXAMPLES.USA_USA_USA, stepSize: 5, computeMode: 'iterative'},
-    // ...confusiongram()
-    CanidateSimilarity()
+    // ...[
+    //   // 'zigZagOnXY',
+    //   'psuedoCartogramLayout',
+    //   // 'gridLayout'
+    // ].map(layout => {
+    //   return {
+    //     data: EXAMPLES.EXAMPLE_TABLE,
+    //     stepSize: 5,
+    //     computeMode: 'iterative',
+    //     dims: {
+    //       height: 0.43434343434,
+    //       width: 1
+    //     },
+    //     optimizationParams: {
+    //       useGreedy: false,
+    //       nonDeterministic: true
+    //       // useAnalytic: true
+    //     },
+    //     defaultColor: 'none',
+    //     getLabel: d => d.value,
+    //     showLabelsByDefault: true,
+    //     layout
+    //   };
+    // })
+    {
+      data: EXAMPLES.CHECKER_BOARD,
+      computeMode: 'direct',
+      stepSize: 5,
+      layout: 'pickBest',
+      defaultColor: 'byValue',
+      getLabel: d => d.value,
+    },
+    {
+      data: EXAMPLES.CHECKER_BOARD,
+      computeMode: 'direct',
+      stepSize: 5,
+      layout: 'pickWorst',
+      defaultColor: 'byValue',
+      getLabel: d => d.value,
+    }
+    // AlongTheLakeExampleJuicing()
     // AlongTheLakeExample(),
     // ...AlongTheLakeExampleMargins()
   ]
   .map((config, idx) => (
     <IterativeDisplay
-      iterations={400}
+      iterations={0}
       layout={'gridLayout'}
       {...config}
       key={`table-${idx}`}/>
@@ -52,10 +90,10 @@ function App() {
           }
         </div>
         {
-          // <HourCalendar data={require('../examples/large-examples/ohare-temp-data.json')}/>
+          // <HourCalendar celius={true} data={require('../examples/large-examples/ohare-temp-data.json')}/>
         }
         {
-          // <Map/>
+          // <PivotogramAlts/>
         }
       </div>
     </div>

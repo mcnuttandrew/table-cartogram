@@ -33,6 +33,12 @@ const COLORS = [
 const zones2012to2018 = [92082, 26386, 4253, 924, 266722, 59799, 32218, 9002, 474016, 168817, 119575, 27581, 243473, 126326, 55163, 12606]
 const zones2006to2012 = [98293, 40654, 4586, 866, 371881, 104736, 39251, 12511, 703709, 283079, 144758, 32449, 321605, 194900, 57275, 15249]
 
+const zones2012to2018SUM = zones2012to2018.reduce((acc, row) => row + acc, 0);
+// 171,8943
+const zones2006to2012SUM = zones2006to2012.reduce((acc, row) => row + acc, 0);
+// 242,5802
+
+
 const zones = [
   {zone: 'CENTRAL', domestic: false, arrest: false, color: COLORS[0]},
   {zone: 'CENTRAL', domestic: false, arrest: true, color: COLORS[0]},

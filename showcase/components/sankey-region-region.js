@@ -1,6 +1,7 @@
 import React from 'react';
 
 import {Sankey} from 'react-vis';
+import {RV_COLORS} from '../colors';
 
 // API REFERENCE
 // const nodes = [{name: 'a', rotation: 0}, {name: 'b'}, {name: 'c'}];
@@ -16,7 +17,12 @@ const nodes = REGIONS.map(name => ({name: `${name}`})).concat(
 ).map(d => ({...d, rotation: 0}));
 const links = REGIONS.reduce((acc, from, idx) => {
   return acc.concat(REGIONS.map((to, jdx) => {
-    return {source: idx, target: jdx + REGIONS.length, value: REGION_NET[from][to]};
+    return {
+      source: idx,
+      target: jdx + REGIONS.length,
+      value: REGION_NET[from][to],
+      color: RV_COLORS[jdx + 5]
+    };
   }));
 }, []);
 
@@ -25,9 +31,10 @@ export default function BasicSankeyExample() {
     <Sankey
       nodes={nodes}
       links={links}
-      width={300}
-      height={300}
+      width={1400}
+      height={1400}
       labelRotation={45}
+
     />
   );
 }
