@@ -6,7 +6,6 @@ import {
   interpolateRdBu,
   interpolateViridis
 } from 'd3-scale-chromatic';
-
 export const RV_COLORS = [
   '#19CDD7',
   '#DDB27C',
@@ -29,6 +28,21 @@ export const RV_COLORS = [
   '#1E96BE',
   '#89DAC1',
   '#B3AD9E'
+];
+
+export const COLOR_BREWER_QUAL_10 = [
+  '#8dd3c7',
+  '#ffffb3',
+  '#bebada',
+  '#fb8072',
+  '#80b1d3',
+  '#fdb462',
+  '#b3de69',
+  '#fccde5',
+  // '#d9d9d9',
+  '#89DAC1',
+  // '#bc80bd'
+  '#88572C',
 ];
 
 export const COLOR_MODES = {
@@ -64,7 +78,9 @@ export const COLOR_MODES = {
   byDataColor: (cell, index, domain) =>
     cell.data.color || '#fff',
   none: (cell, index, domain) => 'rgba(255, 255, 255, 0)',
-  periodicColors: (cell, index, domain) => RV_COLORS[(index + 3) % RV_COLORS.length]
+  periodicColors: (cell, index, domain) => RV_COLORS[(index + 3) % RV_COLORS.length],
+  periodicColorsColorBrewer: (cell, index, domain) =>
+    COLOR_BREWER_QUAL_10[(index + 3) % COLOR_BREWER_QUAL_10.length]
 };
 
 export const colorCell = (cell, index, fillMode, domain) =>

@@ -11,7 +11,7 @@ import {RV_COLORS} from '../colors';
 //   {source: 1, target: 2, value: 20}
 // ];
 import {REGION_NET} from '../../examples/large-examples/state-migration-network';
-const REGIONS = Object.keys(REGION_NET).filter(d => d !== 'Canada');
+const REGIONS = Object.keys(REGION_NET).filter(d => d !== 'Canada' && d !== 'US Islands');
 const nodes = REGIONS.map(name => ({name: `${name}`})).concat(
   REGIONS.map(name => ({name: `${name}`}))
 ).map(d => ({...d, rotation: 0}));

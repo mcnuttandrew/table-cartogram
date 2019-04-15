@@ -1,5 +1,5 @@
 import StateMigration from './state-to-state.json';
-import REGIONS from './us-regions.json';
+import REGIONS from './us-regions-2.json';
 export const originalMigrationStuff = StateMigration;
 const StatesNames = StateMigration.map(d => d.STATE);
 
@@ -38,7 +38,7 @@ const NICKNAMES = {
   Midwest: 'MW',
   South: 'South',
   West: 'West',
-  'US Islands': 'Islands'
+  // 'US Islands': 'Islands'
 };
 
 export const namedRegions = [
@@ -46,7 +46,7 @@ export const namedRegions = [
   'West',
   'Northeast',
   'Midwest',
-  'US Islands'
+  // 'US Islands'
 ];
 // export const namedRegions = Object.keys(NICKNAMES);
 export const REGION_NET = REGION_TO_REGION;

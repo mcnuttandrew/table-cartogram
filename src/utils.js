@@ -224,7 +224,9 @@ export function geoCenter(points) {
     return {x: center.x + row.x, y: center.y + row.y};
   }, {x: 0, y: 0});
   const centerPoint = {x: sum.x / points.length, y: sum.y / points.length};
-  return pointInPolygon(centerPoint, points) ? centerPoint : diagCenter(points);
+  return centerPoint;
+  // this technique is cool but produces not that good results
+  // return pointInPolygon(centerPoint, points) ? centerPoint : diagCenter(points);
 }
 
 /**

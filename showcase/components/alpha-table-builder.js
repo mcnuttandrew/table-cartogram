@@ -9,17 +9,17 @@ const makeLocalCopy = table => table.map(row =>
 
 const ALL_ALPHAS = [
   'IDENTITY',
-  'TRANSPOSE',
-  'RANDOMLY_VARY_ALL_CELLS',
-  'SMALL_CHANGE',
-  'BIG_CHANGE',
-  'REVERSE_ROW',
-  'SWAP_ROWS',
-  'SWAP_COLUMNS',
-  'RESCALE',
-  'SWAP_MIN_MAX',
-  'SET_MAX_TO_AVERAGE',
-  'RECIPROCAL'
+  // 'TRANSPOSE',
+  // 'RANDOMLY_VARY_ALL_CELLS',
+  // 'SMALL_CHANGE',
+  // 'BIG_CHANGE',
+  // 'REVERSE_ROW',
+  // 'SWAP_ROWS',
+  // 'SWAP_COLUMNS',
+  // 'RESCALE',
+  // 'SWAP_MIN_MAX',
+  // 'SET_MAX_TO_AVERAGE',
+  // 'RECIPROCAL'
 ].reduce((acc, alpha) =>
   acc.concat([
     // 'ZION',

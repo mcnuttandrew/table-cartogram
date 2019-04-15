@@ -11,6 +11,7 @@ import HourCalendar from './components/hour-calendar';
 // import ZionExperiment from './components/zion-experiment';
 // import ZionSpiral from './components/zion-spiral';
 import PivotogramAlts from './components/pivotogram-alts';
+import PolygramAlts from './components/polygram-alts';
 // import Map from './components/map';
 import SankeyRegionRegion from './components/sankey-region-region';
 
@@ -54,21 +55,24 @@ function App() {
     //   };
     // })
     {
-      data: EXAMPLES.CHECKER_BOARD,
-      computeMode: 'direct',
+      data: EXAMPLES.PATHOLOGICAL_2_BY,
       stepSize: 5,
-      layout: 'pickBest',
-      defaultColor: 'byValue',
-      getLabel: d => d.value,
-    },
-    {
-      data: EXAMPLES.CHECKER_BOARD,
-      computeMode: 'direct',
-      stepSize: 5,
+      computeMode: 'iterative',
       layout: 'pickWorst',
       defaultColor: 'byValue',
       getLabel: d => d.value,
-    }
+      optimizationParams: {
+        useAnalytic: true
+      }
+    },
+    // {
+    //   data: EXAMPLES.CHECKER_BOARD,
+    //   computeMode: 'adaptive',
+    //   stepSize: 5,
+    //   layout: 'pickWorst',
+    //   defaultColor: 'byValue',
+    //   getLabel: d => d.value,
+    // }
     // AlongTheLakeExampleJuicing()
     // AlongTheLakeExample(),
     // ...AlongTheLakeExampleMargins()
@@ -93,7 +97,7 @@ function App() {
           // <HourCalendar celius={true} data={require('../examples/large-examples/ohare-temp-data.json')}/>
         }
         {
-          // <PivotogramAlts/>
+          // <PolygramAlts/>
         }
       </div>
     </div>
