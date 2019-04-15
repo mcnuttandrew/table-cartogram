@@ -47,60 +47,60 @@ export default function PolygramAlts() {
       }
       {
 
-        // <XYPlot
-        // yType="category"
-        // width={500}
-        // height={100}
-        // >
-        //   {barData.map(({x, x0, y, color}) => (
-        //     <PolygonSeries
-        //     colorType="literal"
-        //     color={color}
-        //     key={color}
-        //     data={[
-        //       {y: y - 1, x},
-        //       {y: y - 1, x: x0},
-        //       {y, x: x0},
-        //       {y, x}
-        //     ]}/>
-        //   ))}
-        //   <LabelSeries
-        //   data={barData.map(d => ({
-        //     ...d,
-        //     style: {
-        //       textAnchor: 'middle',
-        //       alignmentBaseline: 'middle'
-        //     },
-        //     label: `${d.label}: ${Math.floor(d.angle / 100) / 10}k`
-        //   }))}/>
-        // </XYPlot>
+        <XYPlot
+        yType="category"
+        width={500}
+        height={100}
+        >
+          {barData.map(({x, x0, y, color}) => (
+            <PolygonSeries
+            colorType="literal"
+            color={color}
+            key={color}
+            data={[
+              {y: y - 1, x},
+              {y: y - 1, x: x0},
+              {y, x: x0},
+              {y, x}
+            ]}/>
+          ))}
+          <LabelSeries
+          data={barData.map(d => ({
+            ...d,
+            style: {
+              textAnchor: 'middle',
+              alignmentBaseline: 'middle'
+            },
+            label: `${d.label}: ${Math.floor(d.angle / 100) / 10}k`
+          }))}/>
+        </XYPlot>
       }
       {
-        <XYPlot
-          margin={{
-            top: 50,
-            bottom: 50,
-            left: 50,
-            right: 50
-          }}
-          xDomain={data.map(d => d.label)}
-          width={500}
-          height={300}
-          xType="ordinal"
-          colorType="literal"
-          >
-
-          <VerticalBarSeries
-            data={data.map(d => ({
-              ...d,
-              x: d.label,
-              y: d.angle
-            }))}
-
-            />
-          <XAxis />
-          <YAxis tickFormat={d => `${Math.floor(d / 100) / 10}k`}/>
-        </XYPlot>
+        // <XYPlot
+        //   margin={{
+        //     top: 50,
+        //     bottom: 50,
+        //     left: 50,
+        //     right: 50
+        //   }}
+        //   xDomain={data.map(d => d.label)}
+        //   width={500}
+        //   height={300}
+        //   xType="ordinal"
+        //   colorType="literal"
+        //   >
+        //
+        //   <VerticalBarSeries
+        //     data={data.map(d => ({
+        //       ...d,
+        //       x: d.label,
+        //       y: d.angle
+        //     }))}
+        //
+        //     />
+        //   <XAxis />
+        //   <YAxis tickFormat={d => `${Math.floor(d / 100) / 10}k`}/>
+        // </XYPlot>
       }
     </div>
   );

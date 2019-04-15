@@ -1,0 +1,97 @@
+[
+  {
+    "name": "Northeast",
+    "states": [
+      "Connecticut",
+      "Maine",
+      "Massachusetts",
+      "New Hampshire",
+      "New Jersey",
+      "New York",
+      "Pennsylvania",
+      "Rhode Island",
+      "Vermont"
+    ]
+  },
+  {
+    "name": "Midwest",
+    "states": [
+      "Indiana",
+      "Illinois",
+      "Iowa",
+      "Kansas",
+      "Michigan",
+      "Minnesota",
+      "Missouri",
+      "Nebraska",
+      "North Dakota",
+      "Ohio",
+      "South Dakota",
+      "Wisconsin"
+    ]
+  },
+
+  {
+    "name": "South",
+    "states": [
+      "Arkansas",
+      "Alabama",
+      "Delaware",
+      "DC",
+      "District of Columbia",
+      "Florida",
+      "Georgia",
+      "Kentucky",
+      "Louisiana",
+      "Maryland",
+      "Mississippi",
+      "North Carolina",
+      "Oklahoma",
+      "South Carolina",
+      "Tennessee",
+      "Texas",
+      "Virginia",
+      "West Virginia"
+    ]
+  },
+  {
+    "name": "West",
+    "states": [
+      "Alaska",
+      "Arizona",
+      "California",
+      "Colorado",
+      "Idaho",
+      "Montana",
+      "New Mexico",
+      "Nevada",
+      "Oregon",
+      "Utah",
+      "Washington",
+      "Wyoming",
+      "Hawaii"
+    ]
+  },
+  {
+    "name": "Canada",
+    "states": [
+      "Ontario",
+      "Prince Edward Island",
+      "British Columbia",
+      "Quebec",
+      "Alberta",
+      "Manitoba",
+      "Newfoundland and Labrador",
+      "Saskatchewan",
+      "Nova Scotia"
+    ]
+  },
+  {
+    "name": "US Islands",
+    "states": [
+      "Philippines",
+      "Puerto Rico",
+      "Virgin Islands"
+    ]
+  }
+]

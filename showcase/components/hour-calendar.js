@@ -27,6 +27,13 @@ export default class HourCalendar extends React.Component {
       .map(row => ({...row, Temperature: celius ? farenheitToCelius(row.Temperature) : row.Temperature}))
       .sort((a, b) => Number(a.Day) - Number(b.Day)));
 
+    console.log(houredData.reduce((acc, row) => {
+      row.forEach(({Temperature}) => {
+        acc.min = Math.min(acc.min, Temperature);
+        acc.max = Math.max(acc.max, Temperature);
+      })
+      return acc;
+    }, {min: Infinity, max: -Infinity}));
     Promise.resolve()
       .then(() => {
         const {gons} = tableCartogramAdaptive({

@@ -6,6 +6,7 @@ import {
   namedRegions
 } from '../../../examples/large-examples/state-migration-network';
 import {RV_COLORS} from '../../colors';
+import {hexOver} from 'hex-over';
 
 // sourced from
 // http://indiegamr.com/generate-repeatable-random-numbers-in-js/
@@ -26,6 +27,15 @@ function addConsistantColors(table) {
   return table.map((row, jdx) => row.map((d, idx) => ({
     ...d,
     color: RV_COLORS[(jdx * row.length + idx) % RV_COLORS.length]
+  })));
+}
+
+function addSpecialColors(table) {
+  const opacities = [1, 0.6, 0.3].reverse();
+  return table.map((row, jdx) => row.map((d, idx) => ({
+    ...d,
+    color: hexOver(RV_COLORS[idx], '#ffffff', opacities[jdx])
+     // hsl(hues[idx], saturations[jdx], 0.7)
   })));
 }
 
@@ -106,7 +116,7 @@ export const dataSets = {
   },
 
   ELELMENTS: {
-    data: addConsistantColors(ELELMENTS_DENSITY),
+    data: addSpecialColors(ELELMENTS_DENSITY),
     config: {
       getLabel: d => `${d.data.symbol}`,
       accessor: d => d.value,

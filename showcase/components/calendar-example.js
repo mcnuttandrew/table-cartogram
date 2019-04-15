@@ -140,6 +140,7 @@ function renderMonth(gons, month) {
         width={500}
         height={500}>
         {clipToMonth.map((cell, index) => {
+          console.log(cell.data.count)
           return (<PolygonSeries
             key={`triangle-${index}`}
             data={cell.vertices}

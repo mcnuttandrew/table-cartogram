@@ -175,6 +175,48 @@ const WIKI_CONFUSION_GRAM_PERFECT_CLASSIFIER = [
   [{size: 1.0, show: 0}, {size: 1.0, show: 0}, {size: 1.0, show: 13}]
 ];
 
+// XAXIS HAIR COLOR: BLACK/BROWN/RED/BLOND
+const FRIENDLY_MOSAIC = [
+  // MALE
+  // BLUE
+  [{value: 11, sex: 'M'}, {value: 50, sex: 'M'}, {value: 10, sex: 'M'}, {value: 30, sex: 'M'}],
+  // GREEN
+  [{value: 3, sex: 'M'}, {value: 15, sex: 'M'}, {value: 7, sex: 'M'}, {value: 8, sex: 'M'}],
+  // HAZEL
+  [{value: 10, sex: 'M'}, {value: 25, sex: 'M'}, {value: 7, sex: 'M'}, {value: 5, sex: 'M'}],
+  // BROWN
+  [{value: 32, sex: 'M'}, {value: 38, sex: 'M'}, {value: 10, sex: 'M'}, {value: 3, sex: 'M'}],
+
+  // FEMALE
+  // BLUE
+  [{value: 9, sex: 'F'}, {value: 34, sex: 'F'}, {value: 7, sex: 'F'}, {value: 64, sex: 'F'}],
+  // GREEN
+  [{value: 2, sex: 'F'}, {value: 14, sex: 'F'}, {value: 7, sex: 'F'}, {value: 8, sex: 'F'}],
+  // HAZEL
+  [{value: 5, sex: 'F'}, {value: 29, sex: 'F'}, {value: 7, sex: 'F'}, {value: 5, sex: 'F'}],
+  // BROWN
+  [{value: 36, sex: 'F'}, {value: 81, sex: 'F'}, {value: 16, sex: 'F'}, {value: 4, sex: 'F'}]
+];
+
+const FRIENDLY_MOSAIC_2 = [...new Array(4)].map((_, idx) => {
+  const maleRow = FRIENDLY_MOSAIC[idx + 0];
+  const femaleRow = FRIENDLY_MOSAIC[idx + 4];
+  return maleRow
+    .reduce((acc, __, jdx) => acc
+      .concat({...maleRow[jdx], index: `${idx}-${jdx}`})
+      .concat({...femaleRow[jdx], index: `${idx}-${jdx}`}
+    ), []);
+});
+
+const CANDIDATE_SIM = [
+  [1, 0.7620186491, 0.6631815174, 0.6958878285, 0.6193363005, 0.7427370062],
+  [0.7620186491, 1, 0.6368192806, 0.7319941129, 0.6366867638, 0.6943891165],
+  [0.6631815174, 0.6368192806, 1, 0.5982555652, 0.5574229325, 0.7203751903],
+  [0.6958878285, 0.7319941129, 0.5982555652, 1, 0.6939045049, 0.6429074659],
+  [0.6193363005, 0.6366867638, 0.5574229325, 0.6939045049, 1, 0.5859119638],
+  [0.7427370062, 0.6943891165, 0.7203751903, 0.6429074659, 0.5859119638, 1]
+];
+
 export default {
   BLOCKS,
   SUB_BLOCKS,
@@ -192,7 +234,7 @@ export default {
   BLACK_AND_WHITE_TABLE,
   BIG_TOP,
   BIG_BOTTOM,
-  CHECKER_BOARD: checkerBoardGenerator(5, 5, 15, 1),
+  CHECKER_BOARD: checkerBoardGenerator(5, 5, 5, 1),
   CHECKER_BOARD_SMALL: checkerBoardGenerator(4, 4, 5, 1),
   PATHOLOGICAL_2_BY,
   MULTIPLICATION_TABLE,
@@ -214,7 +256,12 @@ export default {
   WIKI_CONFUSION_GRAM_BAD_CLASSIFIER,
   WIKI_CONFUSION_GRAM_PERFECT_CLASSIFIER,
 
+  FRIENDLY_MOSAIC,
+  FRIENDLY_MOSAIC_2,
+
   POWER_1: applyPower(POWER_ARRANGEMENTS[0]),
   POWER_2: applyPower(POWER_ARRANGEMENTS[1]),
-  POWER_3: applyPower(POWER_ARRANGEMENTS[2])
+  POWER_3: applyPower(POWER_ARRANGEMENTS[2]),
+
+  CANDIDATE_SIM
 };
