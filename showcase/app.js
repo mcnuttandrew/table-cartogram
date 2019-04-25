@@ -23,9 +23,10 @@ import {
   // friendlyMosaicAlike2,
   AlongTheLakeExample,
   // AlongTheLakeExampleMargins,
-  AlongTheLakeExampleJuicing
   // regionToRegion
   // buildSenateExample
+  dndAlignments,
+  buildSenateExample
 } from './figure-setups';
 
 function App() {
@@ -54,28 +55,35 @@ function App() {
     //     layout
     //   };
     // })
-    {
-      data: EXAMPLES.PATHOLOGICAL_2_BY,
-      stepSize: 5,
-      computeMode: 'iterative',
-      layout: 'pickWorst',
-      defaultColor: 'byValue',
-      getLabel: d => d.value,
-      optimizationParams: {
-        useAnalytic: true
-      }
-    },
     // {
-    //   data: EXAMPLES.CHECKER_BOARD,
-    //   computeMode: 'adaptive',
+    //   data: EXAMPLES.PATHOLOGICAL_2_BY,
     //   stepSize: 5,
+    //   computeMode: 'iterative',
     //   layout: 'pickWorst',
     //   defaultColor: 'byValue',
     //   getLabel: d => d.value,
+    //   optimizationParams: {
+    //     useAnalytic: true
+    //   }
+    // },
+    // {
+    //   data: EXAMPLES.HAND_SYMMETRIC_OLD,
+    //   computeMode: 'iterative',
+    //   stepSize: 5,
+    //   layout: 'gridLayout',
+    //   defaultColor: 'errorHeat',
+    //   getLabel: d => d.value,
+    //   showLabelsByDefault: true,
+    //   optimizationParams: {
+    //     // useAnalytic: true
+    //     // stepSize: 0.001
+    //   }
     // }
     // AlongTheLakeExampleJuicing()
     // AlongTheLakeExample(),
     // ...AlongTheLakeExampleMargins()
+    // dndAlignments()
+    buildSenateExample()
   ]
   .map((config, idx) => (
     <IterativeDisplay
@@ -97,7 +105,7 @@ function App() {
           // <HourCalendar celius={true} data={require('../examples/large-examples/ohare-temp-data.json')}/>
         }
         {
-          // <PolygramAlts/>
+          // <Legend/>
         }
       </div>
     </div>
