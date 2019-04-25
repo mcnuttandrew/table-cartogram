@@ -1,4 +1,5 @@
 import {objectiveFunction} from './objective-function';
+import {objectiveFunction as evensObjective} from './evans-objective';
 import {generateInitialTable} from './layouts';
 import {
   translateVectorToTable,
@@ -40,6 +41,7 @@ export function descentInnerLoop(objFunc, currentVec, table, dims, optimizationP
   const phases = phaseShuffle(nonDeterministic);
   for (let phase = 0; phase < 4; phase++) {
     const currTable = translateVectorToTable(currentVec, table, dims.height, dims.width);
+    // const searchIndices = [...new Array(currentVec.length)].map((_, idx) => idx);
     const searchIndices = getIndicesInVectorOfInterest(currTable, phases[phase]);
     // debugging stuff
     // const xdx = finiteDiferenceForIndices(objFunc, currentVec, stepSize / 10, searchIndices, true);
@@ -106,8 +108,11 @@ export function buildIterativeCartogram(table, layout = 'pickBest', dims, optimi
   const nowCols = table[0].length;
   const numRows = table.length;
 
-  const objFunc = (vec, onlyShowPenalty) => objectiveFunction(
-      vec, table, dims, onlyShowPenalty, optimizationParams);
+  const objFunc = optimizationParams.useEvans ?
+    (vec, onlyShowPenalty) =>
+      evensObjective(vec, table, dims, onlyShowPenalty, optimizationParams) :
+    (vec, onlyShowPenalty) =>
+      objectiveFunction(vec, table, dims, onlyShowPenalty, optimizationParams);
   const newTable = typeof layout === 'string' ?
     generateInitialTable(numRows, nowCols, table, objFunc, layout, dims) :
     layout;

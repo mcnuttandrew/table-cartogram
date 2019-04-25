@@ -55,17 +55,20 @@ function App() {
     //     layout
     //   };
     // })
-    // {
-    //   data: EXAMPLES.PATHOLOGICAL_2_BY,
-    //   stepSize: 5,
-    //   computeMode: 'iterative',
-    //   layout: 'pickWorst',
-    //   defaultColor: 'byValue',
-    //   getLabel: d => d.value,
-    //   optimizationParams: {
-    //     useAnalytic: true
-    //   }
-    // },
+    {
+      data: EXAMPLES.USA_USA_USA,
+      stepSize: 5,
+      computeMode: 'iterative',
+      layout: 'gridLayout',
+      // defaultColor: 'periodicColors',
+      getLabel: d => d.value,
+      optimizationParams: {
+        // useAnalytic: false,
+        useEvans: true,
+        stepSize: 0.005,
+        useDeterministic: false
+      }
+    },
     // {
     //   data: EXAMPLES.HAND_SYMMETRIC_OLD,
     //   computeMode: 'iterative',
@@ -83,7 +86,7 @@ function App() {
     // AlongTheLakeExample(),
     // ...AlongTheLakeExampleMargins()
     // dndAlignments()
-    buildSenateExample()
+    // buildSenateExample()
   ]
   .map((config, idx) => (
     <IterativeDisplay
