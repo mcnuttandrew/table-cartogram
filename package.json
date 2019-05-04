@@ -7,7 +7,8 @@
     "test": "babel-node test/test-index.js",
     "start": "(cd showcase && yarn && yarn start)",
     "stats": "babel-node scripts/stat-builder.js",
-    "lint": "eslint ./"
+    "lint": "eslint ./",
+    "gen-toys": "babel-node generate-evans-toy-sets"
   },
   "devDependencies": {
     "babel-cli": "6.18.0",
@@ -16,12 +17,14 @@
     "babel-preset-es2017": "^6.24.1",
     "babel-preset-react": "^6.16.0",
     "babel-preset-stage-0": "^6.16.0",
+    "d3-color": "^1.2.3",
     "eslint": "^3.13.1",
     "eslint-config-uber-es2015": "^3.0.1",
     "eslint-config-uber-jsx": "^3.0.1",
     "eslint-plugin-babel": "^4.0.0",
     "eslint-plugin-react": "^6.9.0",
     "faucet": "^0.0.1",
+    "hex-over": "^0.0.2",
     "tape": "4"
   },
   "babel": {

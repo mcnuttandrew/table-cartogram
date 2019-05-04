@@ -1,0 +1,22 @@
+COLORGRID
+4 4
+x0y0 x1y0 x2y0 x3y0
+x0y1 x1y1 x2y1 x3y1
+x0y2 x1y2 x2y2 x3y2
+x0y3 x1y3 x2y3 x3y3
+x0y0 472033.5 #e1f3de
+x1y0 509102 #ddf2da
+x2y0 556015 #d7efd4
+x3y0 549854 #d8efd4
+x0y1 505561 #ddf2da
+x1y1 922703 #80a28d
+x2y1 195715 #f7fcf5
+x3y1 298473 #f1faef
+x0y2 304737 #f1faee
+x1y2 130989 #fafdf9
+x2y2 489683 #dff3dc
+x3y2 101836 #fbfefa
+x0y3 431968 #e6f5e2
+x1y3 240281 #f5fbf3
+x2y3 121032 #fafdf9
+x3y3 580399 #d3edd0
