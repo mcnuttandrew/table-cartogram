@@ -1,0 +1,8 @@
+*.sublime-*
+dist/*.zip
+assets/
+docs/
+examples/
+showscase/
+src/
+test/

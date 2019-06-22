@@ -174,7 +174,12 @@ export function usaWithLabels() {
     data: EXAMPLES.USA_USA_USA_LABELS,
     stepSize: 10,
     computeMode: 'iterative',
-    accessor: d => d[1]
+    accessor: d => d[1],
+    getLabel: d => d.data[0],
+    dims: {
+      height: 0.75,
+      width: 1
+    }
   };
 }
 

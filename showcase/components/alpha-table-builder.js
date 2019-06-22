@@ -8,25 +8,25 @@ const makeLocalCopy = table => table.map(row =>
 );
 
 const ALL_ALPHAS = [
-  'IDENTITY',
+  // 'IDENTITY',
   // 'TRANSPOSE',
-  // 'RANDOMLY_VARY_ALL_CELLS',
+  'RANDOMLY_VARY_ALL_CELLS',
   // 'SMALL_CHANGE',
   // 'BIG_CHANGE',
   // 'REVERSE_ROW',
   // 'SWAP_ROWS',
   // 'SWAP_COLUMNS',
   // 'RESCALE',
-  // 'SWAP_MIN_MAX',
+  'SWAP_MIN_MAX',
   // 'SET_MAX_TO_AVERAGE',
-  // 'RECIPROCAL'
+  'RECIPROCAL'
 ].reduce((acc, alpha) =>
   acc.concat([
     // 'ZION',
     // 'USA',
     // 'BLACK_AND_WHITE',
-    // 'REGION_TO_REGION',
-    'REGION_TO_REGION_FLATS'
+    'REGION_TO_REGION',
+    // 'REGION_TO_REGION_FLATS'
     // 'ELELMENTS'
   ]
     .map(dataset => ({alpha, dataset: dataSets[dataset]}))), []);

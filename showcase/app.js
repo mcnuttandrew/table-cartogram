@@ -21,12 +21,13 @@ import {
   // chicagoArrests,
   // confusiongram,
   // friendlyMosaicAlike2,
-  AlongTheLakeExample,
+  // AlongTheLakeExample,
   // AlongTheLakeExampleMargins,
   // regionToRegion
   // buildSenateExample
-  dndAlignments,
-  buildSenateExample
+  // dndAlignments,
+  // buildSenateExample,
+  usaWithLabels
 } from './figure-setups';
 
 function App() {
@@ -54,19 +55,23 @@ function App() {
     //     showLabelsByDefault: true,
     //     layout
     //   };
-    // })
+    // }),
+    // usaWithLabels()
     {
-      data: EXAMPLES.USA_USA_USA,
-      stepSize: 5,
-      computeMode: 'iterative',
+      data: EXAMPLES.BIG_ONES,
+      stepSize: 10,
       layout: 'gridLayout',
-      // defaultColor: 'periodicColors',
+      computeMode: 'iterative',
+      layout: 'psuedoCartogramLayout',
+      defaultColor: 'errorHeat',
       getLabel: d => d.value,
+      showLabelsByDefault: true,
+      hideControls: true,
       optimizationParams: {
-        // useAnalytic: false,
-        useEvans: true,
-        stepSize: 0.005,
-        useDeterministic: false
+        useAnalytic: true,
+        // useEvans: false,
+        // stepSize: 0.005,
+        // useDeterministic: false
       }
     },
     // {

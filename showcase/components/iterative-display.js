@@ -201,7 +201,7 @@ export default class IterativeDisplay extends React.Component {
   }
 
   displayReadout() {
-    const {computeMode} = this.props;
+    const {computeMode, hideControls} = this.props;
     const {errorLog, error, maxError, endTime, startTime, stepsTaken, runningMode, fillMode} = this.state;
     return (
       <div style={{display: 'flex', flexDirection: 'column'}}>
@@ -225,13 +225,15 @@ export default class IterativeDisplay extends React.Component {
           orientation="horizontal"
           width={300}
           items={['AVG', 'MAX']} />}
-        <select
+        {!hideControls && <div style={{display: 'flex'}}> 
+          <select
           onChange={({target: {value}}) => this.setState({fillMode: value})}
           value={fillMode}>
           {Object.keys(COLOR_MODES).map(d => <option value={d} key={d}>{d}</option>)}
-        </select>
-        <button onClick={() => this.setState({showLabels: !this.state.showLabels})}>TOGGLE LABELS</button>
-        <button onClick={() => this.setState({runningMode: 'stopped'})}>STOP</button>
+          </select>
+          <button onClick={() => this.setState({showLabels: !this.state.showLabels})}>TOGGLE LABELS</button>
+          <button onClick={() => this.setState({runningMode: 'stopped'})}>STOP</button>
+        </div>}
       </div>
     );
   }
