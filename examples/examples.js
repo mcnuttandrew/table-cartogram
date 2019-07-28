@@ -109,6 +109,8 @@ const BLOCKS = [
   [50, 50, 100, 100]
 ];
 
+
+
 const SUB_BLOCKS = [
   [40, 4],
   [100, 400]
@@ -217,9 +219,13 @@ const CANDIDATE_SIM = [
   [0.7427370062, 0.6943891165, 0.7203751903, 0.6429074659, 0.5859119638, 1]
 ];
 
+const BIG_ONES = checkerBoardGenerator(9, 9, 1, 1);
+BIG_ONES[4][4] = 30;
+
 export default {
   BLOCKS,
   SUB_BLOCKS,
+  BIG_ONES,
   LONG_RAMP: checkerBoardGenerator(1, 15, 1, 10),
   SMALL_RAMP: ramp(3, 3),
   DUMB_CALENDER: ramp(7, 4),
@@ -263,5 +269,5 @@ export default {
   POWER_2: applyPower(POWER_ARRANGEMENTS[1]),
   POWER_3: applyPower(POWER_ARRANGEMENTS[2]),
 
-  CANDIDATE_SIM
+  CANDIDATE_SIM,
 };

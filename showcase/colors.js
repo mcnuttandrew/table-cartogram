@@ -6,6 +6,8 @@ import {
   interpolateRdBu,
   interpolateViridis
 } from 'd3-scale-chromatic';
+import {hexOver} from 'hex-over';
+import {color} from 'd3-color';
 export const RV_COLORS = [
   '#19CDD7',
   '#DDB27C',
@@ -42,8 +44,11 @@ export const COLOR_BREWER_QUAL_10 = [
   // '#d9d9d9',
   '#89DAC1',
   // '#bc80bd'
-  '#88572C',
+  '#88572C'
 ];
+
+const clamp = (x, lb, ub) => Math.max(Math.min(x, ub), lb);
+const clampWithDefault = v => isFinite(v) ? clamp(v, 0, 1) : 1;
 
 export const COLOR_MODES = {
   valueHeat: (cell, index, {min, max}) =>
@@ -55,10 +60,10 @@ export const COLOR_MODES = {
   },
   confusiongramHardCode: (cell, index) => {
     const [min, max] = [0, 13];
-    const clamp = v => isFinite(v) ? Math.min(Math.max(v, 0), 1) : 1;
+
     // const val = 1 - (1 - (cell.value - min) / (max - min));
     const val = (cell.data.show - min) / (max - min);
-    return interpolateReds(clamp(val));
+    return interpolateReds(clampWithDefault(val));
   },
   valueHeatRedWhiteBlue: (cell, index, {min, max}) => {
     return interpolateRdBu(1 - ((cell.value - min) / (max - min)));
@@ -71,8 +76,13 @@ export const COLOR_MODES = {
   },
   errorHeat: (cell, index, {min, max}) =>
     interpolateInferno(Math.sqrt(cell.individualError)),
+  errorReds: (cell, index, {min, max}) => {
+    // note the square root!
+    const value = Math.round(clamp(255 * Math.pow(cell.individualError, 1 / 4), 0, 255));
+    return `rgb(${value}, 0, 0)`;
+  },
   plasmaHeat: (cell, index, {min, max}) =>
-    interpolatePlasma(((cell.value - min) / (max - min))),
+    interpolatePlasma(((cell.value - 0) / (max - min))),
   byValue: (cell, index, domain) =>
     RV_COLORS[cell.value % RV_COLORS.length],
   byDataColor: (cell, index, domain) =>

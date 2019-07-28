@@ -21,11 +21,13 @@ import {
   // chicagoArrests,
   // confusiongram,
   // friendlyMosaicAlike2,
-  AlongTheLakeExample,
+  // AlongTheLakeExample,
   // AlongTheLakeExampleMargins,
-  AlongTheLakeExampleJuicing
   // regionToRegion
   // buildSenateExample
+  dndAlignments,
+  // buildSenateExample,
+  usaWithLabels
 } from './figure-setups';
 
 function App() {
@@ -53,29 +55,43 @@ function App() {
     //     showLabelsByDefault: true,
     //     layout
     //   };
-    // })
-    {
-      data: EXAMPLES.PATHOLOGICAL_2_BY,
-      stepSize: 5,
-      computeMode: 'iterative',
-      layout: 'pickWorst',
-      defaultColor: 'byValue',
-      getLabel: d => d.value,
-      optimizationParams: {
-        useAnalytic: true
-      }
-    },
+    // }),
+    // usaWithLabels()
     // {
-    //   data: EXAMPLES.CHECKER_BOARD,
-    //   computeMode: 'adaptive',
-    //   stepSize: 5,
-    //   layout: 'pickWorst',
-    //   defaultColor: 'byValue',
+    //   data: EXAMPLES.BIG_ONES,
+    //   stepSize: 10,
+    //   layout: 'gridLayout',
+    //   computeMode: 'iterative',
+    //   // layout: 'psuedoCartogramLayout',
+    //   defaultColor: 'errorHeat',
     //   getLabel: d => d.value,
+    //   showLabelsByDefault: true,
+    //   hideControls: true,
+    //   optimizationParams: {
+    //     useAnalytic: true,
+    //     // useEvans: false,
+    //     // stepSize: 0.005,
+    //     // useDeterministic: false
+    //   }
+    // },
+    // {
+    //   data: EXAMPLES.HAND_SYMMETRIC_OLD,
+    //   computeMode: 'iterative',
+    //   stepSize: 5,
+    //   layout: 'gridLayout',
+    //   defaultColor: 'errorHeat',
+    //   getLabel: d => d.value,
+    //   showLabelsByDefault: true,
+    //   optimizationParams: {
+    //     // useAnalytic: true
+    //     // stepSize: 0.001
+    //   }
     // }
     // AlongTheLakeExampleJuicing()
     // AlongTheLakeExample(),
     // ...AlongTheLakeExampleMargins()
+    dndAlignments()
+    // buildSenateExample()
   ]
   .map((config, idx) => (
     <IterativeDisplay
@@ -97,7 +113,7 @@ function App() {
           // <HourCalendar celius={true} data={require('../examples/large-examples/ohare-temp-data.json')}/>
         }
         {
-          // <PolygramAlts/>
+          // <Legend/>
         }
       </div>
     </div>
