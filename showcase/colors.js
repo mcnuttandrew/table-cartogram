@@ -82,7 +82,7 @@ export const COLOR_MODES = {
     return `rgb(${value}, 0, 0)`;
   },
   plasmaHeat: (cell, index, {min, max}) =>
-    interpolatePlasma(((cell.value - min) / (max - min))),
+    interpolatePlasma(((cell.value - 0) / (max - min))),
   byValue: (cell, index, domain) =>
     RV_COLORS[cell.value % RV_COLORS.length],
   byDataColor: (cell, index, domain) =>

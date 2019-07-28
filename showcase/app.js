@@ -25,7 +25,7 @@ import {
   // AlongTheLakeExampleMargins,
   // regionToRegion
   // buildSenateExample
-  // dndAlignments,
+  dndAlignments,
   // buildSenateExample,
   usaWithLabels
 } from './figure-setups';
@@ -90,16 +90,15 @@ function App() {
     // AlongTheLakeExampleJuicing()
     // AlongTheLakeExample(),
     // ...AlongTheLakeExampleMargins()
-    // dndAlignments()
+    dndAlignments()
     // buildSenateExample()
   ]
   .map((config, idx) => (
-    false
-    // <IterativeDisplay
-    //   iterations={0}
-    //   layout={'gridLayout'}
-    //   {...config}
-    //   key={`table-${idx}`}/>
+    <IterativeDisplay
+      iterations={0}
+      layout={'gridLayout'}
+      {...config}
+      key={`table-${idx}`}/>
   ));
   return (
     <div>
