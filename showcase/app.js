@@ -57,23 +57,23 @@ function App() {
     //   };
     // }),
     // usaWithLabels()
-    {
-      data: EXAMPLES.BIG_ONES,
-      stepSize: 10,
-      layout: 'gridLayout',
-      computeMode: 'iterative',
-      layout: 'psuedoCartogramLayout',
-      defaultColor: 'errorHeat',
-      getLabel: d => d.value,
-      showLabelsByDefault: true,
-      hideControls: true,
-      optimizationParams: {
-        useAnalytic: true,
-        // useEvans: false,
-        // stepSize: 0.005,
-        // useDeterministic: false
-      }
-    },
+    // {
+    //   data: EXAMPLES.BIG_ONES,
+    //   stepSize: 10,
+    //   layout: 'gridLayout',
+    //   computeMode: 'iterative',
+    //   // layout: 'psuedoCartogramLayout',
+    //   defaultColor: 'errorHeat',
+    //   getLabel: d => d.value,
+    //   showLabelsByDefault: true,
+    //   hideControls: true,
+    //   optimizationParams: {
+    //     useAnalytic: true,
+    //     // useEvans: false,
+    //     // stepSize: 0.005,
+    //     // useDeterministic: false
+    //   }
+    // },
     // {
     //   data: EXAMPLES.HAND_SYMMETRIC_OLD,
     //   computeMode: 'iterative',
@@ -94,11 +94,12 @@ function App() {
     // buildSenateExample()
   ]
   .map((config, idx) => (
-    <IterativeDisplay
-      iterations={0}
-      layout={'gridLayout'}
-      {...config}
-      key={`table-${idx}`}/>
+    false
+    // <IterativeDisplay
+    //   iterations={0}
+    //   layout={'gridLayout'}
+    //   {...config}
+    //   key={`table-${idx}`}/>
   ));
   return (
     <div>

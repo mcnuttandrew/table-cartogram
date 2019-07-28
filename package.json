@@ -1,7 +1,6 @@
 {
   "name": "table-cartogram",
   "version": "0.0.1",
-  "main": "index.js",
   "license": "MIT",
   "scripts": {
     "test": "babel-node test/test-index.js",
@@ -37,8 +36,18 @@
     ]
   },
   "dependencies": {
-    "mathjs": "^5.1.2",
+    "d3-hierarchy": "^1.1.8",
     "point-in-polygon": "^1.0.1",
     "polybooljs": "^1.2.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mcnuttandrew/table-cartogram.git"
+  },
+  "author": "",
+  "bugs": {
+    "url": "https://github.com/mcnuttandrew/table-cartogram/issues"
+  },
+  "homepage": "https://github.com/mcnuttandrew/table-cartogram#readme",
+  "description": ""
 }

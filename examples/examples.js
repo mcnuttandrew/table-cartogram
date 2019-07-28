@@ -222,6 +222,38 @@ const CANDIDATE_SIM = [
 const BIG_ONES = checkerBoardGenerator(9, 9, 1, 1);
 BIG_ONES[4][4] = 30;
 
+
+const weatherCounts = [
+  {season: 'Winter', weather: 'Rain', count: 33951},
+  {season: 'Summer', weather: 'Rain', count: 3691},
+  {season: 'Spring', weather: 'Rain', count: 18335},
+  {season: 'Fall', weather: 'Rain', count: 14202},
+  {season: 'Winter', weather: 'Partly Cloudy', count: 36902},
+  {season: 'Summer', weather: 'Partly Cloudy', count: 97977},
+  {season: 'Spring', weather: 'Partly Cloudy', count: 92522},
+  {season: 'Fall', weather: 'Partly Cloudy', count: 82751},
+  {season: 'Spring', weather: 'Fog', count: 0},
+  {season: 'Winter', weather: 'Fog', count: 820},
+  {season: 'Summer', weather: 'Fog', count: 10710},
+  {season: 'Fall', weather: 'Fog', count: 16958},
+  {season: 'Winter', weather: 'Cloudy', count: 56902},
+  {season: 'Summer', weather: 'Cloudy', count: 73007},
+  {season: 'Spring', weather: 'Cloudy', count: 85618},
+  {season: 'Fall', weather: 'Cloudy', count: 59315},
+  {season: 'Winter', weather: 'Clear', count: 27570},
+  {season: 'Summer', weather: 'Clear', count: 166556},
+  {season: 'Spring', weather: 'Clear', count: 90558},
+  {season: 'Fall', weather: 'Clear', count: 82438}
+].reduce((acc, row) => {
+  acc[`${row.season}-${row.weather}`] = row;
+  return acc;
+}, {});
+const weathers = ['Rain', 'Partly Cloudy', 'Fog', 'Cloudy', 'Clear'];
+const seasons = ['Winter', 'Spring', 'Summer', 'Fall'];
+const cross = (a, b) => a.map(x => b.map(y => [a, b]));
+const WEATHER_TABLE = cross(weathers, seasons)
+  .map(row => row.map(([weather, season]) => weatherCounts(`${season}-${weather}`)));
+
 export default {
   BLOCKS,
   SUB_BLOCKS,
@@ -269,5 +301,7 @@ export default {
   POWER_2: applyPower(POWER_ARRANGEMENTS[1]),
   POWER_3: applyPower(POWER_ARRANGEMENTS[2]),
 
-  CANDIDATE_SIM
+  CANDIDATE_SIM,
+
+  WEATHER_TABLE
 };

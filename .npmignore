@@ -1,8 +1,9 @@
 *.sublime-*
-dist/*.zip
 assets/
 docs/
 examples/
-showscase/
+showcase/
 src/
 test/
+index.js
+node_modules/
