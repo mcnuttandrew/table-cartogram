@@ -20,10 +20,10 @@ import {
   // stateToStateFullNetwork,
   // chicagoArrests,
   // confusiongram,
-  // friendlyMosaicAlike2,
-  // AlongTheLakeExample,
+  friendlyMosaicAlike2,
+  AlongTheLakeExample,
   // AlongTheLakeExampleMargins,
-  // regionToRegion
+  regionToRegion,
   // buildSenateExample
   dndAlignments,
   // buildSenateExample,
@@ -57,8 +57,9 @@ function App() {
     //   };
     // }),
     // usaWithLabels()
+    regionToRegion()
     // {
-    //   data: EXAMPLES.BIG_ONES,
+    //   data: EXAMPLES.CHECKER_BOARD,
     //   stepSize: 10,
     //   layout: 'gridLayout',
     //   computeMode: 'iterative',
@@ -66,7 +67,7 @@ function App() {
     //   defaultColor: 'errorHeat',
     //   getLabel: d => d.value,
     //   showLabelsByDefault: true,
-    //   hideControls: true,
+    //   // hideControls: true,
     //   optimizationParams: {
     //     useAnalytic: true,
     //     // useEvans: false,
@@ -75,7 +76,7 @@ function App() {
     //   }
     // },
     // {
-    //   data: EXAMPLES.HAND_SYMMETRIC_OLD,
+    //   data: EXAMPLES.CANDIDATE_SIM,
     //   computeMode: 'iterative',
     //   stepSize: 5,
     //   layout: 'gridLayout',
@@ -90,7 +91,7 @@ function App() {
     // AlongTheLakeExampleJuicing()
     // AlongTheLakeExample(),
     // ...AlongTheLakeExampleMargins()
-    dndAlignments()
+    // dndAlignments()
     // buildSenateExample()
   ]
   .map((config, idx) => (
