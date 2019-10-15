@@ -24,6 +24,7 @@ import {
   AlongTheLakeExample,
   // AlongTheLakeExampleMargins,
   regionToRegion,
+  unemploymentStreamgram,
   // buildSenateExample
   dndAlignments,
   // buildSenateExample,
@@ -57,7 +58,7 @@ function App() {
     //   };
     // }),
     // usaWithLabels()
-    regionToRegion()
+    unemploymentStreamgram()
     // {
     //   data: EXAMPLES.CHECKER_BOARD,
     //   stepSize: 10,

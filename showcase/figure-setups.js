@@ -6,6 +6,47 @@ import {
 } from 'd3-scale-chromatic';
 import {transposeMatrix} from '../src/utils';
 
+export function unemploymentStreamgram() {
+  const data = require('../examples/large-examples/unemployment');
+  const rows = Object.keys(data[0]).filter(d => d !== 'date');
+  const processedData = rows.map((key, idx) => {
+    return data.map(row => {
+      return {
+        value: Number(row[key]),
+        key,
+        color: RV_COLORS[(idx) % RV_COLORS.length],
+        year: row.date.slice(0, 4)
+      };
+    });
+  });
+  return {
+    data: processedData,
+    stepSize: 10,
+    computeMode: 'iterative',
+    accessor: d => {
+      // console.log(d)
+      return Number(d.value);
+    },
+    defaultColor: 'byDataColor',
+    layout: 'psuedoCartogramLayout',
+    dims: {
+      height: 1,
+      width: 1
+    },
+    xLabels: data.map(({date}) => date.endsWith('-01-01') ? date.split('-01-01')[0] : ''),
+    yLabels: rows,
+    showAxisLabels: true,
+    getLabel: d => d.data.printVal,
+    computeAnnotationBoxBy: d => d.data.year,
+    optimizationParams: {
+      // stepSize: 0.005,
+      useAnalytic: true,
+      nonDeterministic: false,
+      useGreedy: false,
+      // overlapPenalty: 20
+    }
+  };
+}
 /**
  * Generates a pair of versions of the element example
  * One normal, and one transpose
