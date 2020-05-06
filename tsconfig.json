@@ -15,7 +15,7 @@
     },
     "include": [
       "types.ts",
-      "showcase/**/*",
+      "index.d.ts/**/*",
       "src/**/*",
       "test/**/*",
       "index.ts",

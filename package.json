@@ -40,6 +40,7 @@
     "hex-over": "^0.0.2",
     "prettier": "^2.0.5",
     "tape": "4",
+    "ts-loader": "^7.0.2",
     "typescript": "^3.8.3",
     "webpack": "4",
     "webpack-cli": "^3.0.8"
@@ -51,6 +52,7 @@
     ]
   },
   "dependencies": {
+    "@types/tape": "^4.13.0",
     "d3-hierarchy": "^1.1.8",
     "point-in-polygon": "^1.0.1",
     "polybooljs": "^1.2.0"

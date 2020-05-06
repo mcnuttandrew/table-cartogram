@@ -1,7 +1,8 @@
-import AlongTheLakeData from './around-the-lake.json';
-import {transposeMatrix} from '../../src/utils';
+import importedData from './around-the-lake.json';
+const AlongTheLakeData: any = importedData;
+// import {transposeMatrix} from '../../src/utils';
 
-const ALONG_LAKE_STATE_NAMES = {
+const ALONG_LAKE_STATE_NAMES: {[x: string]: string} = {
   Manistique: 'Michigan 1',
   Gladstone: 'Michigan 1',
   Escanaba: 'Michigan 1',
@@ -77,12 +78,12 @@ const exclude = ['St. Francis', 'Oak Creek', 'Portage', 'Bridgman', 'Ferrysburg'
     acc[row] = true;
     return acc;
   },
-  {},
+  {} as {[x: string]: boolean},
 );
 
-const topRow = AlongTheLakeData.filter(({name}) => !exclude[name]).map(({name}) => name);
-const mainTable = years.map((year, idx) =>
-  AlongTheLakeData.filter(({name}) => !exclude[name]).map(({populations, name}) => ({
+const topRow = AlongTheLakeData.filter(({name}: any) => !exclude[name]).map(({name}: any) => name);
+const mainTable = years.map((year) =>
+  AlongTheLakeData.filter(({name}: any) => !exclude[name]).map(({populations, name}: any) => ({
     value: populations[year] || 'NA',
     state: ALONG_LAKE_STATE_NAMES[name],
     name,

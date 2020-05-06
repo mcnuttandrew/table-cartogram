@@ -2,7 +2,7 @@ import Elements from './elements.json';
 
 // Source Wikipedia
 
-const elementLookUp = Elements.reduce((acc, row) => {
+const elementLookUp = Elements.reduce((acc: any, row: any) => {
   acc[row.Symbol] = {...row, unit: 1};
   return acc;
 }, {});
@@ -21,7 +21,7 @@ export const ElementsOfInterest2 = [
   ['In', 'Sn', 'Sb', 'Te', 'I', 'Xe'],
   ['Tl', 'Pb', 'Bi', 'Po', 'At', 'Rn'],
 ].map((row) => row.map((symbol) => elementLookUp[symbol]));
-const generateElementTable = (key) =>
+const generateElementTable = (key: any) =>
   ElementsOfInterest.map((row) => row.map((cell) => ({symbol: cell.Symbol, value: Number(cell[key])})));
 
 export const ELELMENTS_THERMAL = generateElementTable('C');

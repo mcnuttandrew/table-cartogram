@@ -7,7 +7,7 @@ const WAFFLE_WIDTH = 20;
 const WAFFLE_HEIGHT = 5;
 const WAFFLE_CELLS = WAFFLE_WIDTH * WAFFLE_HEIGHT;
 
-const BIRD_STRIKES_BY_REGION = {
+const BIRD_STRIKES_BY_REGION: {[x: string]: number} = {
   Midwest: 38042,
   Canada: 429,
   South: 68307,
@@ -16,21 +16,21 @@ const BIRD_STRIKES_BY_REGION = {
   'US Islands': 5111,
 };
 
-const BIRD_SUM = Object.values(BIRD_STRIKES_BY_REGION).reduce((acc, row) => acc + row, 0);
-const BIRDS = Object.entries(BIRD_STRIKES_BY_REGION).map((row) => ({
+const BIRD_SUM: number = Object.values(BIRD_STRIKES_BY_REGION).reduce((acc, row) => acc + row, 0);
+const BIRDS = Object.entries(BIRD_STRIKES_BY_REGION).map((row: [string, number]) => ({
   name: row[0],
   size: Math.ceil((row[1] / BIRD_SUM) * WAFFLE_CELLS),
 }));
 BIRDS[0].size -= 2;
 // console.log(BIRDS, BIRDS.reduce((acc, {size}) => acc + size, 0))
-const REGION_COLOR = Object.keys(BIRD_STRIKES_BY_REGION).reduce((acc, region, idx) => {
+const REGION_COLOR = Object.keys(BIRD_STRIKES_BY_REGION).reduce((acc: any, region: any, idx: number) => {
   acc[region] = RV_COLORS[idx];
   return acc;
 }, {});
 
 const BIRD_CELLS = BIRDS.reduce((acc, {name, size}) => {
   return acc.concat(
-    [...new Array(size)].map((_, idx) => ({
+    [...new Array(size)].map(() => ({
       // size: 0.5 + (
       //   ((size % 2) && idx === (size - 1)) ? 0.5 :
       //     (!(idx % 2) ? 1.0 : 0)

@@ -144,8 +144,8 @@ for (let i = 0; i < zones.length / 2; i++) {
 }
 export const CHICAGO_ARRESTS = TABLE_CART_DATA;
 
-const SUNBURST = {children: []};
-['CENTRAL', 'NORTH', 'SOUTH', 'WEST'].forEach((zone, idx) => {
+const SUNBURST: any = {children: []};
+['CENTRAL', 'NORTH', 'SOUTH', 'WEST'].forEach((zone: any, idx) => {
   SUNBURST.children.push({
     // title: zone,
     children: [],

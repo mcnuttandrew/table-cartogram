@@ -1,13 +1,4 @@
-import {
-  ObjFunc,
-  Vector,
-  OptimizationParams,
-  Dimensions,
-  LayoutType,
-  DataTable,
-  PositionTable,
-  Pos,
-} from '../types';
+import {ObjFunc, Dimensions, LayoutType, DataTable, PositionTable, Pos} from '../types';
 import {findSumForTable, translateTableToVector, log} from './utils';
 
 type LayoutFunc = (
@@ -45,7 +36,7 @@ const partialPsuedoCartogram: LayoutFunc = (numRows, numCols, colSums, rowSums, 
 };
 
 function buildZigZag(xAmount: number, yAmount: number): LayoutFunc {
-  return (numRows, numCols, colSums, rowSums, total) => {
+  return (numRows, numCols): Pos[][] => {
     return [...new Array(numCols + 1)].map((i, y) => {
       return [...new Array(numRows + 1)].map((j, x) => ({
         x: x / numRows + (xAmount / numRows) * (y % 2 ? -1 : 1),

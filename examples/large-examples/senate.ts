@@ -103,23 +103,28 @@ const senators = [
   {state: 'Wyoming', party: 'Republican', name: 'John Barrasso', date: 'June 25, 2007'},
 ];
 
+const getYear = (x: Date): number => {
+  // @ts-ignore
+  return x.getYear();
+};
+
 const DEMS = senators
   .filter((d) => d.party === 'Democrat')
   .sort((a, b) => {
-    return new Date(b.date).getYear() - new Date(a.date).getYear();
+    return getYear(new Date(b.date)) - getYear(new Date(a.date));
   });
 
 const REPUBS = senators
   .filter((d) => d.party === 'Republican')
   .sort((a, b) => {
-    return new Date(b.date).getYear() - new Date(a.date).getYear();
+    return getYear(new Date(b.date)) - getYear(new Date(a.date));
   })
   .reverse();
 
 const OTHER = senators
   .filter((d) => d.party === 'Independent')
   .sort((a, b) => {
-    return new Date(b.date).getYear() - new Date(a.date).getYear();
+    return getYear(new Date(b.date)) - getYear(new Date(a.date));
   });
 
 const combine = DEMS.concat(OTHER).concat(REPUBS);
@@ -133,7 +138,7 @@ export const SENATORS = transposeMatrix(
 ).map((row) =>
   row.map((d) => ({
     ...d,
-    yearsInOffice: 118 - new Date(d.date).getYear() + 1,
+    yearsInOffice: 118 - getYear(new Date(d.date)) + 1,
     color: d.party === 'Democrat' ? 'blue' : d.party === 'Republican' ? 'red' : 'purple',
   })),
 );

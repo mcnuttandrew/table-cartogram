@@ -29,8 +29,8 @@ interface Params {
   layout: LayoutType;
   iterations: number;
   accessor: Getter;
-  height: number;
-  width: number;
+  height?: number;
+  width?: number;
   optimizationParams?: OptimizationParams;
 }
 export function tableCartogram(params: Params): Gon[] {
@@ -56,12 +56,12 @@ export function tableCartogram(params: Params): Gon[] {
 }
 
 interface WithUpdateParams {
-  data: any[][];
-  layout: LayoutType;
   accessor: Getter;
-  height: number;
-  width: number;
+  data: any[][];
+  height?: number;
+  layout: LayoutType;
   optimizationParams?: OptimizationParams;
+  width?: number;
 }
 /**
  * Build table cartogram with triggerable update hook
@@ -82,16 +82,16 @@ export function tableCartogramWithUpdate(params: WithUpdateParams): Gon[] | ((x:
 }
 
 interface AdapativeParams {
-  data: any[][];
-  layout: LayoutType;
-  maxNumberOfSteps?: number;
-  iterationStepSize?: number;
-  targetAccuracy?: number;
-  logging?: boolean;
   accessor: Getter;
-  height: number;
-  width: number;
+  data: any[][];
+  height?: number;
+  iterationStepSize?: number;
+  layout: LayoutType;
+  logging?: boolean;
+  maxNumberOfSteps?: number;
   optimizationParams?: OptimizationParams;
+  targetAccuracy?: number;
+  width?: number;
 }
 interface AdaptiveReturn {
   gons: Gon[];

@@ -1,9 +1,7 @@
 import {
-  ObjFunc,
   Vector,
   OptimizationParams,
   Dimensions,
-  LayoutType,
   DataTable,
   PositionTable,
   PenaltyProps,
@@ -274,5 +272,5 @@ export function buildErrorGradient(
     return acc;
   }, {} as {[x: number]: boolean});
   const gradVec = translateTableToVector(gradientTable);
-  return gradVec.filter((_, idx) => allowedIndices[idx]);
+  return gradVec.filter((_: any, idx: number) => allowedIndices[idx]);
 }
