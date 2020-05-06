@@ -4,7 +4,7 @@ import {
   interpolatePlasma,
   interpolateGreens,
   interpolateRdBu,
-  interpolateViridis
+  interpolateViridis,
 } from 'd3-scale-chromatic';
 import {hexOver} from 'hex-over';
 import {color} from 'd3-color';
@@ -29,7 +29,7 @@ export const RV_COLORS = [
   '#E79FD5',
   '#1E96BE',
   '#89DAC1',
-  '#B3AD9E'
+  '#B3AD9E',
 ];
 
 export const COLOR_BREWER_QUAL_10 = [
@@ -44,21 +44,22 @@ export const COLOR_BREWER_QUAL_10 = [
   // '#d9d9d9',
   '#89DAC1',
   // '#bc80bd'
-  '#88572C'
+  '#88572C',
 ];
 
-const clamp = (x, lb, ub) => Math.max(Math.min(x, ub), lb);
-const clampWithDefault = v => isFinite(v) ? clamp(v, 0, 1) : 1;
+const clamp = (x: number, lb: number, ub: number): number => Math.max(Math.min(x, ub), lb);
+const clampWithDefault = (v: number): number => (isFinite(v) ? clamp(v, 0, 1) : 1);
 
-export const COLOR_MODES = {
-  valueHeat: (cell, index, {min, max}) =>
-    interpolateInferno(1 - ((cell.value - min) / (max - min))),
+type Domain = {min: number; max: number};
+type ColorMode = (cell: any, index: number, {min, max}: Domain) => string;
+export const COLOR_MODES: {[x: string]: ColorMode} = {
+  valueHeat: (cell, index, {min, max}) => interpolateInferno(1 - (cell.value - min) / (max - min)),
   valueHeatReds: (cell, index, {min, max}) =>
     interpolateReds(1 - Math.sqrt(1 - (cell.value - min) / (max - min))),
   valueHeatGreens: (cell, index, {min, max}) => {
     return interpolateGreens(1 - Math.sqrt(1 - (cell.value - min) / (max - min)));
   },
-  confusiongramHardCode: (cell, index) => {
+  confusiongramHardCode: (cell) => {
     const [min, max] = [0, 13];
 
     // const val = 1 - (1 - (cell.value - min) / (max - min));
@@ -66,32 +67,27 @@ export const COLOR_MODES = {
     return interpolateReds(clampWithDefault(val));
   },
   valueHeatRedWhiteBlue: (cell, index, {min, max}) => {
-    return interpolateRdBu(1 - ((cell.value - min) / (max - min)));
+    return interpolateRdBu(1 - (cell.value - min) / (max - min));
   },
   valueHeatCool: (cell, index, {min, max}) => {
     return interpolateViridis(Math.sqrt((cell.value - min) / (max - min)));
   },
   valueHeatRedWhiteBlueReverse: (cell, index, {min, max}) => {
-    return interpolateRdBu(((cell.value - min) / (max - min)));
+    return interpolateRdBu((cell.value - min) / (max - min));
   },
-  errorHeat: (cell, index, {min, max}) =>
-    interpolateInferno(Math.sqrt(cell.individualError)),
-  errorReds: (cell, index, {min, max}) => {
+  errorHeat: (cell) => interpolateInferno(Math.sqrt(cell.individualError)),
+  errorReds: (cell) => {
     // note the square root!
     const value = Math.round(clamp(255 * Math.pow(cell.individualError, 1 / 4), 0, 255));
     return `rgb(${value}, 0, 0)`;
   },
-  plasmaHeat: (cell, index, {min, max}) =>
-    interpolatePlasma(((cell.value - 0) / (max - min))),
-  byValue: (cell, index, domain) =>
-    RV_COLORS[cell.value % RV_COLORS.length],
-  byDataColor: (cell, index, domain) =>
-    cell.data.color || '#fff',
-  none: (cell, index, domain) => 'rgba(255, 255, 255, 0)',
-  periodicColors: (cell, index, domain) => RV_COLORS[(index + 3) % RV_COLORS.length],
-  periodicColorsColorBrewer: (cell, index, domain) =>
-    COLOR_BREWER_QUAL_10[(index + 3) % COLOR_BREWER_QUAL_10.length]
+  plasmaHeat: (cell, index, {min, max}) => interpolatePlasma((cell.value - 0) / (max - min)),
+  byValue: (cell) => RV_COLORS[cell.value % RV_COLORS.length],
+  byDataColor: (cell) => cell.data.color || '#fff',
+  none: () => 'rgba(255, 255, 255, 0)',
+  periodicColors: (cell, index) => RV_COLORS[(index + 3) % RV_COLORS.length],
+  periodicColorsColorBrewer: (cell, index) => COLOR_BREWER_QUAL_10[(index + 3) % COLOR_BREWER_QUAL_10.length],
 };
 
-export const colorCell = (cell, index, fillMode, domain) =>
+export const colorCell = (cell: any, index: number, fillMode: string, domain: Domain): string =>
   (COLOR_MODES[fillMode] || COLOR_MODES.node)(cell, index, domain);

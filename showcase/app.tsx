@@ -4,7 +4,7 @@ import React from 'react';
 // import AlphaTableBuilder from './components/alpha-table-builder';
 // import EXAMPLES from '../examples/examples';
 import IterativeDisplay from './components/iterative-display';
-import Legend from './components/legend';
+// import Legend from './components/legend';
 // import CalendarDisplay from './components/calendar-example';
 // import HourCalendar from './components/hour-calendar';
 // import CartogramPlot from './components/table-cartogram';
@@ -31,7 +31,7 @@ import {
   // usaWithLabels,
 } from './figure-setups';
 
-function App() {
+function App(): JSX.Element {
   const tables = [
     regionToRegion(),
     // ...[
@@ -96,6 +96,7 @@ function App() {
     // dndAlignments()
     // buildSenateExample()
   ].map((config, idx) => (
+    // @ts-ignore
     <IterativeDisplay iterations={0} layout={'gridLayout'} {...config} key={`table-${idx}`} />
   ));
   return (

@@ -1,9 +1,11 @@
-const scaleChromatic = require('d3-scale-chromatic');
+/* eslint-disable react/no-string-refs */
+// const scaleChromatic = require('d3-scale-chromatic');
 import React from 'react';
 import {COLOR_MODES} from '../colors';
 
 class ContinuousLegend extends React.Component {
   componentDidMount() {
+    // eslint-disable-next-line react/no-string-refs
     const canvas = this.refs.ctx;
     const ctx = canvas.getContext('2d');
     // const colorScale = scaleChromatic[this.props.d3ColorScale];

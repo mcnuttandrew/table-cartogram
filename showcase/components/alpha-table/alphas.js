@@ -1,20 +1,20 @@
 import {transposeMatrix} from '../../../src/utils';
 
-const getLast = list => list[list.length - 1];
+const getLast = (list) => list[list.length - 1];
 
 const swapFromIdx = 1;
 // for elements
 const swapToIdx = 2;
 // for everyone else
 // const swapToIdx = 3;
-const swapRows = table => {
+const swapRows = (table) => {
   const temp = table[swapFromIdx];
   table[swapFromIdx] = table[swapToIdx];
   table[swapToIdx] = temp;
   return table;
 };
 
-const swapLabel = labels => {
+const swapLabel = (labels) => {
   const copy = labels.slice();
   const temp = copy[swapFromIdx];
   copy[swapFromIdx] = copy[swapToIdx];
@@ -22,13 +22,17 @@ const swapLabel = labels => {
   return copy;
 };
 
-const computeDomain = (table, config) => table.reduce((acc, row) => {
-  row.forEach(d => {
-    acc.min = Math.min(acc.min, config.accessor(d));
-    acc.max = Math.max(acc.max, config.accessor(d));
-  });
-  return acc;
-}, {min: Infinity, max: -Infinity});
+const computeDomain = (table, config) =>
+  table.reduce(
+    (acc, row) => {
+      row.forEach((d) => {
+        acc.min = Math.min(acc.min, config.accessor(d));
+        acc.max = Math.max(acc.max, config.accessor(d));
+      });
+      return acc;
+    },
+    {min: Infinity, max: -Infinity},
+  );
 
 // sourced from
 // http://indiegamr.com/generate-repeatable-random-numbers-in-js/
@@ -46,13 +50,12 @@ export function generateSeededRandom(baseSeed = 10) {
 }
 const seededRandom = generateSeededRandom(2);
 
-const generateOrderList = (table, config) => table
-  .reduce((acc, row, y) =>
-    acc.concat(row.map((d, x) => ({cell: d, coords: {y, x}}))
-  ), [])
-  .sort((a, b) => config.accessor(a.cell) - config.accessor(b.cell));
+const generateOrderList = (table, config) =>
+  table
+    .reduce((acc, row, y) => acc.concat(row.map((d, x) => ({cell: d, coords: {y, x}}))), [])
+    .sort((a, b) => config.accessor(a.cell) - config.accessor(b.cell));
 
-const identity = d => d;
+const identity = (d) => d;
 class Alpha {
   constructor(transform = identity, transformConfig = identity) {
     this.transform = transform;
@@ -62,10 +65,10 @@ class Alpha {
 
 const buildIdentity = () => new Alpha();
 const buildTranspose = () => {
-  const transformConfig = config => ({
+  const transformConfig = (config) => ({
     ...config,
     xLabels: config.yLabels,
-    yLabels: config.xLabels
+    yLabels: config.xLabels,
   });
   return new Alpha(transposeMatrix, transformConfig);
 };
@@ -74,20 +77,25 @@ const buildRandomlyVaryCells = () => {
   const transform = (table, config) => {
     const {min, max} = computeDomain(table, config);
     const range = max - min;
-    table.forEach((row, y) => row.forEach((d, x) =>
-      config.setter(table, y, x,
-        Math.max(
-          Math.round(10 * (config.accessor(table[y][x]) + range / 5 * (seededRandom() - 0.5))) / 10,
-          1
-        )
-      )));
+    table.forEach((row, y) =>
+      row.forEach((d, x) =>
+        config.setter(
+          table,
+          y,
+          x,
+          Math.max(
+            Math.round(10 * (config.accessor(table[y][x]) + (range / 5) * (seededRandom() - 0.5))) / 10,
+            1,
+          ),
+        ),
+      ),
+    );
     return table;
   };
   return new Alpha(transform);
 };
 const buildSmallChange = () => {
-  const transform = (table, {setter, accessor}) =>
-    setter(table, 1, 1, accessor(table[1][1]) * 1.1);
+  const transform = (table, {setter, accessor}) => setter(table, 1, 1, accessor(table[1][1]) * 1.1);
   return new Alpha(transform);
 };
 const buildBigChange = () => {
@@ -95,14 +103,13 @@ const buildBigChange = () => {
   // const transform = (table, {setter, accessor}) =>
   //   setter(table, 3, 1, accessor(table[3][1]) * 2);
   // version for elements
-  const transform = (table, {setter, accessor}) =>
-    setter(table, 2, 1, accessor(table[2][1]) * 2);
+  const transform = (table, {setter, accessor}) => setter(table, 2, 1, accessor(table[2][1]) * 2);
   return new Alpha(transform);
 };
 const buildReverseRow = () => {
-  const transformConfig = config => ({
+  const transformConfig = (config) => ({
     ...config,
-    xLabels: config.xLabels ? config.xLabels.slice().reverse() : config.xLabels
+    xLabels: config.xLabels ? config.xLabels.slice().reverse() : config.xLabels,
   });
   const transform = (table, config) => {
     table[2].reverse();
@@ -112,18 +119,18 @@ const buildReverseRow = () => {
 };
 
 const buildSwapColumns = () => {
-  const transformConfig = config => ({
+  const transformConfig = (config) => ({
     ...config,
-    xLabels: config.xLabels ? swapLabel(config.xLabels) : config.xLabels
+    xLabels: config.xLabels ? swapLabel(config.xLabels) : config.xLabels,
   });
   const transform = (table, config) => transposeMatrix(swapRows(transposeMatrix(table)));
   return new Alpha(transform, transformConfig);
 };
 
 const buildSwapRow = () => {
-  const transformConfig = config => ({
+  const transformConfig = (config) => ({
     ...config,
-    yLabels: config.yLabels ? swapLabel(config.yLabels) : config.yLabels
+    yLabels: config.yLabels ? swapLabel(config.yLabels) : config.yLabels,
   });
   return new Alpha(swapRows, transformConfig);
 };
@@ -198,5 +205,5 @@ export default {
   CHANGE_ALL_IN_COLUMN_BUT_ONE: buildChangelAllInColumnButOne(),
   RECIPROCAL: buildReciprocal(),
   SWAP_MIN_MAX: buildSwapMinMax(),
-  SET_MAX_TO_AVERAGE: buildSetMaxToAverage()
+  SET_MAX_TO_AVERAGE: buildSetMaxToAverage(),
 };

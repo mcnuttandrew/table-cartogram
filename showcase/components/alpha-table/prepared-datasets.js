@@ -3,7 +3,7 @@ import {ELELMENTS_DENSITY} from '../../../examples/large-examples/element-exampl
 import {ZION_VISITORS_WITH_ANNOTATION} from '../../../examples/large-examples/zion-slice';
 import {
   MIGRATION_REGION_TO_REGION,
-  namedRegions
+  namedRegions,
 } from '../../../examples/large-examples/state-migration-network';
 import {RV_COLORS} from '../../colors';
 import {hexOver} from 'hex-over';
@@ -24,26 +24,30 @@ export function generateSeededRandom(baseSeed = 10) {
 }
 
 function addConsistantColors(table) {
-  return table.map((row, jdx) => row.map((d, idx) => ({
-    ...d,
-    color: RV_COLORS[(jdx * row.length + idx) % RV_COLORS.length]
-  })));
+  return table.map((row, jdx) =>
+    row.map((d, idx) => ({
+      ...d,
+      color: RV_COLORS[(jdx * row.length + idx) % RV_COLORS.length],
+    })),
+  );
 }
 
 function addSpecialColors(table) {
   const opacities = [1, 0.6, 0.3].reverse();
-  return table.map((row, jdx) => row.map((d, idx) => ({
-    ...d,
-    color: hexOver(RV_COLORS[idx], '#ffffff', opacities[jdx])
-     // hsl(hues[idx], saturations[jdx], 0.7)
-  })));
+  return table.map((row, jdx) =>
+    row.map((d, idx) => ({
+      ...d,
+      color: hexOver(RV_COLORS[idx], '#ffffff', opacities[jdx]),
+      // hsl(hues[idx], saturations[jdx], 0.7)
+    })),
+  );
 }
 
 export const dataSets = {
   REGION_TO_REGION: {
     data: MIGRATION_REGION_TO_REGION,
     config: {
-      accessor: d => d.value,
+      accessor: (d) => d.value,
       setter: (table, y, x, d) => {
         table[y][x].value = d;
         return table;
@@ -51,7 +55,7 @@ export const dataSets = {
       xLabels: namedRegions,
       yLabels: namedRegions,
       showAxisLabels: true,
-      getLabel: d => `${Math.floor(d.value / 100) / 10}k`,
+      getLabel: (d) => `${Math.floor(d.value / 100) / 10}k`,
       defaultColor: 'valueHeatGreens',
       layout: 'zigZagOnXY',
       optimizationParams: {
@@ -63,14 +67,14 @@ export const dataSets = {
         useGreedy: false,
         // nonDeterministic: true,
         // useAnalytic: true
-      }
-    }
+      },
+    },
   },
   // produces heatmaps of the heatmap
   REGION_TO_REGION_FLATS: {
     data: MIGRATION_REGION_TO_REGION,
     config: {
-      accessor: d => d.value,
+      accessor: (d) => d.value,
       setter: (table, y, x, d) => {
         table[y][x].value = d;
         return table;
@@ -78,65 +82,67 @@ export const dataSets = {
       xLabels: namedRegions,
       yLabels: namedRegions,
       showAxisLabels: true,
-      getLabel: d => `${Math.floor(d.value / 100) / 10}k`,
+      getLabel: (d) => `${Math.floor(d.value / 100) / 10}k`,
       defaultColor: 'valueHeatGreens',
       computeMode: 'direct',
       iterations: 0,
-      layout: 'gridLayout'
-    }
+      layout: 'gridLayout',
+    },
   },
 
   BLACK_AND_WHITE: {
-    data: EXAMPLES.BLACK_AND_WHITE_TABLE.map((row, jdx) => row.map((value, idx) => ({
-      value,
-      color: RV_COLORS[(jdx * row.length + idx) % RV_COLORS.length]
-    }))),
+    data: EXAMPLES.BLACK_AND_WHITE_TABLE.map((row, jdx) =>
+      row.map((value, idx) => ({
+        value,
+        color: RV_COLORS[(jdx * row.length + idx) % RV_COLORS.length],
+      })),
+    ),
     config: {
-      getLabel: d => `${Math.round(d.value * 100) / 100}`,
-      accessor: d => d.value,
+      getLabel: (d) => `${Math.round(d.value * 100) / 100}`,
+      accessor: (d) => d.value,
       setter: (table, y, x, d) => {
         table[y][x].value = d;
         return table;
       },
-      defaultColor: 'byDataColor'
-    }
+      defaultColor: 'byDataColor',
+    },
   },
 
   USA: {
     data: addConsistantColors(EXAMPLES.USA_USA_USA_LABELS),
     config: {
-      accessor: d => d[1],
-      getLabel: d => d.data[0],
+      accessor: (d) => d[1],
+      getLabel: (d) => d.data[0],
       setter: (table, y, x, d) => {
         table[y][x][1] = d;
         return table;
       },
-      defaultColor: 'byDataColor'
-    }
+      defaultColor: 'byDataColor',
+    },
   },
 
   ELELMENTS: {
     data: addSpecialColors(ELELMENTS_DENSITY),
     config: {
-      getLabel: d => `${d.data.symbol}`,
-      accessor: d => d.value,
+      getLabel: (d) => `${d.data.symbol}`,
+      accessor: (d) => d.value,
       setter: (table, y, x, d) => {
         table[y][x].value = d;
         return table;
       },
       dims: {
         height: 0.3,
-        width: 1
+        width: 1,
       },
-      defaultColor: 'byDataColor'
-    }
+      defaultColor: 'byDataColor',
+    },
   },
 
   ZION: {
     data: ZION_VISITORS_WITH_ANNOTATION,
     config: {
-      getLabel: d => '',
-      accessor: d => d.value,
+      getLabel: (d) => '',
+      accessor: (d) => d.value,
       setter: (table, y, x, d) => {
         table[y][x].value = d;
         return table;
@@ -147,10 +153,10 @@ export const dataSets = {
       showAxisLabels: true,
       layout: 'gridLayout',
       optimizationParams: {
-        stepSize: 0.005
+        stepSize: 0.005,
         // useAnalytic: true
-      }
-    }
-  }
+      },
+    },
+  },
 };
 export default dataSets;

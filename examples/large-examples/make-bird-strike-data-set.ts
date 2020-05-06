@@ -71,7 +71,7 @@ const STATE_MAP = {
   'Prince Edward Island': 'PE',
   Quebec: 'QC',
   Saskatchewan: 'SK',
-  Yukon: 'YT'
+  Yukon: 'YT',
 };
 
 const INV_STATE_MAP = Object.entries(STATE_MAP).reduce((acc, row) => {
@@ -80,7 +80,7 @@ const INV_STATE_MAP = Object.entries(STATE_MAP).reduce((acc, row) => {
 }, {});
 
 const STATE_TO_REGION = REGIONS.reduce((acc, region) => {
-  region.states.forEach(state => {
+  region.states.forEach((state) => {
     acc[state] = region.name;
   });
   return acc;
@@ -148,7 +148,7 @@ const strikeCounts = [
   [15, 'MB'],
   [8, 'NL'],
   [6, 'SK'],
-  [5, 'NS']
+  [5, 'NS'],
 ];
 const OTHER = {};
 const REGION_STRIKES = strikeCounts.reduce((acc, row) => {

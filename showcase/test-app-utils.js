@@ -8,22 +8,28 @@ import {hierarchy, treemap} from 'd3-hierarchy';
  */
 export function checkErrorOfTreemap(data) {
   const treeIzedData = {
-    children: data.reduce((acc, row) => acc.concat(row), [])
+    children: data.reduce((acc, row) => acc.concat(row), []),
   };
 
-  const root = hierarchy(treeIzedData).sum(d => d);
-  const gons = treemap()(root).descendants().map(leaf => ({
-    vertices: [
-      {x: leaf.x0, y: leaf.y0},
-      {x: leaf.x1, y: leaf.y0},
-      {x: leaf.x1, y: leaf.y1},
-      {x: leaf.x0, y: leaf.y1}
-    ],
-    value: leaf.data
-  }));
+  const root = hierarchy(treeIzedData).sum((d) => d);
+  const gons = treemap()(root)
+    .descendants()
+    .map((leaf) => ({
+      vertices: [
+        {x: leaf.x0, y: leaf.y0},
+        {x: leaf.x1, y: leaf.y0},
+        {x: leaf.x1, y: leaf.y1},
+        {x: leaf.x0, y: leaf.y1},
+      ],
+      value: leaf.data,
+    }));
 
   return round(
-    computeErrors(data, gons.filter(({value}) => typeof value === 'number'), d => d),
-    Math.pow(10, 12)
+    computeErrors(
+      data,
+      gons.filter(({value}) => typeof value === 'number'),
+      (d) => d,
+    ),
+    Math.pow(10, 12),
   );
 }

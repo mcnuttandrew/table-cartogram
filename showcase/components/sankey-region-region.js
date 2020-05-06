@@ -11,30 +11,23 @@ import {RV_COLORS} from '../colors';
 //   {source: 1, target: 2, value: 20}
 // ];
 import {REGION_NET} from '../../examples/large-examples/state-migration-network';
-const REGIONS = Object.keys(REGION_NET).filter(d => d !== 'Canada' && d !== 'US Islands');
-const nodes = REGIONS.map(name => ({name: `${name}`})).concat(
-  REGIONS.map(name => ({name: `${name}`}))
-).map(d => ({...d, rotation: 0}));
+const REGIONS = Object.keys(REGION_NET).filter((d) => d !== 'Canada' && d !== 'US Islands');
+const nodes = REGIONS.map((name) => ({name: `${name}`}))
+  .concat(REGIONS.map((name) => ({name: `${name}`})))
+  .map((d) => ({...d, rotation: 0}));
 const links = REGIONS.reduce((acc, from, idx) => {
-  return acc.concat(REGIONS.map((to, jdx) => {
-    return {
-      source: idx,
-      target: jdx + REGIONS.length,
-      value: REGION_NET[from][to],
-      color: RV_COLORS[jdx + 5]
-    };
-  }));
+  return acc.concat(
+    REGIONS.map((to, jdx) => {
+      return {
+        source: idx,
+        target: jdx + REGIONS.length,
+        value: REGION_NET[from][to],
+        color: RV_COLORS[jdx + 5],
+      };
+    }),
+  );
 }, []);
 
 export default function BasicSankeyExample() {
-  return (
-    <Sankey
-      nodes={nodes}
-      links={links}
-      width={1400}
-      height={1400}
-      labelRotation={45}
-
-    />
-  );
+  return <Sankey nodes={nodes} links={links} width={1400} height={1400} labelRotation={45} />;
 }

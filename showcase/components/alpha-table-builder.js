@@ -3,9 +3,7 @@ import IterativeDisplay from './iterative-display';
 import dataSets from './alpha-table/prepared-datasets';
 import alphas from './alpha-table/alphas';
 
-const makeLocalCopy = table => table.map(row =>
-  row.map(d => typeof d === 'number' ? d : {...d})
-);
+const makeLocalCopy = (table) => table.map((row) => row.map((d) => (typeof d === 'number' ? d : {...d})));
 
 const ALL_ALPHAS = [
   // 'IDENTITY',
@@ -19,17 +17,21 @@ const ALL_ALPHAS = [
   // 'RESCALE',
   'SWAP_MIN_MAX',
   // 'SET_MAX_TO_AVERAGE',
-  'RECIPROCAL'
-].reduce((acc, alpha) =>
-  acc.concat([
-    // 'ZION',
-    // 'USA',
-    // 'BLACK_AND_WHITE',
-    'REGION_TO_REGION',
-    // 'REGION_TO_REGION_FLATS'
-    // 'ELELMENTS'
-  ]
-    .map(dataset => ({alpha, dataset: dataSets[dataset]}))), []);
+  'RECIPROCAL',
+].reduce(
+  (acc, alpha) =>
+    acc.concat(
+      [
+        // 'ZION',
+        // 'USA',
+        // 'BLACK_AND_WHITE',
+        'REGION_TO_REGION',
+        // 'REGION_TO_REGION_FLATS'
+        // 'ELELMENTS'
+      ].map((dataset) => ({alpha, dataset: dataSets[dataset]})),
+    ),
+  [],
+);
 
 const SUBSET_ALPHAS = [
   /* eslint-disable comma-dangle */
@@ -50,42 +52,45 @@ const SUBSET_ALPHAS = [
   /* eslint-enable comma-dangle */
 ];
 
-const TABLES = ALL_ALPHAS
-.map(({alpha, dataset}) => ({alpha: alphas[alpha], dataset, name: alpha}))
-.map(({alpha, dataset, name}) => ({
-  name,
-  config: alpha.transformConfig(dataset.config || {}),
-  data: makeLocalCopy(alpha.transform(makeLocalCopy(dataset.data), dataset.config))
-}));
+const TABLES = ALL_ALPHAS.map(({alpha, dataset}) => ({alpha: alphas[alpha], dataset, name: alpha})).map(
+  ({alpha, dataset, name}) => ({
+    name,
+    config: alpha.transformConfig(dataset.config || {}),
+    data: makeLocalCopy(alpha.transform(makeLocalCopy(dataset.data), dataset.config)),
+  }),
+);
 
 export default function AlphaTableBuilder(props) {
-  return (<div>
-    {TABLES.map(({name, data, config}, idx) => {
-      const commonProps = {
-        iterations: 400,
-        optimizationParams: {
-          stepSize: 0.01,
-          nonDeterministic: true
-          // useAnalytic: true
-        },
-        // layout: 'pickWorst',
-        // layout: 'gridLayout',
-        // layout: 'zigZagOnXY',
-        computeMode: 'iterative',
-        // computeMode: 'adaptive',
-        stepSize: 5,
-        defaultColor: 'periodicColors',
-        showLabelsByDefault: true,
-        getLabel: d => d.value,
-        ...config
-      };
-      return (
-        <div key={`alpha-gen-${idx}`}>
-          <h2>{name}</h2>
-          <div style={{display: 'flex'}}>
-            <IterativeDisplay {...commonProps} data={data}/>
+  return (
+    <div>
+      {TABLES.map(({name, data, config}, idx) => {
+        const commonProps = {
+          iterations: 400,
+          optimizationParams: {
+            stepSize: 0.01,
+            nonDeterministic: true,
+            // useAnalytic: true
+          },
+          // layout: 'pickWorst',
+          // layout: 'gridLayout',
+          // layout: 'zigZagOnXY',
+          computeMode: 'iterative',
+          // computeMode: 'adaptive',
+          stepSize: 5,
+          defaultColor: 'periodicColors',
+          showLabelsByDefault: true,
+          getLabel: (d) => d.value,
+          ...config,
+        };
+        return (
+          <div key={`alpha-gen-${idx}`}>
+            <h2>{name}</h2>
+            <div style={{display: 'flex'}}>
+              <IterativeDisplay {...commonProps} data={data} />
+            </div>
           </div>
-        </div>);
-    })}
-  </div>);
+        );
+      })}
+    </div>
+  );
 }

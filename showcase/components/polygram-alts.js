@@ -1,13 +1,5 @@
 import React from 'react';
-import {
-  RadialChart,
-  XYPlot,
-  PolygonSeries,
-  LabelSeries,
-  VerticalBarSeries,
-  XAxis,
-  YAxis
-} from 'react-vis';
+import {RadialChart, XYPlot, PolygonSeries, LabelSeries, VerticalBarSeries, XAxis, YAxis} from 'react-vis';
 
 const data = [
   {label: 'Midwest', angle: 38042, color: '#19CDD7'},
@@ -15,16 +7,16 @@ const data = [
   {label: 'South', angle: 68307, color: '#88572C'},
   {label: 'West', angle: 39481, color: '#FF991F'},
   {label: 'Northeast', angle: 30142, color: '#F15C17'},
-  {label: 'US Islands', angle: 5111, color: '#223F9A'}
+  {label: 'US Islands', angle: 5111, color: '#223F9A'},
 ];
 
 let offset = 0;
-const barData = data.map(d => {
+const barData = data.map((d) => {
   const newObj = {
     ...d,
     y: 0,
     x: offset,
-    x0: offset + d.angle
+    x0: offset + d.angle,
   };
   offset += d.angle;
   return newObj;
@@ -46,33 +38,30 @@ export default function PolygramAlts() {
         //   height={400}/>
       }
       {
-
-        <XYPlot
-        yType="category"
-        width={500}
-        height={100}
-        >
+        <XYPlot yType="category" width={500} height={100}>
           {barData.map(({x, x0, y, color}) => (
             <PolygonSeries
-            colorType="literal"
-            color={color}
-            key={color}
-            data={[
-              {y: y - 1, x},
-              {y: y - 1, x: x0},
-              {y, x: x0},
-              {y, x}
-            ]}/>
+              colorType="literal"
+              color={color}
+              key={color}
+              data={[
+                {y: y - 1, x},
+                {y: y - 1, x: x0},
+                {y, x: x0},
+                {y, x},
+              ]}
+            />
           ))}
           <LabelSeries
-          data={barData.map(d => ({
-            ...d,
-            style: {
-              textAnchor: 'middle',
-              alignmentBaseline: 'middle'
-            },
-            label: `${d.label}: ${Math.floor(d.angle / 100) / 10}k`
-          }))}/>
+            data={barData.map((d) => ({
+              ...d,
+              style: {
+                textAnchor: 'middle',
+                alignmentBaseline: 'middle',
+              },
+              label: `${d.label}: ${Math.floor(d.angle / 100) / 10}k`,
+            }))}
+          />
         </XYPlot>
       }
       {

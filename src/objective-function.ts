@@ -1,42 +1,47 @@
-import pointInPolygon from 'point-in-polygon';
 import {
-  translateVectorToTable,
-  getRectsFromTable,
-  findSumForTable,
-  signedArea
-} from './utils';
+  Vector,
+  DataTable,
+  Pos,
+  PositionTable,
+  Dimensions,
+  OptimizationParams,
+  ArrPos,
+  PenaltyProps,
+} from '../types';
+import pointInPolygon from 'point-in-polygon';
+import {translateVectorToTable, getRectsFromTable, findSumForTable, signedArea} from './utils';
 
-function continuousMax(x, y) {
+function continuousMax(x: number, y: number): number {
   return 0.5 * (x + y + Math.abs(x - y));
 }
 
-function expPenalty(x) {
+function expPenalty(x: number): number {
   return continuousMax(0, -x) * Math.exp(-x) * 100;
 }
 
-export function derivPenalty(x) {
+export function derivPenalty(x: number): number {
   if (x === 0) {
     return 0;
   }
   // return expPenalty(x) *
   // return -100 * Math.exp(-x) * (Math.sign(x) - 1) * (Math.sign(x) + x) / (Math.sign(x));
-  return -(1 + Math.abs(x)) * expPenalty(x) / Math.abs(x);
+  return (-(1 + Math.abs(x)) * expPenalty(x)) / Math.abs(x);
 }
 
-function dist(a, b) {
+function dist(a: ArrPos, b: ArrPos): number {
   return Math.sqrt(Math.pow(a[0] - b[0], 2) + Math.pow(a[1] - b[1], 2));
 }
 
-function norm(a) {
+function norm(a: ArrPos): number {
   return Math.sqrt(Math.pow(a[0], 2) + Math.pow(a[1], 2));
 }
 
-function getAngle(a, b) {
+function getAngle(a: ArrPos, b: ArrPos): number {
   return Math.acos((a[0] * b[0] + a[1] * b[1]) / (norm(a) * norm(b)));
 }
 
 // TODO DRY UP THE NEXT TWO FUNCTIONS
-function computeMinDist(points, cell) {
+function computeMinDist(points: ArrPos[], cell: Pos): number {
   let minDist = Infinity;
   for (let jdx = 0; jdx < points.length; jdx++) {
     const d = points[jdx];
@@ -50,7 +55,7 @@ function computeMinDist(points, cell) {
   return minDist;
 }
 
-export function computeMinDistPoint(points, cell) {
+export function computeMinDistPoint(points: ArrPos[], cell: Pos): {minPoint: ArrPos; minDist: number} {
   let minDist = Infinity;
   let minPoint = points[0];
   for (let jdx = 0; jdx < points.length; jdx++) {
@@ -73,37 +78,37 @@ export function computeMinDistPoint(points, cell) {
  * @param  {Number} j     - the x or horizontal index
  * @return {Object}
  */
-export function computeEdges(table, i, j) {
+export function computeEdges(
+  table: any[][],
+  i: number,
+  j: number,
+): {
+  inFirstRow: boolean;
+  inLeftColumn: boolean;
+  inRightColumn: boolean;
+  inLastRow: boolean;
+  inCorner: boolean;
+} {
   const inFirstRow = i === 0;
   const inLeftColumn = j === 0;
 
-  const inRightColumn = j === (table[0].length - 1);
-  const inLastRow = i === (table.length - 1);
-  const inCorner = ((inFirstRow && (inLeftColumn || inRightColumn))) ||
-          ((inLastRow && (inLeftColumn || inRightColumn)));
+  const inRightColumn = j === table[0].length - 1;
+  const inLastRow = i === table.length - 1;
+  const inCorner =
+    (inFirstRow && (inLeftColumn || inRightColumn)) || (inLastRow && (inLeftColumn || inRightColumn));
 
   return {
     inFirstRow,
     inLeftColumn,
     inRightColumn,
     inLastRow,
-    inCorner
+    inCorner,
   };
 }
 
-function continOverlapPenalty(props) {
-  const {
-    cell,
-    newTable,
-    inCorner,
-    inFirstRow,
-    inLastRow,
-    i,
-    j,
-    inLeftColumn,
-    inRightColumn
-  } = props;
-  let neighbors = [];
+function continOverlapPenalty(props: PenaltyProps): number {
+  const {cell, newTable, inCorner, inFirstRow, inLastRow, i, j, inLeftColumn, inRightColumn} = props;
+  let neighbors = [] as Pos[];
   if (inCorner) {
     // no penaltys for corners, they are not manipualted
   } else if (inFirstRow) {
@@ -114,12 +119,12 @@ function continOverlapPenalty(props) {
       newTable[i + 1][j + 1],
       newTable[i + 1][j],
       newTable[i + 1][j - 1],
-      newTable[i][j - 1]
+      newTable[i][j - 1],
     ];
   } else if (inLastRow) {
     const delta = Math.max(
       Math.abs(newTable[i - 1][j - 1].y - newTable[i][j - 1].y),
-      Math.abs(newTable[i - 1][j + 1].y - newTable[i][j + 1].y)
+      Math.abs(newTable[i - 1][j + 1].y - newTable[i][j + 1].y),
     );
     neighbors = [
       newTable[i - 1][j - 1],
@@ -128,7 +133,7 @@ function continOverlapPenalty(props) {
       newTable[i][j + 1],
       {x: newTable[i][j + 1].x, y: newTable[i][j + 1].y + delta},
       {x: newTable[i][j - 1].x, y: newTable[i][j - 1].y + delta},
-      newTable[i][j - 1]
+      newTable[i][j - 1],
     ];
   } else if (inLeftColumn) {
     neighbors = [
@@ -138,12 +143,12 @@ function continOverlapPenalty(props) {
       newTable[i][j + 1],
       newTable[i + 1][j + 1],
       newTable[i + 1][j],
-      {x: -newTable[i + 1][j + 1].x, y: newTable[i + 1][j + 1].y}
+      {x: -newTable[i + 1][j + 1].x, y: newTable[i + 1][j + 1].y},
     ];
   } else if (inRightColumn) {
     const delta = Math.max(
       Math.abs(newTable[i - 1][j - 1].x - newTable[i - 1][j].x),
-      Math.abs(newTable[i + 1][j - 1].x - newTable[i + 1][j].x)
+      Math.abs(newTable[i + 1][j - 1].x - newTable[i + 1][j].x),
     );
     neighbors = [
       newTable[i - 1][j - 1],
@@ -152,7 +157,7 @@ function continOverlapPenalty(props) {
       {x: newTable[i + 1][j].x + delta, y: newTable[i + 1][j].y},
       newTable[i + 1][j],
       newTable[i + 1][j - 1],
-      newTable[i][j - 1]
+      newTable[i][j - 1],
     ];
   } else {
     neighbors = [
@@ -163,10 +168,10 @@ function continOverlapPenalty(props) {
       newTable[i + 1][j + 1],
       newTable[i + 1][j],
       newTable[i + 1][j - 1],
-      newTable[i][j - 1]
+      newTable[i][j - 1],
     ];
   }
-  const points = neighbors.map(({x, y}) => [x, y]);
+  const points: ArrPos[] = neighbors.map(({x, y}) => [x, y]);
   if (neighbors.length && !pointInPolygon([cell.x, cell.y], points)) {
     const minDist = computeMinDist(points, cell);
     return expPenalty(-(isFinite(minDist) ? minDist : 0));
@@ -174,19 +179,10 @@ function continOverlapPenalty(props) {
   return 0;
 }
 
-function contOrderPenalty(props) {
-  const {
-    cell,
-    inFirstRow,
-    inLastRow,
-    inRightColumn,
-    inLeftColumn,
-    newTable,
-    inCorner,
-    i, j
-  } = props;
+function contOrderPenalty(props: PenaltyProps): number {
+  const {cell, inFirstRow, inLastRow, inRightColumn, inLeftColumn, newTable, inCorner, i, j} = props;
 
-  let evalTarget = [];
+  let evalTarget = [] as {lessThan: boolean; dim: 'x' | 'y'; val: number}[];
   // don't allow values to move out of correct order
   if (inCorner) {
     // no penaltys for corners, they are not manipualted
@@ -194,20 +190,20 @@ function contOrderPenalty(props) {
     evalTarget = [
       {lessThan: true, dim: 'x', val: newTable[i][j - 1].x},
       {lessThan: false, dim: 'x', val: newTable[i][j + 1].x},
-      {lessThan: !inFirstRow, dim: 'y', val: newTable[i + (inFirstRow ? 1 : -1)][j].y}
+      {lessThan: !inFirstRow, dim: 'y', val: newTable[i + (inFirstRow ? 1 : -1)][j].y},
     ];
   } else if (inLeftColumn || inRightColumn) {
     evalTarget = [
       {lessThan: true, dim: 'y', val: newTable[i - 1][j].y},
       {lessThan: false, dim: 'y', val: newTable[i + 1][j].y},
-      {lessThan: !inLeftColumn, dim: 'x', val: newTable[i][j + (inLeftColumn ? 1 : -1)].x}
+      {lessThan: !inLeftColumn, dim: 'x', val: newTable[i][j + (inLeftColumn ? 1 : -1)].x},
     ];
   } else {
     evalTarget = [
       {lessThan: true, dim: 'y', val: newTable[i - 1][j].y},
       {lessThan: false, dim: 'y', val: newTable[i + 1][j].y},
       {lessThan: true, dim: 'x', val: newTable[i][j - 1].x},
-      {lessThan: false, dim: 'x', val: newTable[i][j + 1].x}
+      {lessThan: false, dim: 'x', val: newTable[i][j + 1].x},
     ];
   }
   return evalTarget.reduce((acc, {val, dim, lessThan}) => {
@@ -221,22 +217,16 @@ function contOrderPenalty(props) {
  * @param  {Array of Array of {x: Number, y: Number}} newTable - the table to be evaluaated
  * @return {Number} The evaluated penalties
  */
-export function continuousBuildPenalties(newTable, dims, optimizationParams) {
+export function continuousBuildPenalties(
+  newTable: PositionTable,
+  dims: Dimensions,
+  optimizationParams: OptimizationParams,
+): number {
   let penalties = 0;
-  const {
-    orderPenalty,
-    borderPenalty,
-    overlapPenalty
-  } = optimizationParams;
+  const {orderPenalty, borderPenalty, overlapPenalty} = optimizationParams;
   for (let i = 0; i < newTable.length; i++) {
     for (let j = 0; j < newTable[0].length; j++) {
-      const {
-        inFirstRow,
-        inLeftColumn,
-        inRightColumn,
-        inLastRow,
-        inCorner
-      } = computeEdges(newTable, i, j);
+      const {inFirstRow, inLeftColumn, inRightColumn, inLastRow, inCorner} = computeEdges(newTable, i, j);
       const cell = newTable[i][j];
 
       // boundary penalties
@@ -245,28 +235,19 @@ export function continuousBuildPenalties(newTable, dims, optimizationParams) {
       penalties += borderPenalty * expPenalty(cell.x);
       penalties += borderPenalty * expPenalty(dims.height - cell.y);
       penalties += borderPenalty * expPenalty(cell.y);
-      penalties += orderPenalty * contOrderPenalty({
+      const penaltyProps = {
         cell,
-        inFirstRow,
-        inLastRow,
-        inRightColumn,
-        inLeftColumn,
-        newTable,
-        inCorner,
-        i, j
-      });
-
-      penalties += overlapPenalty * continOverlapPenalty({
-        cell,
-        newTable,
-        inCorner,
-        inFirstRow,
-        inLastRow,
         i,
-        j,
+        inCorner,
+        inFirstRow,
+        inLastRow,
         inLeftColumn,
-        inRightColumn
-      });
+        inRightColumn,
+        j,
+        newTable,
+      };
+      penalties += orderPenalty * contOrderPenalty(penaltyProps);
+      penalties += overlapPenalty * continOverlapPenalty(penaltyProps);
     }
   }
 
@@ -288,12 +269,17 @@ export function continuousBuildPenalties(newTable, dims, optimizationParams) {
  * @return {Number} Score
  */
 export function objectiveFunction(
-  vector, targetTable, dims = {height: 1, width: 1}, onlyShowPenalty, optimizationParams) {
+  vector: Vector,
+  targetTable: DataTable,
+  dims: Dimensions = {height: 1, width: 1},
+  onlyShowPenalty: boolean,
+  optimizationParams: OptimizationParams,
+): number {
   const newTable = translateVectorToTable(vector, targetTable, dims.height, dims.width);
   const rects = getRectsFromTable(newTable);
   // sum up the relative amount of "error"
   // generate the areas of each of the boxes
-  const areas = rects.map(row => row.map(rect => signedArea(rect)));
+  const areas = rects.map((row) => row.map((rect) => signedArea(rect)));
   const sumArea = findSumForTable(areas);
   const sumTrueArea = findSumForTable(targetTable);
   const sumRatio = sumTrueArea / sumArea;

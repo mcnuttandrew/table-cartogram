@@ -1,11 +1,7 @@
-import {
-  translateVectorToTable,
-  getRectsFromTable,
-  findSumForTable,
-  signedArea
-} from './utils';
+import {DataTable, Vector, Pos, PositionTable, Dimensions, OptimizationParams} from '../types';
+import {translateVectorToTable, getRectsFromTable, findSumForTable, signedArea} from './utils';
 
-const dist = (a, b) => Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));
+const dist = (a: Pos, b: Pos): number => Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));
 
 /**
  * Determine where an index (j, i) is in a table
@@ -14,25 +10,39 @@ const dist = (a, b) => Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)
  * @param  {Number} j     - the x or horizontal index
  * @return {Object}
  */
-export function computeEdges(table, i, j) {
+export function computeEdges(
+  table: any[][],
+  i: number,
+  j: number,
+): {
+  inFirstRow: boolean;
+  inLeftColumn: boolean;
+  inRightColumn: boolean;
+  inLastRow: boolean;
+  inCorner: boolean;
+} {
   const inFirstRow = i === 0;
   const inLeftColumn = j === 0;
 
-  const inRightColumn = j === (table[0].length - 1);
-  const inLastRow = i === (table.length - 1);
-  const inCorner = ((inFirstRow && (inLeftColumn || inRightColumn))) ||
-          ((inLastRow && (inLeftColumn || inRightColumn)));
+  const inRightColumn = j === table[0].length - 1;
+  const inLastRow = i === table.length - 1;
+  const inCorner =
+    (inFirstRow && (inLeftColumn || inRightColumn)) || (inLastRow && (inLeftColumn || inRightColumn));
 
   return {
     inFirstRow,
     inLeftColumn,
     inRightColumn,
     inLastRow,
-    inCorner
+    inCorner,
   };
 }
 
-export function continuousBuildPenalties(newTable, dims, optimizationParams) {
+export function continuousBuildPenalties(
+  newTable: PositionTable,
+  dims: Dimensions,
+  optimizationParams: OptimizationParams,
+): number {
   let penalties = 0;
   // const rects = getRectsFromTable(newTable);
   // const areas = rects.map(row => row.map(rect => signedArea(rect)));
@@ -54,7 +64,7 @@ export function continuousBuildPenalties(newTable, dims, optimizationParams) {
         // inFirstRow,
         // inLeftColumn,
         inRightColumn,
-        inLastRow
+        inLastRow,
         // inCorner
       } = computeEdges(newTable, i, j);
       if (inRightColumn || inLastRow) {
@@ -74,22 +84,14 @@ export function continuousBuildPenalties(newTable, dims, optimizationParams) {
       // penalties += Math.pow((area - A[i][j]) / A[i][j], 2);
 
       // area ratio
-      const areaTR = 0.5 * (
-        (upRght.x - dnRght.x) * (dnLeft.y - dnRght.y) -
-        (upRght.y - dnRght.y) * (dnLeft.x - dnRght.x)
-      );
-      const areaLB = 0.5 * (
-        (dnLeft.x - upLeft.x) * (upRght.y - upLeft.y) -
-        (dnLeft.y - upLeft.y) * (upRght.x - upLeft.x)
-      );
-      const areaTL = 0.5 * (
-        (upLeft.x - upRght.x) * (dnRght.y - upRght.y) -
-        (upLeft.y - upRght.y) * (dnRght.x - upRght.x)
-      );
-      const areaRB = 0.5 * (
-        (dnRght.x - dnLeft.x) * (upLeft.y - dnLeft.y) -
-        (dnRght.y - dnLeft.y) * (upLeft.x - dnLeft.x)
-      );
+      const areaTR =
+        0.5 * ((upRght.x - dnRght.x) * (dnLeft.y - dnRght.y) - (upRght.y - dnRght.y) * (dnLeft.x - dnRght.x));
+      const areaLB =
+        0.5 * ((dnLeft.x - upLeft.x) * (upRght.y - upLeft.y) - (dnLeft.y - upLeft.y) * (upRght.x - upLeft.x));
+      const areaTL =
+        0.5 * ((upLeft.x - upRght.x) * (dnRght.y - upRght.y) - (upLeft.y - upRght.y) * (dnRght.x - upRght.x));
+      const areaRB =
+        0.5 * ((dnRght.x - dnLeft.x) * (upLeft.y - dnLeft.y) - (dnRght.y - dnLeft.y) * (upLeft.x - dnLeft.x));
       penalties += 10 * Math.pow(Math.log(areaTR / areaLB), 2);
       penalties += 10 * Math.pow(Math.log(areaTL / areaRB), 2);
 
@@ -124,12 +126,17 @@ export function continuousBuildPenalties(newTable, dims, optimizationParams) {
  * @return {Number} Score
  */
 export function objectiveFunction(
-  vector, targetTable, dims = {height: 1, width: 1}, onlyShowPenalty, optimizationParams) {
+  vector: Vector,
+  targetTable: DataTable,
+  dims: Dimensions = {height: 1, width: 1},
+  onlyShowPenalty: boolean,
+  optimizationParams: OptimizationParams,
+): number {
   const newTable = translateVectorToTable(vector, targetTable, dims.height, dims.width);
   // sum up the relative amount of "error"
   // generate the areas of each of the boxes
   const rects = getRectsFromTable(newTable);
-  const areas = rects.map(row => row.map(rect => signedArea(rect)));
+  const areas = rects.map((row) => row.map((rect) => signedArea(rect)));
   const sumArea = findSumForTable(areas);
   const sumTrueArea = findSumForTable(targetTable);
   const sumRatio = sumTrueArea / sumArea;
