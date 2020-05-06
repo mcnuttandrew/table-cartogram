@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-undef
 module.exports = {
   resolve: {
     // Add '.ts' and '.tsx' as resolvable extensions.

@@ -7,7 +7,7 @@ const style = {
   strokeWidth: 0.5,
   stroke: 'black',
   strokeOpacity: 1,
-  fillOpacity: 0.5
+  fillOpacity: 0.5,
 };
 
 export default function ExampleTreemap({data}) {
@@ -19,17 +19,11 @@ export default function ExampleTreemap({data}) {
       .map((d, i) => ({
         size: d,
         title: d,
-        color: RV_COLORS[(i + 3) % RV_COLORS.length]
-      }))
+        color: RV_COLORS[(i + 3) % RV_COLORS.length],
+      })),
   };
 
   return (
-    <Treemap
-      data={treeData}
-      width={500}
-      height={500}
-      style={style}
-      colorType="literal"
-      renderMode="SVG"/>
+    <Treemap data={treeData} width={500} height={500} style={style} colorType="literal" renderMode="SVG" />
   );
 }

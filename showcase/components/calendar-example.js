@@ -130,7 +130,7 @@ function renderMonth(gons, month) {
     <div key={month}>
       <XYPlot className={MONTH_NAMES[month]} yDomain={[1, 0]} margin={60} width={500} height={500}>
         {clipToMonth.map((cell, index) => {
-          console.log(cell.data.count);
+          // console.log(cell.data.count);
           return (
             <PolygonSeries
               key={`triangle-${index}`}

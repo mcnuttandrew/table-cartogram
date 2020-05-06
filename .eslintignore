@@ -1,2 +1,3 @@
-/node_modules/*
-/showcase/node_modules/*
+node_modules/*
+showcase/node_modules/*
+dist/*

@@ -1,43 +1,34 @@
+/* eslint-disable react/no-string-refs */
 import React from 'react';
 
 import {interpolateViridis} from 'd3-scale-chromatic';
 import {scaleLinear} from 'd3-scale';
 import {rgb} from 'd3-color';
 
-import {
-  objectiveFunction
-} from '../../src/objective-function';
+import {objectiveFunction} from '../../src/objective-function';
 
-import {
-  generateInitialTable
-} from '../../src/layouts';
+import {generateInitialTable} from '../../src/layouts';
 
-import {
-  translateTableToVector,
-  prepareRects,
-  translateVectorToTable
-} from '../../src/utils';
+import {translateTableToVector, prepareRects, translateVectorToTable} from '../../src/utils';
 
-import {
-  executeOptimization
-} from '../../src/optimization';
+import {executeOptimization} from '../../src/optimization';
 
 import CartogramPlot from './table-cartogram';
 
 function to8bit(v) {
   const i = Math.round(256 * v - 0.5);
-  return i < 0 ? 0 : (i > 255 ? 255 : i);
+  return i < 0 ? 0 : i > 255 ? 255 : i;
 }
 
 class ObjectiveFunctionVisualization extends React.Component {
   state = {
     pos: [],
-    ready: false
-  }
+    ready: false,
+  };
 
   componentDidMount() {
     const {table, layout, maxSteps, stepSize} = this.props;
-    const objFunc = vec => objectiveFunction(vec, table, 'coordinate');
+    const objFunc = (vec) => objectiveFunction(vec, table, 'coordinate');
     const constructedLayout = generateInitialTable(2, 2, table, objFunc, layout);
     let pos = translateTableToVector(constructedLayout);
     let steps = 0;
@@ -74,7 +65,7 @@ class ObjectiveFunctionVisualization extends React.Component {
 
     for (let idx = 0; idx < imgData.data.length; idx += 4) {
       const xVal = x((idx / 4) % width);
-      const yVal = y(Math.floor((idx / 4) / width));
+      const yVal = y(Math.floor(idx / 4 / width));
       const objVal = objFunc(vec(xVal, yVal));
       const {r, g, b} = rgb(interpolateViridis(Math.sqrt(1 - objVal / max)));
       imgData.data[idx + 0] = to8bit(r / 255);
@@ -90,12 +81,15 @@ class ObjectiveFunctionVisualization extends React.Component {
     const {width, height, table} = this.props;
     return (
       <div style={{display: 'flex', alignItems: 'center'}}>
-        <canvas ref="canvas" width={width} height={height} style={{position: 'absolute'}}/>
-        {ready && <CartogramPlot
-          data={prepareRects(translateVectorToTable(pos, table, 1, 1), table, d => d)}
-          fillMode="none"
-          height={height}
-          width={width}/>}
+        <canvas ref="canvas" width={width} height={height} style={{position: 'absolute'}} />
+        {ready && (
+          <CartogramPlot
+            data={prepareRects(translateVectorToTable(pos, table, 1, 1), table, (d) => d)}
+            fillMode="none"
+            height={height}
+            width={width}
+          />
+        )}
       </div>
     );
   }
@@ -105,11 +99,14 @@ ObjectiveFunctionVisualization.defaultProps = {
   width: 300,
   height: 300,
   // table: [[100, 1], [0.1, 10]],
-  table: [[1, 10], [1, 1]],
-  vectorShell: edges => (x, y) => [edges[0], edges[1], x, y, edges[2], edges[3]],
+  table: [
+    [1, 10],
+    [1, 1],
+  ],
+  vectorShell: (edges) => (x, y) => [edges[0], edges[1], x, y, edges[2], edges[3]],
   layout: 'psuedoCartogramLayout',
   maxSteps: 1,
-  stepSize: 1
+  stepSize: 1,
 };
 
 export default ObjectiveFunctionVisualization;

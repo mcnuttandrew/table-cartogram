@@ -36,7 +36,7 @@
   "settings": {
     "react": {
       "pragma": "React",
-      "version": "detect"
+      "version": "15"
     }
   },
   "parser": "@typescript-eslint/parser"
