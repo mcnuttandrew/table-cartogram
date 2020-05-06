@@ -13,16 +13,14 @@ const BIRD_STRIKES_BY_REGION = {
   South: 68307,
   West: 39481,
   Northeast: 30142,
-  'US Islands': 5111
+  'US Islands': 5111,
 };
 
-const BIRD_SUM = Object.values(BIRD_STRIKES_BY_REGION)
-  .reduce((acc, row) => acc + row, 0);
-const BIRDS = Object.entries(BIRD_STRIKES_BY_REGION)
-  .map(row => ({
-    name: row[0],
-    size: Math.ceil(row[1] / BIRD_SUM * WAFFLE_CELLS)
-  }));
+const BIRD_SUM = Object.values(BIRD_STRIKES_BY_REGION).reduce((acc, row) => acc + row, 0);
+const BIRDS = Object.entries(BIRD_STRIKES_BY_REGION).map((row) => ({
+  name: row[0],
+  size: Math.ceil((row[1] / BIRD_SUM) * WAFFLE_CELLS),
+}));
 BIRDS[0].size -= 2;
 // console.log(BIRDS, BIRDS.reduce((acc, {size}) => acc + size, 0))
 const REGION_COLOR = Object.keys(BIRD_STRIKES_BY_REGION).reduce((acc, region, idx) => {
@@ -31,8 +29,8 @@ const REGION_COLOR = Object.keys(BIRD_STRIKES_BY_REGION).reduce((acc, region, id
 }, {});
 
 const BIRD_CELLS = BIRDS.reduce((acc, {name, size}) => {
-  return acc.concat([...new Array(size)].map((_, idx) =>
-    ({
+  return acc.concat(
+    [...new Array(size)].map((_, idx) => ({
       // size: 0.5 + (
       //   ((size % 2) && idx === (size - 1)) ? 0.5 :
       //     (!(idx % 2) ? 1.0 : 0)
@@ -40,11 +38,14 @@ const BIRD_CELLS = BIRDS.reduce((acc, {name, size}) => {
       size: BIRD_STRIKES_BY_REGION[name] / size,
       name,
       // size: 1,
-      color: REGION_COLOR[name]
-    })));
+      color: REGION_COLOR[name],
+    })),
+  );
 }, []).slice(0, 100);
 BIRD_CELLS[99].size = 3;
 
-export const BIRD_STRIKES = transposeMatrix([...new Array(WAFFLE_WIDTH)].map((_, idx) => {
-  return BIRD_CELLS.slice(idx * WAFFLE_HEIGHT, (idx + 1) * WAFFLE_HEIGHT);
-}));
+export const BIRD_STRIKES = transposeMatrix(
+  [...new Array(WAFFLE_WIDTH)].map((_, idx) => {
+    return BIRD_CELLS.slice(idx * WAFFLE_HEIGHT, (idx + 1) * WAFFLE_HEIGHT);
+  }),
+);

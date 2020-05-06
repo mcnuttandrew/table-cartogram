@@ -1,10 +1,10 @@
 import StateMigration from './state-to-state.json';
 import REGIONS from './us-regions-2.json';
 export const originalMigrationStuff = StateMigration;
-const StatesNames = StateMigration.map(d => d.STATE);
+const StatesNames = StateMigration.map((d) => d.STATE);
 
 const STATE_TO_REGION = REGIONS.reduce((acc, region) => {
-  region.states.forEach(state => {
+  region.states.forEach((state) => {
     acc[state] = region.name;
   });
   return acc;
@@ -18,10 +18,10 @@ const REGION_TO_REGION = REGIONS.reduce((acc, fromRegion) => {
   return acc;
 }, {});
 
-export const stateMigration = StateMigration.reverse().map(row => StatesNames.map(state => row[state]));
-StateMigration.forEach(fromState => {
+export const stateMigration = StateMigration.reverse().map((row) => StatesNames.map((state) => row[state]));
+StateMigration.forEach((fromState) => {
   const stateName = fromState.STATE;
-  StatesNames.forEach(toState => {
+  StatesNames.forEach((toState) => {
     const fromRegion = STATE_TO_REGION[stateName];
     const toRegion = STATE_TO_REGION[toState];
     const num = Number(`${fromState[toState]}`.replace(/\,/g, ''));
@@ -62,8 +62,8 @@ export const namedRegions = [
 ];
 // export const namedRegions = Object.keys(NICKNAMES);
 export const REGION_NET = REGION_TO_REGION;
-export const MIGRATION_REGION_TO_REGION = namedRegions.map(fromRegion => {
-  return namedRegions.map(toRegion => ({
+export const MIGRATION_REGION_TO_REGION = namedRegions.map((fromRegion) => {
+  return namedRegions.map((toRegion) => ({
     value: REGION_TO_REGION[fromRegion][toRegion],
     name: `${NICKNAMES[fromRegion]} -> ${NICKNAMES[toRegion]}`,
   }));

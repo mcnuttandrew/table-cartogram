@@ -100,29 +100,40 @@ const senators = [
   {state: 'Wisconsin', party: 'Republican', name: 'Ron Johnson', date: 'January 3, 2011'},
   {state: 'Wisconsin', party: 'Democrat', name: 'Tammy Baldwin', date: 'January 3, 2013'},
   {state: 'Wyoming', party: 'Republican', name: 'Mike Enzi', date: 'January 3, 1997'},
-  {state: 'Wyoming', party: 'Republican', name: 'John Barrasso', date: 'June 25, 2007'}
+  {state: 'Wyoming', party: 'Republican', name: 'John Barrasso', date: 'June 25, 2007'},
 ];
 
-const DEMS = senators.filter(d => d.party === 'Democrat').sort((a, b) => {
-  return (new Date(b.date)).getYear() - (new Date(a.date)).getYear();
-});
+const DEMS = senators
+  .filter((d) => d.party === 'Democrat')
+  .sort((a, b) => {
+    return new Date(b.date).getYear() - new Date(a.date).getYear();
+  });
 
-const REPUBS = senators.filter(d => d.party === 'Republican').sort((a, b) => {
-  return (new Date(b.date)).getYear() - (new Date(a.date)).getYear();
-}).reverse();
+const REPUBS = senators
+  .filter((d) => d.party === 'Republican')
+  .sort((a, b) => {
+    return new Date(b.date).getYear() - new Date(a.date).getYear();
+  })
+  .reverse();
 
-const OTHER = senators.filter(d => d.party === 'Independent').sort((a, b) => {
-  return (new Date(b.date)).getYear() - (new Date(a.date)).getYear();
-});
+const OTHER = senators
+  .filter((d) => d.party === 'Independent')
+  .sort((a, b) => {
+    return new Date(b.date).getYear() - new Date(a.date).getYear();
+  });
 
 const combine = DEMS.concat(OTHER).concat(REPUBS);
 
 const SENATORS_WIDTH = 20;
 const SENATORS_HEIGHT = 5;
-export const SENATORS = transposeMatrix([...new Array(SENATORS_WIDTH)].map((_, idx) => {
-  return combine.slice(idx * SENATORS_HEIGHT, (idx + 1) * SENATORS_HEIGHT);
-})).map(row => row.map(d => ({
-  ...d,
-  yearsInOffice: (118 - new Date(d.date).getYear() + 1),
-  color: d.party === 'Democrat' ? 'blue' : (d.party === 'Republican' ? 'red' : 'purple')
-})));
+export const SENATORS = transposeMatrix(
+  [...new Array(SENATORS_WIDTH)].map((_, idx) => {
+    return combine.slice(idx * SENATORS_HEIGHT, (idx + 1) * SENATORS_HEIGHT);
+  }),
+).map((row) =>
+  row.map((d) => ({
+    ...d,
+    yearsInOffice: 118 - new Date(d.date).getYear() + 1,
+    color: d.party === 'Democrat' ? 'blue' : d.party === 'Republican' ? 'red' : 'purple',
+  })),
+);

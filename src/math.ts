@@ -1,3 +1,4 @@
+import {ObjFunc, Vector} from '../types';
 /**
  * Compute the gradient for an objective function
  * Uses a centered finite difference for computation
@@ -7,7 +8,7 @@
  * @param  {Number} stepSize - The size of the gradient step
  * @return {Array of Numbers} - The gradient of objFunc at currentPos
  */
-export function finiteDiference(objFunc, currentPos, stepSize) {
+export function finiteDiference(objFunc: ObjFunc, currentPos: Vector, stepSize: number): Vector {
   return currentPos.map((d, i) => {
     // currentPos[i] += stepSize;
     // const forward = objFunc(currentPos);
@@ -29,8 +30,14 @@ export function finiteDiference(objFunc, currentPos, stepSize) {
  * @param  {Number} stepSize - The size of the gradient step
  * @return {Array of Numbers} - The gradient of objFunc at currentPos
  */
-export function finiteDiferenceForIndices(objFunc, currentPos, stepSize, indices, onlyShowPenalty) {
-  return indices.map(i => {
+export function finiteDiferenceForIndices(
+  objFunc: ObjFunc,
+  currentPos: Vector,
+  stepSize: number,
+  indices: Vector,
+  onlyShowPenalty?: boolean,
+): Vector {
+  return indices.map((i) => {
     // TODO make this faster by not mapping over the whole vector, just change the required item
     // MUTATIONS I GUESS!?!?!?
     // currentPos[i] += stepSize;
@@ -38,13 +45,19 @@ export function finiteDiferenceForIndices(objFunc, currentPos, stepSize, indices
     // currentPos[i] -= 2 * stepSize;
     // const backward = objFunc(currentPos);
     // currentPos[i] += stepSize;
-    const forward = objFunc(currentPos.map((row, idx) => row + (idx === i ? stepSize : 0)), onlyShowPenalty);
-    const backward = objFunc(currentPos.map((row, idx) => row - (idx === i ? stepSize : 0)), onlyShowPenalty);
+    const forward = objFunc(
+      currentPos.map((row, idx) => row + (idx === i ? stepSize : 0)),
+      onlyShowPenalty,
+    );
+    const backward = objFunc(
+      currentPos.map((row, idx) => row - (idx === i ? stepSize : 0)),
+      onlyShowPenalty,
+    );
     return (forward - backward) / (2 * stepSize);
   });
 }
 
-export function dot(a, b) {
+export function dot(a: Vector, b: Vector): number {
   let ret = 0;
   for (let i = 0; i < a.length; ++i) {
     ret += a[i] * b[i];
@@ -52,6 +65,6 @@ export function dot(a, b) {
   return ret;
 }
 
-export function norm2(a) {
+export function norm2(a: Vector): number {
   return Math.sqrt(dot(a, a));
 }

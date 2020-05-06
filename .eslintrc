@@ -1,23 +1,43 @@
 {
-  "env": {
-    "es6": true,
-    "browser": true
-  },
   "extends": [
-    "uber-es2015",
-    "uber-jsx"
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:@typescript-eslint/recommended",
+    "prettier/@typescript-eslint",
+    "plugin:prettier/recommended"
   ],
-  "rules": {
-    "consistent-return": 0,
-    "max-len": [1, 110, 4],
-    "max-params": ["error", 6],
-    "object-curly-spacing": 0,
-    "babel/object-curly-spacing": 2,
-    "comma-dangle": 0
-  },
-  "parser": "babel-eslint",
   "plugins": [
     "react",
-    "babel"
-  ]
+    "@typescript-eslint",
+    "prettier",
+    "react-hooks"
+  ],
+  "env": {
+    "browser": true,
+    "jasmine": true,
+    "jest": true,
+    "es6": true
+  },
+  "rules": {
+    "prettier/prettier": [
+      "error",
+      {
+        "singleQuote": true
+      }
+    ],
+    "@typescript-eslint/no-explicit-any": 0,
+    "@typescript-eslint/camelcase": 0,
+    "@typescript-eslint/ban-ts-ignore": 0,
+    "no-case-declarations": 0,
+    "react/prop-types": 0,
+    "no-console": 2,
+    "@typescript-eslint/no-empty-function": 0
+  },
+  "settings": {
+    "react": {
+      "pragma": "React",
+      "version": "detect"
+    }
+  },
+  "parser": "@typescript-eslint/parser"
 }
