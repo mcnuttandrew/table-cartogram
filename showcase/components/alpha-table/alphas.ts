@@ -1,20 +1,27 @@
 import {transposeMatrix} from '../../../src/utils';
 
-const getLast = (list) => list[list.length - 1];
+const getLast = (list: any[]): any => list[list.length - 1];
+type Table = any[][];
+interface Config {
+  accessor: (x: any) => number;
+  setter: (table: Table, y: number, x: number, newVal: number) => Table;
+}
+type Transform = (table: Table, config?: Config) => Table;
+type TransformConfig = (config: any) => any;
 
 const swapFromIdx = 1;
 // for elements
 const swapToIdx = 2;
 // for everyone else
 // const swapToIdx = 3;
-const swapRows = (table) => {
+const swapRows = (table: Table): Table => {
   const temp = table[swapFromIdx];
   table[swapFromIdx] = table[swapToIdx];
   table[swapToIdx] = temp;
   return table;
 };
 
-const swapLabel = (labels) => {
+const swapLabel = (labels: string[]): string[] => {
   const copy = labels.slice();
   const temp = copy[swapFromIdx];
   copy[swapFromIdx] = copy[swapToIdx];
@@ -22,7 +29,7 @@ const swapLabel = (labels) => {
   return copy;
 };
 
-const computeDomain = (table, config) =>
+const computeDomain = (table: Table, config: Config): {min: number; max: number} =>
   table.reduce(
     (acc, row) => {
       row.forEach((d) => {
@@ -36,9 +43,9 @@ const computeDomain = (table, config) =>
 
 // sourced from
 // http://indiegamr.com/generate-repeatable-random-numbers-in-js/
-export function generateSeededRandom(baseSeed = 10) {
+export function generateSeededRandom(baseSeed = 10): (max?: number, min?: number) => number {
   let seed = baseSeed;
-  return function seededRandom(max, min) {
+  return function seededRandom(max, min): number {
     max = max || 1;
     min = min || 0;
 
@@ -50,13 +57,15 @@ export function generateSeededRandom(baseSeed = 10) {
 }
 const seededRandom = generateSeededRandom(2);
 
-const generateOrderList = (table, config) =>
+const generateOrderList = (table: Table, config: Config): Table =>
   table
     .reduce((acc, row, y) => acc.concat(row.map((d, x) => ({cell: d, coords: {y, x}}))), [])
     .sort((a, b) => config.accessor(a.cell) - config.accessor(b.cell));
 
-const identity = (d) => d;
+const identity = (d: any): any => d;
 class Alpha {
+  transform: Transform;
+  transformConfig: TransformConfig;
   constructor(transform = identity, transformConfig = identity) {
     this.transform = transform;
     this.transformConfig = transformConfig;
@@ -65,7 +74,7 @@ class Alpha {
 
 const buildIdentity = () => new Alpha();
 const buildTranspose = () => {
-  const transformConfig = (config) => ({
+  const transformConfig = (config: any) => ({
     ...config,
     xLabels: config.yLabels,
     yLabels: config.xLabels,
@@ -74,7 +83,7 @@ const buildTranspose = () => {
 };
 
 const buildRandomlyVaryCells = () => {
-  const transform = (table, config) => {
+  const transform: Transform = (table, config) => {
     const {min, max} = computeDomain(table, config);
     const range = max - min;
     table.forEach((row, y) =>
@@ -94,57 +103,58 @@ const buildRandomlyVaryCells = () => {
   };
   return new Alpha(transform);
 };
-const buildSmallChange = () => {
-  const transform = (table, {setter, accessor}) => setter(table, 1, 1, accessor(table[1][1]) * 1.1);
+const buildSmallChange = (): Alpha => {
+  const transform: Transform = (table, {setter, accessor}) =>
+    setter(table, 1, 1, accessor(table[1][1]) * 1.1);
   return new Alpha(transform);
 };
-const buildBigChange = () => {
+const buildBigChange = (): Alpha => {
   // version for all but elements
   // const transform = (table, {setter, accessor}) =>
   //   setter(table, 3, 1, accessor(table[3][1]) * 2);
   // version for elements
-  const transform = (table, {setter, accessor}) => setter(table, 2, 1, accessor(table[2][1]) * 2);
+  const transform: Transform = (table, {setter, accessor}) => setter(table, 2, 1, accessor(table[2][1]) * 2);
   return new Alpha(transform);
 };
-const buildReverseRow = () => {
-  const transformConfig = (config) => ({
+const buildReverseRow = (): Alpha => {
+  const transformConfig = (config: any) => ({
     ...config,
     xLabels: config.xLabels ? config.xLabels.slice().reverse() : config.xLabels,
   });
-  const transform = (table, config) => {
+  const transform: Transform = (table, config) => {
     table[2].reverse();
     return table;
   };
   return new Alpha(transform, transformConfig);
 };
 
-const buildSwapColumns = () => {
-  const transformConfig = (config) => ({
+const buildSwapColumns = (): Alpha => {
+  const transformConfig = (config: any) => ({
     ...config,
     xLabels: config.xLabels ? swapLabel(config.xLabels) : config.xLabels,
   });
-  const transform = (table, config) => transposeMatrix(swapRows(transposeMatrix(table)));
+  const transform: Transform = (table) => transposeMatrix(swapRows(transposeMatrix(table)));
   return new Alpha(transform, transformConfig);
 };
 
-const buildSwapRow = () => {
-  const transformConfig = (config) => ({
+const buildSwapRow = (): Alpha => {
+  const transformConfig = (config: any) => ({
     ...config,
     yLabels: config.yLabels ? swapLabel(config.yLabels) : config.yLabels,
   });
   return new Alpha(swapRows, transformConfig);
 };
 
-const buildRescale = () => {
-  const transform = (table, {setter, accessor}) => {
+const buildRescale = (): Alpha => {
+  const transform: Transform = (table, {setter, accessor}) => {
     table.forEach((row, y) => row.forEach((d, x) => setter(table, y, x, 100 * accessor(d))));
     return table;
   };
   return new Alpha(transform);
 };
 
-const buildChangelAllInColumnButOne = () => {
-  const transform = (table, {setter, accessor}) => {
+const buildChangelAllInColumnButOne = (): Alpha => {
+  const transform: Transform = (table, {setter, accessor}) => {
     const column = table[0].length - 2;
     table.forEach((row, y) => {
       if (y === column) {
@@ -157,18 +167,19 @@ const buildChangelAllInColumnButOne = () => {
   return new Alpha(transform);
 };
 
-const buildReciprocal = () => {
-  const transform = (table, {setter, accessor}) => {
+const buildReciprocal = (): Alpha => {
+  const transform: Transform = (table, {setter, accessor}) => {
     table.forEach((row, y) => row.forEach((d, x) => setter(table, y, x, 1 / accessor(d))));
     return table;
   };
   return new Alpha(transform);
 };
 
-const buildSwapMinMax = () => {
-  const transform = (table, config) => {
+const buildSwapMinMax = (): Alpha => {
+  const transform: Transform = (table, config) => {
     const orderedValues = generateOrderList(table, config);
     const maxCoords = getLast(orderedValues).coords;
+    // @ts-ignore
     const minCoords = orderedValues[0].coords;
     const temp = table[maxCoords.y][maxCoords.x];
     table[maxCoords.y][maxCoords.x] = table[minCoords.y][minCoords.x];
@@ -178,13 +189,14 @@ const buildSwapMinMax = () => {
   return new Alpha(transform);
 };
 
-const buildSetMaxToAverage = () => {
-  const transform = (table, config) => {
+const buildSetMaxToAverage = (): Alpha => {
+  const transform: Transform = (table, config) => {
     const {accessor, setter} = config;
     // not really the most efficent way to get just that one value, but whatever
     const orderedValues = generateOrderList(table, config);
     const maxCell = getLast(orderedValues);
     const maxCoords = maxCell.coords;
+    // @ts-ignore
     const sum = orderedValues.reduce((acc, cell) => acc + accessor(cell.cell), 0);
     setter(table, maxCoords.y, maxCoords.x, sum / (table.length * table[0].length));
     return table;
@@ -206,4 +218,4 @@ export default {
   RECIPROCAL: buildReciprocal(),
   SWAP_MIN_MAX: buildSwapMinMax(),
   SET_MAX_TO_AVERAGE: buildSetMaxToAverage(),
-};
+} as {[x: string]: Alpha};

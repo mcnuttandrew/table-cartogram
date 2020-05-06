@@ -1,17 +1,17 @@
 import StateMigration from './state-to-state.json';
 import REGIONS from './us-regions-2.json';
 export const originalMigrationStuff = StateMigration;
-const StatesNames = StateMigration.map((d) => d.STATE);
+const StatesNames = StateMigration.map((d: any) => d.STATE);
 
-const STATE_TO_REGION = REGIONS.reduce((acc, region) => {
-  region.states.forEach((state) => {
+const STATE_TO_REGION = REGIONS.reduce((acc: any, region: any) => {
+  region.states.forEach((state: any) => {
     acc[state] = region.name;
   });
   return acc;
 }, {} as any);
 
-const REGION_TO_REGION = REGIONS.reduce((acc, fromRegion) => {
-  acc[fromRegion.name] = REGIONS.reduce((mem, toRegion) => {
+const REGION_TO_REGION = REGIONS.reduce((acc: any, fromRegion: any) => {
+  acc[fromRegion.name] = REGIONS.reduce((mem: any, toRegion: any) => {
     mem[toRegion.name] = 0;
     return mem;
   }, {} as any);
@@ -23,7 +23,7 @@ export const stateMigration = StateMigration.reverse().map((row: any) =>
 );
 StateMigration.forEach((fromState: any) => {
   const stateName = fromState.STATE;
-  StatesNames.forEach((toState) => {
+  StatesNames.forEach((toState: any) => {
     const fromRegion = STATE_TO_REGION[stateName];
     const toRegion = STATE_TO_REGION[toState];
     // eslint-disable-next-line no-useless-escape

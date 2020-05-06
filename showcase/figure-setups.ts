@@ -5,81 +5,81 @@ import {interpolateRdBu, interpolateGreens} from 'd3-scale-chromatic';
 import {transposeMatrix} from '../src/utils';
 import {FigureConfig, ComputeMode} from '../types';
 
-// export function unemploymentStreamgram() {
-//   const data = require('../examples/large-examples/unemployment');
-//   const rows = Object.keys(data[0]).filter((d) => d !== 'date');
-//   const processedData = rows.map((key, idx) => {
-//     return data.map((row) => {
-//       return {
-//         value: Number(row[key]),
-//         key,
-//         color: RV_COLORS[idx % RV_COLORS.length],
-//         year: row.date.slice(0, 4),
-//       };
-//     });
-//   });
-//   return {
-//     data: processedData,
-//     stepSize: 10,
-//     computeMode: 'iterative',
-//     accessor: (d) => {
-//       // console.log(d)
-//       return Number(d.value);
-//     },
-//     defaultColor: 'byDataColor',
-//     layout: 'psuedoCartogramLayout',
-//     dims: {
-//       height: 1,
-//       width: 1,
-//     },
-//     xLabels: data.map(({date}) => (date.endsWith('-01-01') ? date.split('-01-01')[0] : '')),
-//     yLabels: rows,
-//     showAxisLabels: true,
-//     getLabel: (d) => d.data.printVal,
-//     computeAnnotationBoxBy: (d) => d.data.year,
-//     optimizationParams: {
-//       // stepSize: 0.005,
-//       useAnalytic: true,
-//       nonDeterministic: false,
-//       useGreedy: false,
-//       // overlapPenalty: 20
-//     },
-//   };
-// }
-// /**
-//  * Generates a pair of versions of the element example
-//  * One normal, and one transpose
-//  */
-// export function createElementTableWithTranspose() {
-//   const {ELELMENTS_DENSITY} = require('../examples/large-examples/element-examples');
-//   const data = ELELMENTS_DENSITY.map((row, idx) =>
-//     row.map((d, jdx) => ({
-//       ...d,
-//       color: RV_COLORS[(idx * row.length + jdx) % RV_COLORS.length],
-//     })),
-//   );
+export function unemploymentStreamgram() {
+  const data = require('../examples/large-examples/unemployment.json');
+  const rows = Object.keys(data[0]).filter((d) => d !== 'date');
+  const processedData = rows.map((key, idx) => {
+    return data.map((row: any) => {
+      return {
+        value: Number(row[key]),
+        key,
+        color: RV_COLORS[idx % RV_COLORS.length],
+        year: row.date.slice(0, 4),
+      };
+    });
+  });
+  return {
+    data: processedData,
+    stepSize: 10,
+    computeMode: 'iterative',
+    accessor: (d: any) => {
+      // console.log(d)
+      return Number(d.value);
+    },
+    defaultColor: 'byDataColor',
+    layout: 'psuedoCartogramLayout',
+    dims: {
+      height: 1,
+      width: 1,
+    },
+    xLabels: data.map(({date}: any) => (date.endsWith('-01-01') ? date.split('-01-01')[0] : '')),
+    yLabels: rows,
+    showAxisLabels: true,
+    getLabel: (d: any) => d.data.printVal,
+    computeAnnotationBoxBy: (d: any) => d.data.year,
+    optimizationParams: {
+      // stepSize: 0.005,
+      useAnalytic: true,
+      nonDeterministic: false,
+      useGreedy: false,
+      // overlapPenalty: 20
+    },
+  };
+}
+/**
+ * Generates a pair of versions of the element example
+ * One normal, and one transpose
+ */
+export function createElementTableWithTranspose() {
+  const {ELELMENTS_DENSITY} = require('../examples/large-examples/element-examples');
+  const data = ELELMENTS_DENSITY.map((row: any, idx: number) =>
+    row.map((d: any, jdx: number) => ({
+      ...d,
+      color: RV_COLORS[(idx * row.length + jdx) % RV_COLORS.length],
+    })),
+  );
 
-//   const regularDims = {height: 0.5, width: 1};
-//   const transposeDims = {height: 1, width: 0.5};
-//   const basicSetup = {
-//     stepSize: 10,
-//     computeMode: 'iterative',
-//     accessor: (cell) => cell.value,
-//     getLabel: (cell) => cell.data.symbol,
-//     showAxisLabels: false,
-//     dims: {
-//       height: 0.5,
-//       width: 1,
-//     },
-//     defaultColor: 'byDataColor',
-//     showLabelsByDefault: true,
-//   };
+  const regularDims = {height: 0.5, width: 1};
+  const transposeDims = {height: 1, width: 0.5};
+  const basicSetup = {
+    stepSize: 10,
+    computeMode: 'iterative',
+    accessor: (cell: any) => cell.value,
+    getLabel: (cell: any) => cell.data.symbol,
+    showAxisLabels: false,
+    dims: {
+      height: 0.5,
+      width: 1,
+    },
+    defaultColor: 'byDataColor',
+    showLabelsByDefault: true,
+  };
 
-//   return [
-//     {...basicSetup, data: transposeMatrix(data), dims: transposeDims},
-//     {...basicSetup, data, dims: regularDims},
-//   ];
-// }
+  return [
+    {...basicSetup, data: transposeMatrix(data), dims: transposeDims},
+    {...basicSetup, data, dims: regularDims},
+  ];
+}
 
 /**
  * Creates all of the elemental examples
@@ -124,32 +124,32 @@ export function buildSenateExample(): FigureConfig {
   };
 }
 
-// export function zionFigure(): FigureConfig {
-//   const zionDomain = require('../examples/large-examples/zion-slice').ZION_VISITORS_WITH_ANNOTATION_DOMAIN;
-//   return {
-//     data: require('../examples/large-examples/zion-slice').ZION_VISITORS_WITH_ANNOTATION.map((row) => {
-//       return row.map((d) => ({
-//         ...d,
-//         color: interpolateRdBu(1 - (d.value - zionDomain.min) / (zionDomain.max - zionDomain.min)),
-//         value: d.value,
-//         printVal: `${Math.floor(d.value / 1000)}k`,
-//       }));
-//     }),
-//     stepSize: 10,
-//     computeMode: 'iterative',
-//     accessor: (d) => Number(d.value),
-//     defaultColor: 'byDataColor',
-//     layout: 'psuedoCartogramLayout',
-//     dims: {
-//       height: 1,
-//       width: 1,
-//     },
-//     xLabels: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
-//     yLabels: [...new Array(10)].map((_, idx) => `${2016 - idx}`),
-//     showAxisLabels: true,
-//     getLabel: (d) => d.data.printVal,
-//   };
-// }
+export function zionFigure(): FigureConfig {
+  const zionDomain = require('../examples/large-examples/zion-slice').ZION_VISITORS_WITH_ANNOTATION_DOMAIN;
+  return {
+    data: require('../examples/large-examples/zion-slice').ZION_VISITORS_WITH_ANNOTATION.map((row: any) => {
+      return row.map((d: any) => ({
+        ...d,
+        color: interpolateRdBu(1 - (d.value - zionDomain.min) / (zionDomain.max - zionDomain.min)),
+        value: d.value,
+        printVal: `${Math.floor(d.value / 1000)}k`,
+      }));
+    }),
+    stepSize: 10,
+    computeMode: 'iterative',
+    accessor: (d) => Number(d.value),
+    defaultColor: 'byDataColor',
+    layout: 'psuedoCartogramLayout',
+    dims: {
+      height: 1,
+      width: 1,
+    },
+    xLabels: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
+    yLabels: [...new Array(10)].map((_, idx) => `${2016 - idx}`),
+    showAxisLabels: true,
+    getLabel: (d) => d.data.printVal,
+  };
+}
 
 export function chicagoArrests(): FigureConfig {
   return {

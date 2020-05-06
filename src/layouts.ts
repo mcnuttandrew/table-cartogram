@@ -109,6 +109,6 @@ export function generateInitialTable(
     },
     {bestIndex: -1, bestScore: layout === 'pickWorst' ? -Infinity : Infinity},
   );
-  log([layout, Object.keys(layouts)[measurements.bestIndex]]);
+  console.log([layout, Object.keys(layouts)[measurements.bestIndex]]);
   return scaleLayoutsToDims(constructedLayouts[measurements.bestIndex], dims);
 }

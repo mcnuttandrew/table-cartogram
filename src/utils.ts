@@ -329,7 +329,7 @@ export function trace(mat: number[][]): number {
 // export function log(content:) {
 //   console.log(...content);
 // }
-export const log = console.log;
+export const log = (x: any) => console.log(x);
 export const error = console.error;
 // export function error(content) {
 //   console.error(...content);

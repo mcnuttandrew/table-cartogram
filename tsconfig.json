@@ -20,6 +20,7 @@
       "test/**/*",
       "index.ts",
       "untyped/index.d.ts",
+      "examples/**/*"
     ],
     "exclude": [
       "showcase/node_modules/**/*",

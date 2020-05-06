@@ -1,3 +1,4 @@
+import {ComputeMode, OptimizationParams, Dimensions, LayoutType, DataTable} from '../../../types';
 import EXAMPLES from '../../../examples/examples';
 import {ELELMENTS_DENSITY} from '../../../examples/large-examples/element-examples';
 import {ZION_VISITORS_WITH_ANNOTATION} from '../../../examples/large-examples/zion-slice';
@@ -10,9 +11,9 @@ import {hexOver} from 'hex-over';
 
 // sourced from
 // http://indiegamr.com/generate-repeatable-random-numbers-in-js/
-export function generateSeededRandom(baseSeed = 10) {
+export function generateSeededRandom(baseSeed = 10): (max: number, min: number) => number {
   let seed = baseSeed;
-  return function seededRandom(max, min) {
+  return function seededRandom(max: number, min: number): number {
     max = max || 1;
     min = min || 0;
 
@@ -23,7 +24,7 @@ export function generateSeededRandom(baseSeed = 10) {
   };
 }
 
-function addConsistantColors(table) {
+function addConsistantColors(table: any[][]): any[][] {
   return table.map((row, jdx) =>
     row.map((d, idx) => ({
       ...d,
@@ -32,7 +33,7 @@ function addConsistantColors(table) {
   );
 }
 
-function addSpecialColors(table) {
+function addSpecialColors(table: any[][]): any[][] {
   const opacities = [1, 0.6, 0.3].reverse();
   return table.map((row, jdx) =>
     row.map((d, idx) => ({
@@ -43,7 +44,31 @@ function addSpecialColors(table) {
   );
 }
 
-export const dataSets = {
+interface DataSet {
+  data: any[][];
+  config: {
+    data?: any;
+    stepSize?: number;
+    computeMode?: ComputeMode;
+    iterations?: number;
+    getLabel?: (x: any) => string;
+    layout?: LayoutType;
+    showAxisLabels?: boolean;
+    dims?: Dimensions;
+    showLabelsByDefault?: boolean;
+    defaultColor?: string;
+    xLabels?: (string | number)[];
+    yLabels?: (string | number)[];
+    showBorder?: boolean;
+    computeAnnotationBoxBy?: (d: any) => any;
+    optimizationParams?: OptimizationParams;
+
+    accessor: (d: any) => number;
+    setter: (table: any[][], y: number, x: number, d: number) => DataTable;
+  };
+}
+
+export const dataSets: {[x: string]: DataSet} = {
   REGION_TO_REGION: {
     data: MIGRATION_REGION_TO_REGION,
     config: {
@@ -147,11 +172,11 @@ export const dataSets = {
         table[y][x].value = d;
         return table;
       },
-      defaultColor: 'valueHeatRedWhiteBlue',
+      defaultColor: 'valueHeatBlueGreens',
       xLabels: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
       yLabels: [...new Array(10)].map((_, idx) => `${2016 - idx}`),
       showAxisLabels: true,
-      layout: 'gridLayout',
+      layout: 'pickBest',
       optimizationParams: {
         stepSize: 0.005,
         // useAnalytic: true

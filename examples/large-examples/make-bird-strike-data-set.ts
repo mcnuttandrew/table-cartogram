@@ -2,7 +2,7 @@
 // import BirdStrikes from './bird-strikes.json';
 import REGIONS from './us-regions.json';
 
-const STATE_MAP = {
+const STATE_MAP: any = {
   Alabama: 'AL',
   Alaska: 'AK',
   Arizona: 'AZ',
@@ -74,19 +74,19 @@ const STATE_MAP = {
   Yukon: 'YT',
 };
 
-const INV_STATE_MAP = Object.entries(STATE_MAP).reduce((acc, row) => {
+const INV_STATE_MAP: any = Object.entries(STATE_MAP).reduce((acc: any, row: [string, string]) => {
   acc[row[1]] = row[0];
   return acc;
-}, {});
+}, {} as any);
 
-const STATE_TO_REGION = REGIONS.reduce((acc, region) => {
-  region.states.forEach((state) => {
+const STATE_TO_REGION: any = REGIONS.reduce((acc: any, region: any) => {
+  region.states.forEach((state: any) => {
     acc[state] = region.name;
   });
   return acc;
 }, {});
 
-const strikeCounts = [
+const strikeCounts: any = [
   [17913, 'TX'],
   [15546, 'CA'],
   [13148, 'FL'],
@@ -150,8 +150,8 @@ const strikeCounts = [
   [6, 'SK'],
   [5, 'NS'],
 ];
-const OTHER = {};
-const REGION_STRIKES = strikeCounts.reduce((acc, row) => {
+const OTHER: any = {};
+const REGION_STRIKES = strikeCounts.reduce((acc: any, row: any) => {
   const strikeRegion = STATE_TO_REGION[INV_STATE_MAP[row[1]]];
   if (!strikeRegion || row[1] === 'N/A') {
     // console.log(row['Origin State'])
@@ -163,7 +163,7 @@ const REGION_STRIKES = strikeCounts.reduce((acc, row) => {
   }
   acc[strikeRegion] += row[0];
   return acc;
-}, {});
+}, {} as any);
 
 /* eslint-disable */
 console.log(JSON.stringify(OTHER, null, 2));

@@ -5,6 +5,7 @@ import {
   interpolateGreens,
   interpolateRdBu,
   interpolateViridis,
+  interpolateYlGnBu,
 } from 'd3-scale-chromatic';
 import {hexOver} from 'hex-over';
 import {color} from 'd3-color';
@@ -58,6 +59,9 @@ export const COLOR_MODES: {[x: string]: ColorMode} = {
     interpolateReds(1 - Math.sqrt(1 - (cell.value - min) / (max - min))),
   valueHeatGreens: (cell, index, {min, max}) => {
     return interpolateGreens(1 - Math.sqrt(1 - (cell.value - min) / (max - min)));
+  },
+  valueHeatBlueGreens: (cell, index, {min, max}) => {
+    return interpolateYlGnBu(1 - Math.sqrt(1 - (cell.value - min) / (max - min)));
   },
   confusiongramHardCode: (cell) => {
     const [min, max] = [0, 13];

@@ -3,29 +3,30 @@ import IterativeDisplay from './iterative-display';
 import dataSets from './alpha-table/prepared-datasets';
 import alphas from './alpha-table/alphas';
 
-const makeLocalCopy = (table) => table.map((row) => row.map((d) => (typeof d === 'number' ? d : {...d})));
+const makeLocalCopy = (table: any[]) =>
+  table.map((row) => row.map((d: any) => (typeof d === 'number' ? d : {...d})));
 
 const ALL_ALPHAS = [
-  // 'IDENTITY',
+  'IDENTITY',
   // 'TRANSPOSE',
-  'RANDOMLY_VARY_ALL_CELLS',
+  // 'RANDOMLY_VARY_ALL_CELLS',
   // 'SMALL_CHANGE',
   // 'BIG_CHANGE',
   // 'REVERSE_ROW',
   // 'SWAP_ROWS',
   // 'SWAP_COLUMNS',
   // 'RESCALE',
-  'SWAP_MIN_MAX',
+  // 'SWAP_MIN_MAX',
   // 'SET_MAX_TO_AVERAGE',
   'RECIPROCAL',
 ].reduce(
   (acc, alpha) =>
     acc.concat(
       [
-        // 'ZION',
+        'ZION',
         // 'USA',
         // 'BLACK_AND_WHITE',
-        'REGION_TO_REGION',
+        // 'REGION_TO_REGION',
         // 'REGION_TO_REGION_FLATS'
         // 'ELELMENTS'
       ].map((dataset) => ({alpha, dataset: dataSets[dataset]})),
@@ -51,16 +52,22 @@ const SUBSET_ALPHAS = [
 
   /* eslint-enable comma-dangle */
 ];
+export interface TableType {
+  name: any;
+  config: any;
+  data: any[];
+}
+const TABLES: TableType[] = ALL_ALPHAS.map(({alpha, dataset}) => ({
+  alpha: alphas[alpha],
+  dataset,
+  name: alpha,
+})).map(({alpha, dataset, name}) => ({
+  name,
+  config: alpha.transformConfig(dataset.config || {}),
+  data: makeLocalCopy(alpha.transform(makeLocalCopy(dataset.data), dataset.config)),
+}));
 
-const TABLES = ALL_ALPHAS.map(({alpha, dataset}) => ({alpha: alphas[alpha], dataset, name: alpha})).map(
-  ({alpha, dataset, name}) => ({
-    name,
-    config: alpha.transformConfig(dataset.config || {}),
-    data: makeLocalCopy(alpha.transform(makeLocalCopy(dataset.data), dataset.config)),
-  }),
-);
-
-export default function AlphaTableBuilder(props) {
+export default function AlphaTableBuilder(): JSX.Element {
   return (
     <div>
       {TABLES.map(({name, data, config}, idx) => {
@@ -79,7 +86,7 @@ export default function AlphaTableBuilder(props) {
           stepSize: 5,
           defaultColor: 'periodicColors',
           showLabelsByDefault: true,
-          getLabel: (d) => d.value,
+          getLabel: (d: any) => d.value,
           ...config,
         };
         return (

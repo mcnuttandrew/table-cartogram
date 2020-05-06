@@ -1,10 +1,10 @@
 import ReactDOM from 'react-dom';
 import React from 'react';
 
-// import AlphaTableBuilder from './components/alpha-table-builder';
+import AlphaTableBuilder from './components/alpha-table-builder';
 // import EXAMPLES from '../examples/examples';
-import IterativeDisplay from './components/iterative-display';
-// import Legend from './components/legend';
+// import IterativeDisplay from './components/iterative-display';
+import Legend from './components/legend';
 // import CalendarDisplay from './components/calendar-example';
 // import HourCalendar from './components/hour-calendar';
 // import CartogramPlot from './components/table-cartogram';
@@ -95,19 +95,21 @@ function App(): JSX.Element {
     // ...AlongTheLakeExampleMargins()
     // dndAlignments()
     // buildSenateExample()
-  ].map((config, idx) => (
+  ].map(
+    (config, idx) => 0,
     // @ts-ignore
-    <IterativeDisplay iterations={0} layout={'gridLayout'} {...config} key={`table-${idx}`} />
-  ));
+    // <IterativeDisplay iterations={0} layout={'gridLayout'} {...config} key={`table-${idx}`} />
+  );
   return (
     <div>
       <h1>TABLE CARTOGRAM SHOWCASE</h1>
       <div>
-        <div style={{display: 'flex', flexWrap: 'wrap'}}>{tables}</div>
+        {/* <div style={{display: 'flex', flexWrap: 'wrap'}}>{tables}</div> */}
         {
           // <HourCalendar celius={true} data={require('../examples/large-examples/ohare-temp-data.json')}/>
         }
-        {/* {<Legend />} */}
+        {<Legend />}
+        {<AlphaTableBuilder />}
       </div>
     </div>
   );

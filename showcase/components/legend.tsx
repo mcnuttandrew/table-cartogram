@@ -4,12 +4,13 @@ import React from 'react';
 import {COLOR_MODES} from '../colors';
 
 class ContinuousLegend extends React.Component {
-  componentDidMount() {
+  componentDidMount(): void {
     // eslint-disable-next-line react/no-string-refs
     const canvas = this.refs.ctx;
+    // @ts-ignore
     const ctx = canvas.getContext('2d');
     // const colorScale = scaleChromatic[this.props.d3ColorScale];
-    const colorScale = COLOR_MODES.valueHeatGreens;
+    const colorScale = COLOR_MODES.valueHeatBlueGreens;
     const steps = 600;
     for (let i = 0; i <= steps; i++) {
       ctx.beginPath();
@@ -29,7 +30,7 @@ class ContinuousLegend extends React.Component {
     }
   }
 
-  render() {
+  render(): JSX.Element {
     return (
       <canvas
         ref="ctx"
@@ -41,9 +42,5 @@ class ContinuousLegend extends React.Component {
     );
   }
 }
-
-ContinuousLegend.defaultProps = {
-  d3ColorScale: 'interpolateRdBu',
-};
 
 export default ContinuousLegend;
