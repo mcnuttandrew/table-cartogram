@@ -12,7 +12,8 @@
     "max-len": [1, 110, 4],
     "max-params": ["error", 6],
     "object-curly-spacing": 0,
-    "babel/object-curly-spacing": 2
+    "babel/object-curly-spacing": 2,
+    "comma-dangle": 0
   },
   "parser": "babel-eslint",
   "plugins": [

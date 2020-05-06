@@ -18,8 +18,7 @@ const REGION_TO_REGION = REGIONS.reduce((acc, fromRegion) => {
   return acc;
 }, {});
 
-export const stateMigration = StateMigration.reverse()
-  .map(row => StatesNames.map(state => row[state]));
+export const stateMigration = StateMigration.reverse().map(row => StatesNames.map(state => row[state]));
 StateMigration.forEach(fromState => {
   const stateName = fromState.STATE;
   StatesNames.forEach(toState => {
@@ -42,17 +41,30 @@ const NICKNAMES = {
 };
 
 export const namedRegions = [
-  'South',
-  'West',
-  'Northeast',
+  // 1
+  // 'South',
+  // 'West',
+  // 'Northeast',
+  // 'Midwest',
+  // // 'US Islands',
+
+  // 2
   'Midwest',
-  // 'US Islands'
+  'Northeast',
+  'West',
+  'South',
+
+  // 3
+  // 'Midwest',
+  // 'West',
+  // 'South',
+  // 'Northeast',
 ];
 // export const namedRegions = Object.keys(NICKNAMES);
 export const REGION_NET = REGION_TO_REGION;
 export const MIGRATION_REGION_TO_REGION = namedRegions.map(fromRegion => {
   return namedRegions.map(toRegion => ({
     value: REGION_TO_REGION[fromRegion][toRegion],
-    name: `${NICKNAMES[fromRegion]} -> ${NICKNAMES[toRegion]}`
+    name: `${NICKNAMES[fromRegion]} -> ${NICKNAMES[toRegion]}`,
   }));
 });

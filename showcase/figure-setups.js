@@ -1,9 +1,6 @@
 import {RV_COLORS} from './colors';
 import EXAMPLES from '../examples/examples';
-import {
-  interpolateRdBu,
-  interpolateGreens
-} from 'd3-scale-chromatic';
+import {interpolateRdBu, interpolateGreens} from 'd3-scale-chromatic';
 import {transposeMatrix} from '../src/utils';
 
 export function unemploymentStreamgram() {
@@ -14,8 +11,8 @@ export function unemploymentStreamgram() {
       return {
         value: Number(row[key]),
         key,
-        color: RV_COLORS[(idx) % RV_COLORS.length],
-        year: row.date.slice(0, 4)
+        color: RV_COLORS[idx % RV_COLORS.length],
+        year: row.date.slice(0, 4),
       };
     });
   });
@@ -31,9 +28,9 @@ export function unemploymentStreamgram() {
     layout: 'psuedoCartogramLayout',
     dims: {
       height: 1,
-      width: 1
+      width: 1,
     },
-    xLabels: data.map(({date}) => date.endsWith('-01-01') ? date.split('-01-01')[0] : ''),
+    xLabels: data.map(({date}) => (date.endsWith('-01-01') ? date.split('-01-01')[0] : '')),
     yLabels: rows,
     showAxisLabels: true,
     getLabel: d => d.data.printVal,
@@ -44,7 +41,7 @@ export function unemploymentStreamgram() {
       nonDeterministic: false,
       useGreedy: false,
       // overlapPenalty: 20
-    }
+    },
   };
 }
 /**
@@ -53,10 +50,12 @@ export function unemploymentStreamgram() {
  */
 export function createElementTableWithTranspose() {
   const {ELELMENTS_DENSITY} = require('../examples/large-examples/element-examples');
-  const data = ELELMENTS_DENSITY.map((row, idx) => row.map((d, jdx) => ({
-    ...d,
-    color: RV_COLORS[(idx * row.length + jdx) % RV_COLORS.length]
-  })));
+  const data = ELELMENTS_DENSITY.map((row, idx) =>
+    row.map((d, jdx) => ({
+      ...d,
+      color: RV_COLORS[(idx * row.length + jdx) % RV_COLORS.length],
+    })),
+  );
 
   const regularDims = {height: 0.5, width: 1};
   const transposeDims = {height: 1, width: 0.5};
@@ -68,15 +67,15 @@ export function createElementTableWithTranspose() {
     showAxisLabels: false,
     dims: {
       height: 0.5,
-      width: 1
+      width: 1,
     },
     defaultColor: 'byDataColor',
-    showLabelsByDefault: true
+    showLabelsByDefault: true,
   };
 
   return [
     {...basicSetup, data: transposeMatrix(data), dims: transposeDims},
-    {...basicSetup, data, dims: regularDims}
+    {...basicSetup, data, dims: regularDims},
   ];
 }
 
@@ -84,21 +83,20 @@ export function createElementTableWithTranspose() {
  * Creates all of the elemental examples
  */
 export function buildElementExamples() {
-  return require('../examples/large-examples/element-examples')
-    .ELEMENT_TABLES.map(key => {
-      return {
-        data: require('../examples/large-examples/element-examples')[key],
-        stepSize: 10,
-        computeMode: 'iterative',
-        accessor: cell => cell.value,
-        getLabel: cell => cell.data.symbol,
-        showAxisLabels: false,
-        dims: {
-          height: 0.5,
-          width: 1
-        }
-      };
-    });
+  return require('../examples/large-examples/element-examples').ELEMENT_TABLES.map(key => {
+    return {
+      data: require('../examples/large-examples/element-examples')[key],
+      stepSize: 10,
+      computeMode: 'iterative',
+      accessor: cell => cell.value,
+      getLabel: cell => cell.data.symbol,
+      showAxisLabels: false,
+      dims: {
+        height: 0.5,
+        width: 1,
+      },
+    };
+  });
 }
 
 export function buildSenateExample() {
@@ -111,7 +109,7 @@ export function buildSenateExample() {
     dims: {
       // height: 0.5,
       height: 0.75,
-      width: 1
+      width: 1,
     },
     getLabel: cell => {
       const names = cell.data.name.split(' ');
@@ -120,7 +118,7 @@ export function buildSenateExample() {
     // getSubLabel: cell => {
     //   return `${cell.data.yearsInOffice - 1}`;
     // },
-    defaultColor: 'byDataColor'
+    defaultColor: 'byDataColor',
   };
 }
 
@@ -130,9 +128,9 @@ export function zionFigure() {
     data: require('../examples/large-examples/zion-slice').ZION_VISITORS_WITH_ANNOTATION.map(row => {
       return row.map(d => ({
         ...d,
-        color: interpolateRdBu(1 - ((d.value - zionDomain.min) / (zionDomain.max - zionDomain.min))),
+        color: interpolateRdBu(1 - (d.value - zionDomain.min) / (zionDomain.max - zionDomain.min)),
         value: d.value,
-        printVal: `${Math.floor(d.value / 1000)}k`
+        printVal: `${Math.floor(d.value / 1000)}k`,
       }));
     }),
     stepSize: 10,
@@ -142,12 +140,12 @@ export function zionFigure() {
     layout: 'psuedoCartogramLayout',
     dims: {
       height: 1,
-      width: 1
+      width: 1,
     },
     xLabels: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
     yLabels: [...new Array(10)].map((_, idx) => `${2016 - idx}`),
     showAxisLabels: true,
-    getLabel: d => d.data.printVal
+    getLabel: d => d.data.printVal,
   };
 }
 
@@ -170,8 +168,8 @@ export function chicagoArrests() {
       // useAnalytic: true,
       // nonDeterministic: true,
       useGreedy: false,
-      overlapPenalty: 20
-    }
+      overlapPenalty: 20,
+    },
   };
 }
 
@@ -183,9 +181,9 @@ export function birdStrikes() {
     accessor: d => d.size,
     dims: {
       height: 0.3,
-      width: 1
+      width: 1,
     },
-    computeAnnotationBoxBy: d => d.data.name
+    computeAnnotationBoxBy: d => d.data.name,
   };
 }
 
@@ -201,12 +199,12 @@ export function gdpVsCountry() {
     accessor: d => d.GDP / d.pop,
     dims: {
       height: 0.5,
-      width: 2
+      width: 2,
     },
     optimizationParams: {
       useAnalytic: true,
-      nonDeterministic: true
-    }
+      nonDeterministic: true,
+    },
   };
 }
 
@@ -219,8 +217,8 @@ export function usaWithLabels() {
     getLabel: d => d.data[0],
     dims: {
       height: 0.75,
-      width: 1
-    }
+      width: 1,
+    },
   };
 }
 
@@ -236,14 +234,14 @@ export function dndAlignments() {
     getLabel: d => `${d.data.percent}%`,
     dims: {
       height: 0.26,
-      width: 1
-    }
+      width: 1,
+    },
   };
 }
 
 export function systemsTiming() {
   return {
-    data: EXAMPLES.SYSTEMS_TIMING.map(row => row.filter((d, i) => (i % 2))),
+    data: EXAMPLES.SYSTEMS_TIMING.map(row => row.filter((d, i) => i % 2)),
     stepSize: 5,
     computeMode: 'iterative',
     accessor: d => 166 / d.val,
@@ -252,12 +250,12 @@ export function systemsTiming() {
     xLabels: ['Plaid', 'Tensorflow'],
     yLabels: ['GOOG CPU', 'GOOG GPU', 'SCHOOL CPU', 'GOOG CPU', 'GOOG GPU', 'SCHOOL CPU'],
     showAxisLabels: true,
-    getLabel: d => `${Math.floor(166 / d.data.val * 1000) / 1000}`,
+    getLabel: d => `${Math.floor((166 / d.data.val) * 1000) / 1000}`,
     // getLabel: d => `${Math.floor(d.data.val / (152 * 10) * 1000) / 1000}`,
     dims: {
       height: 1,
-      width: 1
-    }
+      width: 1,
+    },
   };
 }
 
@@ -278,9 +276,9 @@ export function ahnbSurveyResults() {
     // getLabel: d => `${Math.floor(d.data.val / (152 * 10) * 1000) / 1000}`,
     dims: {
       height: 1,
-      width: 3
+      width: 3,
     },
-    showBorder: false
+    showBorder: false,
   };
 }
 
@@ -298,16 +296,16 @@ export function confusiongram() {
     // getLabel: d => `${Math.floor(d.data.val / (152 * 10) * 1000) / 1000}`,
     dims: {
       height: 1,
-      width: 1
+      width: 1,
     },
     showLabelsByDefault: true,
     defaultColor: 'confusiongramHardCode',
-    showBorder: false
+    showBorder: false,
   };
   return [
     {...common, data: EXAMPLES.WIKI_CONFUSION_GRAM_PERFECT_CLASSIFIER},
     {...common, data: EXAMPLES.WIKI_CONFUSION_GRAM_OK_CLASSIFIER},
-    {...common, data: EXAMPLES.WIKI_CONFUSION_GRAM_BAD_CLASSIFIER}
+    {...common, data: EXAMPLES.WIKI_CONFUSION_GRAM_BAD_CLASSIFIER},
   ];
 }
 
@@ -315,31 +313,35 @@ export function stateToStateFullNetwork() {
   // sort by row weight
   // all states
   const data = require('../examples/large-examples/state-migration-network').originalMigrationStuff;
-  const sortOrder = data.map(row => {
-    return {
-      state: row['State of residence'],
-      sum: Object.values(row).reduce((acc, v) => (typeof v === 'number' ? v : 0) + acc, 0)
-      // sum: row.
-    };
-  }).sort((a, b) => a.sum - b.sum);
+  const sortOrder = data
+    .map(row => {
+      return {
+        state: row['State of residence'],
+        sum: Object.values(row).reduce((acc, v) => (typeof v === 'number' ? v : 0) + acc, 0),
+        // sum: row.
+      };
+    })
+    .sort((a, b) => a.sum - b.sum);
   const sortMap = sortOrder.reduce((acc, {state}, idx) => {
     acc[state] = idx;
     return acc;
   }, {});
-  const finalData = data.sort((a, b) => sortMap[a.state] - sortMap[b.state]).map(row => {
-    return Object.entries(row)
-      .filter(d => d[0] !== 'State of residence')
-      .sort((a, b) => sortMap[a[0]] - sortMap[b[0]])
-      .map(d => d[1]);
-  });
+  const finalData = data
+    .sort((a, b) => sortMap[a.state] - sortMap[b.state])
+    .map(row => {
+      return Object.entries(row)
+        .filter(d => d[0] !== 'State of residence')
+        .sort((a, b) => sortMap[a[0]] - sortMap[b[0]])
+        .map(d => d[1]);
+    });
   return {
     data: finalData.map(row => row.map(d => d + 1)),
     stepSize: 5,
     computeMode: 'iterative',
     optimizationParams: {
       useAnalytic: true,
-      nonDeterministic: true
-    }
+      nonDeterministic: true,
+    },
   };
 }
 export function regionToRegion() {
@@ -367,7 +369,7 @@ export function regionToRegion() {
     showBorder: false,
     defaultColor: 'valueHeatGreens',
     // defaultColor: 'byDataColor',
-    layout: 'zigZagOnXY',
+    layout: 'psuedoCartogramLayout',
     optimizationParams: {
       // stepSize: 0.01,
       stepSize: 0.005,
@@ -377,7 +379,7 @@ export function regionToRegion() {
       useGreedy: false,
       nonDeterministic: true,
       // useAnalytic: true
-    }
+    },
   };
 }
 
@@ -396,7 +398,7 @@ export function multiplicationTable() {
     computeAnnotationBoxBy: d => {
       const sqrt = Math.sqrt(d.value);
       return Math.floor(sqrt) === sqrt ? `${d.value}${Math.random()}` : 'ignore';
-    }
+    },
   };
 }
 
@@ -415,7 +417,7 @@ export function friendlyMosaicAlike() {
     showAxisLabels: true,
     computeAnnotationBoxBy: d => d.data.sex,
     showLabelsByDefault: true,
-    defaultColor: 'valueHeatGreens'
+    defaultColor: 'valueHeatGreens',
   };
 }
 
@@ -434,7 +436,7 @@ export function friendlyMosaicAlike2() {
     showAxisLabels: true,
     computeAnnotationBoxBy: d => d.data.index,
     showLabelsByDefault: true,
-    defaultColor: 'valueHeatGreens'
+    defaultColor: 'valueHeatGreens',
   };
 }
 
@@ -442,7 +444,7 @@ export function AlongTheLakeExample() {
   const {
     AlongTheLake,
     AlongTheLakeXLabels,
-    AlongTheLakeYLabels
+    AlongTheLakeYLabels,
   } = require('../examples/large-examples/along-the-lake');
   return {
     data: AlongTheLake.map(row => row.map(d => ({...d, value: Math.sqrt(d.value)}))),
@@ -452,7 +454,7 @@ export function AlongTheLakeExample() {
     computeMode: 'iterative',
     dims: {
       height: 0.5,
-      width: 3
+      width: 3,
     },
     layout: 'psuedoCartogramLayout',
     xLabels: AlongTheLakeXLabels,
@@ -465,8 +467,8 @@ export function AlongTheLakeExample() {
       useAnalytic: true,
       nonDeterministic: true,
       // useGreedy: false,
-      overlapPenalty: 20
-    }
+      overlapPenalty: 20,
+    },
   };
 }
 
@@ -475,9 +477,9 @@ export function AlongTheLakeExampleJuicing() {
   const {
     AlongTheLake,
     AlongTheLakeXLabels,
-    AlongTheLakeYLabels
+    AlongTheLakeYLabels,
   } = require('../examples/large-examples/along-the-lake');
-  const sum = row => (row.reduce((acc, {value}) => acc + (value), 0) / row.length);
+  const sum = row => row.reduce((acc, {value}) => acc + value, 0) / row.length;
   // const yearMargin = ([AlongTheLake.map(sum)]);
   const cityMargin = [transposeMatrix(AlongTheLake).map(sum)];
   // console.log(cityMargin)
@@ -489,7 +491,7 @@ export function AlongTheLakeExampleJuicing() {
     return row.map(d => {
       const preval = cityAvg + alpha * (d.value - cityAvg);
       const value = Math.sqrt(preval);
-      return ({...d, value});
+      return {...d, value};
     });
   });
 
@@ -501,7 +503,7 @@ export function AlongTheLakeExampleJuicing() {
     computeMode: 'iterative',
     dims: {
       height: 0.5,
-      width: 3
+      width: 3,
     },
     layout: 'zigZagOnXY',
     xLabels: AlongTheLakeXLabels,
@@ -514,8 +516,8 @@ export function AlongTheLakeExampleJuicing() {
       useAnalytic: true,
       nonDeterministic: true,
       // useGreedy: false,
-      overlapPenalty: 20
-    }
+      overlapPenalty: 20,
+    },
   };
 }
 
@@ -523,11 +525,11 @@ export function AlongTheLakeExampleMargins() {
   const {
     AlongTheLake,
     AlongTheLakeXLabels,
-    AlongTheLakeYLabels
+    AlongTheLakeYLabels,
   } = require('../examples/large-examples/along-the-lake');
   // data: AlongTheLake.map(row => row.map(d => ({...d, value: Math.sqrt(d.value)}))),
   const sum = row => row.reduce((acc, {value}) => acc + Math.sqrt(value), 0);
-  const yearMargin = ([AlongTheLake.map(sum)]);
+  const yearMargin = [AlongTheLake.map(sum)];
   const cityMargin = [transposeMatrix(AlongTheLake).map(sum)];
   const common = {
     stepSize: 10,
@@ -541,22 +543,25 @@ export function AlongTheLakeExampleMargins() {
       useAnalytic: true,
       nonDeterministic: true,
       // useGreedy: false,
-      overlapPenalty: 20
-    }
+      overlapPenalty: 20,
+    },
   };
   const [size1, size2] = [0.3, 3];
-  return [{
-    ...common,
-    data: yearMargin,
-    xLabels: AlongTheLakeYLabels,
-    dims: {width: size1, height: 0.5}
-    // dims: {height: size1, width: size2}
-  }, {
-    ...common,
-    data: cityMargin,
-    xLabels: AlongTheLakeXLabels,
-    dims: {height: size1, width: size2}
-  }];
+  return [
+    {
+      ...common,
+      data: yearMargin,
+      xLabels: AlongTheLakeYLabels,
+      dims: {width: size1, height: 0.5},
+      // dims: {height: size1, width: size2}
+    },
+    {
+      ...common,
+      data: cityMargin,
+      xLabels: AlongTheLakeXLabels,
+      dims: {height: size1, width: size2},
+    },
+  ];
 }
 
 export function CanidateSimilarity() {
@@ -566,7 +571,7 @@ export function CanidateSimilarity() {
     'Pete Buttigieg',
     'Andrew Yang',
     'Tulsi Gabbard',
-    'Amy Klobuchar'
+    'Amy Klobuchar',
   ];
   return {
     data: EXAMPLES.CANDIDATE_SIM,
@@ -577,6 +582,6 @@ export function CanidateSimilarity() {
     yLabels: canidates,
     defaultColor: 'valueHeatGreens',
     showLabelsByDefault: true,
-    showAxisLabels: true
+    showAxisLabels: true,
   };
 }
