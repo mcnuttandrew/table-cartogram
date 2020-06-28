@@ -397,6 +397,7 @@ export function multiplicationTable(): FigureConfig {
     xLabels: [...new Array(10)].map((_, i) => i + 1),
     yLabels: [...new Array(10)].map((_, i) => i + 1),
     showAxisLabels: true,
+    layout: 'psuedoCartogramLayout',
     computeAnnotationBoxBy: (d) => {
       const sqrt = Math.sqrt(d.value);
       return Math.floor(sqrt) === sqrt ? `${d.value}${Math.random()}` : 'ignore';

@@ -5,12 +5,14 @@ import moment from 'moment';
 
 import {XYPlot, PolygonSeries, LabelSeries} from 'react-vis';
 
-import {tableCartogramAdaptive} from '../../';
+import {tableCartogramAdaptive} from '../..';
 
 import {geoCenter} from '../../src/utils';
-import Speeding from '../../examples/large-examples/speeding';
+// import Speeding from '../../examples/large-examples/speeding';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+import Speeding from '../../examples/large-examples/speeding.json';
 
-function decorateGonsWithData(data, gons) {
+function decorateGonsWithData(data: any[][], gons: any[]): any[] {
   for (let i = 0; i < data.length; i++) {
     for (let j = 0; j < data[0].length; j++) {
       gons[i * data[0].length + j].data = data[i][j];
@@ -20,8 +22,8 @@ function decorateGonsWithData(data, gons) {
 }
 
 const MONTH_NAMES = [
-  'Janurary',
-  'Feburary',
+  'January',
+  'February',
   'March',
   'April',
   'May',
@@ -35,7 +37,7 @@ const MONTH_NAMES = [
 ];
 const DAYS = ['Su', 'M', 'T', 'W', 'Th', 'F', 'S'];
 const DAYS_OF_WEEK_OFFSET = 0;
-const getDayOfWeekName = (idx) => DAYS[(idx + DAYS_OF_WEEK_OFFSET) % 7];
+const getDayOfWeekName = (idx: number): string => DAYS[(idx + DAYS_OF_WEEK_OFFSET) % 7];
 const weekStarts = MONTH_NAMES.map((month, idx) => moment(`2017-${idx + 1}-01`, 'YYYY-MM-DD').week() - 1);
 
 const monthsToWeeks = weekStarts.reduce((acc, row, idx) => {
@@ -46,10 +48,10 @@ const monthsToWeeks = weekStarts.reduce((acc, row, idx) => {
   }
   acc[idx] = validWeeks;
   return acc;
-}, {});
+}, {} as any);
 
 const CAL = Object.entries(
-  Speeding.map((d) => {
+  Speeding.map((d: any) => {
     const date = moment(d.date);
     // if it is the first week of the next year do some special handling
     const nye =
@@ -64,7 +66,7 @@ const CAL = Object.entries(
       month: date.month(),
       count: d.count,
     };
-  }).reduce((acc, row) => {
+  }).reduce((acc: any, row: any) => {
     // again border handling
     if (!(row.year === 2017 || (row.year === 2018 && row.week === 53))) {
       return acc;
@@ -76,10 +78,10 @@ const CAL = Object.entries(
     return acc;
   }, {}),
 )
-  .sort((a, b) => a[0] - b[0])
+  .sort((a: any, b: any) => a[0] - b[0])
   .map((d) => d[1]);
 
-const DATA_DOMAIN = CAL.reduce((acc, row) => acc.concat(row)).reduce(
+const DATA_DOMAIN = (CAL.reduce((acc: any[], row) => acc.concat(row), []) as any[]).reduce(
   (acc, row) => {
     return {
       min: Math.min(acc.min, row.count),
@@ -89,9 +91,9 @@ const DATA_DOMAIN = CAL.reduce((acc, row) => acc.concat(row)).reduce(
   {min: Infinity, max: -Infinity},
 );
 
-const findMinObject = (data, comparator) => {
+const findMinObject = (data: any, comparator: any): any => {
   const minPoint = data.reduce(
-    (acc, row, idx) => {
+    (acc: any, row: any, idx: number) => {
       const newMin = comparator(row);
       if (newMin > acc.min) {
         return acc;
@@ -107,10 +109,10 @@ const findMinObject = (data, comparator) => {
   return data[minPoint.idx];
 };
 
-const MONTHS = Object.entries(monthsToWeeks).reduce((acc, row) => {
+const MONTHS = Object.entries(monthsToWeeks).reduce((acc: any, row) => {
   const month = Number(row[0]);
-  acc[month] = row[1].map((idx) => CAL[idx]).filter((d) => d);
-  const firstDay = findMinObject(acc[month][0], (d) => d.dayOfMonth);
+  acc[month] = (row[1] as number[]).map((idx) => CAL[idx]).filter((d) => d);
+  const firstDay = findMinObject(acc[month][0], (d: any) => d.dayOfMonth);
   if (firstDay.dayOfWeek === 6) {
     acc[month] = acc[month].slice(1);
   }
@@ -124,12 +126,12 @@ const MONTHS = Object.entries(monthsToWeeks).reduce((acc, row) => {
   return acc;
 }, {});
 
-function renderMonth(gons, month) {
-  const clipToMonth = gons.filter((d) => d.data.month === month);
+function renderMonth(gons: any, month: any): JSX.Element {
+  const clipToMonth = gons.filter((d: any) => d.data.month === month);
   return (
     <div key={month}>
       <XYPlot className={MONTH_NAMES[month]} yDomain={[1, 0]} margin={60} width={500} height={500}>
-        {clipToMonth.map((cell, index) => {
+        {clipToMonth.map((cell: any, index: number) => {
           // console.log(cell.data.count);
           return (
             <PolygonSeries
@@ -163,7 +165,7 @@ function renderMonth(gons, month) {
           ]}
         />
         <LabelSeries
-          data={clipToMonth.map((cell, index) => {
+          data={clipToMonth.map((cell: any) => {
             return {
               ...geoCenter(cell.vertices),
               label: `${cell.data.dayOfMonth}`,
@@ -176,7 +178,7 @@ function renderMonth(gons, month) {
           })}
         />
         <LabelSeries
-          data={gons.slice(0, 7).map((cell, index) => {
+          data={gons.slice(0, 7).map((cell: any) => {
             const {x} = geoCenter(cell.vertices);
             return {
               x,
@@ -211,19 +213,19 @@ function renderMonth(gons, month) {
   );
 }
 
-class CalendarDisplay extends React.Component {
+class CalendarDisplay extends React.Component<{}, {[x: string]: any}> {
   state = {
     loaded: false,
-    ...MONTH_NAMES.reduce((acc, row) => {
+    ...MONTH_NAMES.reduce((acc: any, row) => {
       acc[row] = false;
       return acc;
     }, {}),
   };
 
-  componentDidMount() {
+  componentDidMount(): void {
     Promise.resolve().then(() => {
       Object.keys(MONTHS)
-        .filter((d, i) => true)
+        .filter((d: any) => true)
         .forEach((month) => {
           const {gons} = tableCartogramAdaptive({
             data: MONTHS[month],
@@ -233,13 +235,14 @@ class CalendarDisplay extends React.Component {
             logging: false,
           });
           this.setState({
+            // @ts-ignore
             [MONTH_NAMES[month]]: decorateGonsWithData(MONTHS[month], gons),
           });
         });
     });
   }
 
-  render() {
+  render(): JSX.Element {
     return (
       <div style={{display: 'flex', alignItems: 'center', flexWrap: 'wrap'}}>
         {MONTH_NAMES.map((monthName, idx) => {

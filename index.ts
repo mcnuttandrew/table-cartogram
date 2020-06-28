@@ -86,7 +86,7 @@ interface AdapativeParams {
   data: any[][];
   height?: number;
   iterationStepSize?: number;
-  layout: LayoutType;
+  layout?: LayoutType;
   logging?: boolean;
   maxNumberOfSteps?: number;
   optimizationParams?: OptimizationParams;

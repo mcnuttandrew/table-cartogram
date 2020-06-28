@@ -1,7 +1,7 @@
 /* eslint-disable react/no-string-refs */
-// const scaleChromatic = require('d3-scale-chromatic');
 import React from 'react';
 import {COLOR_MODES} from '../colors';
+import {interpolateReds} from 'd3-scale-chromatic';
 
 class ContinuousLegend extends React.Component {
   componentDidMount(): void {
@@ -10,7 +10,10 @@ class ContinuousLegend extends React.Component {
     // @ts-ignore
     const ctx = canvas.getContext('2d');
     // const colorScale = scaleChromatic[this.props.d3ColorScale];
-    const colorScale = COLOR_MODES.valueHeatBlueGreens;
+    const colorScale = COLOR_MODES.valueHeatReds;
+    // jan cal scale
+    // const colorScale = ({value}: any, _1: any, _2: any): string =>
+    //   interpolateReds(1 - Math.sqrt(1 - (value - 1) / (1 - 0)));
     const steps = 600;
     for (let i = 0; i <= steps; i++) {
       ctx.beginPath();
