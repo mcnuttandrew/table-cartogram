@@ -80,7 +80,6 @@ export function tableCartogramWithUpdate(params: WithUpdateParams): Gon[] | ((x:
   const updateFunction = buildIterativeCartogram(localTable, layout, {height, width}, optimizationParams);
   return (numIterations): Gon[] => prepareRects(updateFunction(numIterations), data, accessor);
 }
-
 interface AdapativeParams {
   accessor: Getter;
   data: any[][];

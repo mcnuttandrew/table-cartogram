@@ -51,6 +51,21 @@ const zigZagOnX = buildZigZag(0.5, 0);
 const zigZagOnY = buildZigZag(0, 0.5);
 const zigZagOnXY = buildZigZag(0.25, 0.25);
 
+const makeSum = (x: number): number => (x * (x - 1)) / 2;
+
+function makeRamp(rampOnX: boolean, rampOnY: boolean): LayoutFunc {
+  return function (numRows: number, numCols: number): Pos[][] {
+    const Xsum = makeSum(numRows + 1);
+    const Ysum = makeSum(numCols + 1);
+    return [...new Array(numCols + 1)].map((_, y) =>
+      [...new Array(numRows + 1)].map((_, x) => ({
+        y: rampOnY ? makeSum(y + 1) / Ysum : y / numCols,
+        x: rampOnX ? makeSum(x + 1) / Xsum : x / numRows,
+      })),
+    );
+  };
+}
+
 const layouts: {[x: string]: LayoutFunc} = {
   gridLayout,
   zigZagOnX,
@@ -59,6 +74,9 @@ const layouts: {[x: string]: LayoutFunc} = {
   psuedoCartogramLayout,
   psuedoCartogramLayoutZigZag,
   partialPsuedoCartogram,
+  rampX: makeRamp(true, false),
+  rampY: makeRamp(false, true),
+  rampXY: makeRamp(true, true),
 };
 
 function scaleLayoutsToDims(layout: Pos[][], dims: Dimensions): PositionTable {

@@ -8,7 +8,9 @@ export type LayoutType =
   | 'zigZagOnXY'
   | 'psuedoCartogramLayout'
   | 'psuedoCartogramLayoutZigZag'
-  | 'partialPsuedoCartogram';
+  | 'partialPsuedoCartogram'
+  | 'rampX'
+  | 'rampY';
 export interface FigureConfig {
   data: any;
   stepSize: number;
