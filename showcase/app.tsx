@@ -38,18 +38,18 @@ function App(): JSX.Element {
   const tables = [
     // multiplicationTable()
     {
-      // data: EXAMPLES.CHECKER_BOARD,
-      data: [
-        [1, 1, 1, 1],
-        [1, 1, 1, 1],
-        [1, 1, 1, 1],
-        [1, 1, 1, 1],
-      ],
+      data: EXAMPLES.CHECKER_BOARD,
+      // data: [
+      //   [1, 1, 1, 1],
+      //   [1, 1, 1, 1],
+      //   [1, 1, 1, 1],
+      //   [1, 1, 1, 1],
+      // ],
       defaultColor: 'byValue',
       accessor: (d: any) => d,
       height: 1,
       width: 1,
-      layout: 'rampXY',
+      layout: 'rampY',
       // computeMode: 'iterative',
       // stepSize: 10,
       computeMode: 'direct',
