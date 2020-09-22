@@ -10,6 +10,9 @@ module.exports = {
   entry: {
     app: './src/app.tsx',
   },
+  output: {
+    filename: 'dist/app.js',
+  },
   module: {
     rules: [
       {
@@ -46,6 +49,10 @@ module.exports = {
         query: {
           presets: ['es2017'],
         },
+      },
+      {
+        test: /\.md$/i,
+        use: 'raw-loader',
       },
     ],
   },

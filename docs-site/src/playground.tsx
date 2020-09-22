@@ -65,12 +65,12 @@ function DisplayReadout(props: DisplayReadoutProps): JSX.Element {
   return (
     <div className="flex-down">
       <h5>COMPUTATION STATUS</h5>
-      <p>
+      <div>
         {`Steps taken ${stepsTaken}`} <br />
         {`Avg Error ${Math.floor(error * Math.pow(10, 7)) / Math.pow(10, 5)} %`} <br />
         {`Max Error ${Math.floor(maxError * Math.pow(10, 7)) / Math.pow(10, 5)} %`} <br />
         {`Computation Time ${(endTime - startTime) / 1000} seconds`} <br />
-      </p>
+      </div>
 
       {errorLog.length > 0 && (
         <XYPlot yDomain={[0, errorLog[0].y]} width={300} height={300}>
@@ -166,7 +166,7 @@ export default function Playground(): JSX.Element {
   }, [runningMode, JSON.stringify(data), JSON.stringify(optimizationParams)]);
 
   return (
-    <div className="flex">
+    <div className="flex" id="playground">
       <div className="flex">
         <div className="flex-down">
           <h5>DATA SET SELECTION</h5>
@@ -191,14 +191,47 @@ export default function Playground(): JSX.Element {
               current={layout}
             />
             {[
-              {paramName: 'lineSearchSteps', type: 'number', description: 'todo'},
-              {paramName: 'useAnalytic', type: 'switch', description: 'todo'},
-              {paramName: 'stepSize', type: 'number', description: 'todo'},
-              {paramName: 'nonDeterministic', type: 'switch', description: 'todo'},
-              {paramName: 'useGreedy', type: 'switch', description: 'todo'},
-              {paramName: 'orderPenalty', type: 'number', description: 'todo'},
-              {paramName: 'borderPenalty', type: 'number', description: 'todo'},
-              {paramName: 'overlapPenalty', type: 'number', description: 'todo'},
+              {
+                paramName: 'lineSearchSteps',
+                type: 'number',
+                description: 'The number of steps to take while computing the gradient line search.',
+              },
+              {
+                paramName: 'useAnalytic',
+                type: 'switch',
+                description: 'Whether to use the analytic gradient or an automatically computed one.',
+              },
+              {
+                paramName: 'stepSize',
+                type: 'number',
+                description: 'How big a step to use in computing the gradient.',
+              },
+              {
+                paramName: 'nonDeterministic',
+                type: 'switch',
+                description: 'Whether to use stochastic gradient descent or just regular gradient descent.',
+              },
+              {
+                paramName: 'useGreedy',
+                type: 'switch',
+                description:
+                  'Whether to use a greedy strategy (bigger shapes should be corrected first) for computing the object or a normalized one (all shapes should be corrected at the same rate).',
+              },
+              {
+                paramName: 'orderPenalty',
+                type: 'number',
+                description: ' How much penalty to assign to nodes that have gone out of order.',
+              },
+              {
+                paramName: 'borderPenalty',
+                type: 'number',
+                description: 'How much penalty to assign to nodes that have gone out of the border.',
+              },
+              {
+                paramName: 'overlapPenalty',
+                type: 'number',
+                description: 'How much penalty to assign to overlap between quads.',
+              },
             ].map(({paramName, type, description}) => {
               return (
                 <div key={paramName} className="flex space-between">
@@ -260,7 +293,7 @@ export default function Playground(): JSX.Element {
             stepsTaken={stepsTaken}
           />
         </div>
-        <div className="plot-container">
+        <div className="plot-container flex-down">
           <CartogramPlot
             data={gons}
             fillMode={fillMode}
@@ -268,6 +301,21 @@ export default function Playground(): JSX.Element {
             height={800}
             width={800}
           />
+          <button
+            onClick={() => {
+              // console.log('hi');
+              const svg = document.querySelector('.plot-container svg').innerHTML;
+              const blob = new Blob([svg.toString()]);
+              const element = document.createElement('a');
+              element.download = `table-cartogram-${new Date()}.svg`;
+              element.href = window.URL.createObjectURL(blob);
+              element.click();
+              element.remove();
+            }}
+            className="download-button"
+          >
+            Download
+          </button>
         </div>
       </div>
     </div>

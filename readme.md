@@ -2,14 +2,14 @@
 
 Table cartograms are a type of data visualization that represents tables of data as grid of quadrilaterals. They look a lot like if you were a heatmap were area-ed rather than colored. They may look really unconventional, but they have a surprisingly wide collection of uses, ranging from calendars, to pivot tables, and many others. They facilitate part-to-whole and part-to-part comparisons, in a similar manner as a pie chart, as well as offer specific detail look up, as in a traditional table or heatmap. Together these properties can make really interesting displays.
 
-<img src="./assets/zion.png" alt="Table cartogram describing visitor statistics to zion national park"/>
+<img src="./docs-site/assets/zion.png" alt="Table cartogram describing visitor statistics to zion national park"/>
 
 In this library we provide an iteration based approach to creating table cartograms. We follow a very simple optimization approach in which we select from a library of initializations, also allowing for custom ones, and then iteratively adjust the vertices via gradient descent until a satisfactory condition is reached. Details about the math and algorithm behind process are forthcoming.
 
 
 What mattters here is how to use this tool.
 
-### Installation
+## Installation
 
 To install table-cartogram.js pick your favorite command line installation tool and install from npm:
 

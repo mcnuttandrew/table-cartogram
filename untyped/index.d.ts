@@ -6,6 +6,11 @@ declare module '*.json' {
   export default value;
 }
 
+declare module '*.md' {
+  const value: any;
+  export default value;
+}
+
 declare module 'react-vis' {
   import {
     Component,
