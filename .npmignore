@@ -7,3 +7,5 @@ src/
 test/
 index.js
 node_modules/
+docs-site/
+test/
