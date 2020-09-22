@@ -103,16 +103,41 @@ It is then up to you to figure out how to render this thing! For more impatience
 
 
 
-## API
+# API
 
 We expose three top level functions, which related to three processing modes for the table cartogram: tableCartogram, tableCartogramWithUpdate, tableCartogramAdaptive. In a subsequent release we will expose a collection of react components for computing the table cartogram, those components currently live in showcase/components, most notably iterative-display.js (which shows the converge process for a table cartogram) and table-cartogram.js (which is a simple rendering component).
 
 
-### tableCartogram
+## tableCartogram
 
 Construct a table cartogram using a fixed number of steps. 
 
-Example: 
+### Props  
+**data**: DataTable  
+Any tabular data that can be be combined with an accessor to generate number[][]
+
+**accessor**: (x: any) => number   
+A lambda function for getting the of a particular cell with data table 
+
+**layout**: LayoutType  
+See Below
+
+**iterations**: number  
+The number of iteration that you wish for the computation to run
+
+
+**height?**: number  
+Default: 1  
+The height scaling factor of computation. Generally good to select a low number such as 1.
+
+**width?**: number  
+Default: 1  
+The width scaling factor of computation. Generally good to select a low number such as 1.
+
+**optimizationParams?**: OptimizationParams  
+Object See Below
+
+### Example
 
 ```js
 const directResults = tableCartogram({
@@ -124,10 +149,33 @@ const directResults = tableCartogram({
 });
 ```
 
-### tableCartogramWithUpdate
+## tableCartogramWithUpdate
 
-Construct a function for iteratively creating updates, useful for watching the descent process or debugging.
+Construct a function for iteratively creating updates, useful for watching the descent process or debugging. Returns a function which takes a number of steps to take, that is it's type is something like `(PROPS) => (steps: number) => polygons`.
 
+### Props
+
+**data**: DataTable  
+Any tabular data that can be be combined with an accessor to generate number[][]
+
+**accessor**: (x: any) => number   
+A lambda function for getting the of a particular cell with data table 
+
+**height?**: number  
+Default: 1  
+The height scaling factor of computation. Generally good to select a low number such as 1.
+
+**width?**: number  
+Default: 1  
+The width scaling factor of computation. Generally good to select a low number such as 1.
+
+**layout**: LayoutType  
+See Below
+
+**optimizationParams?**: OptimizationParams  
+Object See Below
+
+### Example
 
 ```js
 const resultsBuilder = tableCartogramWithUpdate({
@@ -140,9 +188,53 @@ const withUpdateResults = resultsBuilder(300);
 ```
 
 
-### tableCartogramAdaptive
+## tableCartogramAdaptive
 
 Construct a table cartogram using a fixed accuracy target.
+
+### Props
+
+**data**: DataTable  
+Any tabular data that can be be combined with an accessor to generate number[][]
+
+**accessor**: (x: any) => number   
+A lambda function for getting the of a particular cell with data table 
+
+**height?**: number  
+Default: 1  
+The height scaling factor of computation. Generally good to select a low number such as 1.
+
+**width?**: number  
+Default: 1  
+The width scaling factor of computation. Generally good to select a low number such as 1.
+
+**layout**: LayoutType  
+See Below
+
+**logging?**: boolean    
+Default: false
+Whether or not to provide console logging of various metrics across the gradient descent process
+
+**maxNumberOfSteps?**: number;
+The maximum number of allowed steps in the descent.
+
+**iterationStepSize?**: number   
+Default: 10   
+How many gradient steps to take in between checks
+
+
+**maxNumberOfSteps?**: number   
+Default: 1000   
+The maximum allowed number of steps that can be taken
+
+**optimizationParams?**: OptimizationParams   
+Object See Below
+
+**targetAccuracy?**: number   
+Default: 0.01   
+The target accuracy for the adapative descent.
+
+### Example
 
 ```js
 const adaptive = tableCartogramAdaptive({
@@ -154,7 +246,26 @@ const adaptive = tableCartogramAdaptive({
 });
 ```
 
-### Optimization Params
+## Optimization Params
+
+The controls for the gradient descent and objective function. 
+
+
+
+### Props
+Default 
+```js
+{
+  lineSearchSteps: 30,
+  useAnalytic: false,
+  stepSize: 0.01,
+  nonDeterministic: false,
+  useGreedy: true,
+  orderPenalty: 1,
+  borderPenalty: 1,
+  overlapPenalty: 4,
+}
+```
 
 Param: lineSearchSteps  
 Default: 30
@@ -189,7 +300,7 @@ Default: 4
 Description: How much penalty to assign to overlap between quads.
 
 
-### Layouts
+## Layouts
 
 We offer a suite of 12 layouts, 10 single algorithm layouts and 2 meta layouts. Much of the control that our library offers is due to the flexibility of these layouts.
 
@@ -197,7 +308,7 @@ The single layouts consist of: gridLayout, zigZagOnX, zigZagOnY, zigZagOnXY, psu
 
 The meta layouts are: pickBest and pickWorst. As the names suggest they iterate through each of the single layout options and try to select either the best or the worst one, based purely on the objective score at that point.
 
-## Contributing and Local Development
+# Contributing and Local Development
 
 We welcome contributions and comments. To get started simply run
 

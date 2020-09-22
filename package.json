@@ -24,6 +24,7 @@
     "@types/point-in-polygon": "^1.0.0",
     "@types/react": "^16.9.9",
     "@types/react-dom": "^16.9.2",
+    "@types/react-vis": "^1.11.0",
     "@types/tape": "^4.13.0",
     "@typescript-eslint/eslint-plugin": "^2.31.0",
     "@typescript-eslint/parser": "^2.31.0",
@@ -63,8 +64,6 @@
     ]
   },
   "dependencies": {
-    "@types/react-vis": "^1.11.0",
-    "d3-scale-chromatic": "^2.0.0",
     "point-in-polygon": "^1.0.1",
     "polybooljs": "^1.2.0"
   },
