@@ -6,3 +6,4 @@ docs-site/node_modules/*
 docs/*
 scripts/*
 examples/*
+test/*
