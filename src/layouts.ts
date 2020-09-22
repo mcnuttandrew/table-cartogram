@@ -66,7 +66,7 @@ function makeRamp(rampOnX: boolean, rampOnY: boolean): LayoutFunc {
   };
 }
 
-const layouts: {[x: string]: LayoutFunc} = {
+export const layouts: {[x: string]: LayoutFunc} = {
   gridLayout,
   zigZagOnX,
   zigZagOnY,

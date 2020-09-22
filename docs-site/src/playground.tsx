@@ -1,9 +1,11 @@
 import React, {useState, useEffect} from 'react';
-// import CartogramPlot from '../../showcase/components/table-cartogram';
+import Switch from 'react-switch';
+import Tooltip from 'rc-tooltip';
 import CartogramPlot from './cartogram-plot';
 import {tableCartogramWithUpdate} from '../..';
 import {area, computeErrors} from '../../src/utils';
 import {Gon, Getter, LayoutType, Dimensions, OptimizationParams, DataTable} from '../../types';
+import {layouts} from '../../src/layouts';
 import {XYPlot, LineSeries, XAxis, YAxis, DiscreteColorLegend} from 'react-vis';
 import EXAMPLES from './examples';
 
@@ -26,6 +28,27 @@ function decorateGonsWithErrors(data: DataTable, gons: Gon[], accessor: Getter, 
     }
   }
   return gons;
+}
+interface DropDownProps {
+  label: string;
+  onChange: (x: string) => any;
+  keys: string[];
+  current?: any;
+}
+function DropDownWithLabel(props: DropDownProps): JSX.Element {
+  const {label, onChange, keys, current} = props;
+  return (
+    <div className="flex-down">
+      <span>{label}</span>
+      <select onChange={({target: {value}}): any => onChange(value)} value={current}>
+        {keys.map(d => (
+          <option value={d} key={d}>
+            {d}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
 }
 
 interface DisplayReadoutProps {
@@ -67,7 +90,16 @@ export default function Playground(): JSX.Element {
   const dims = {height: 1, width: 1};
   const [gons, setGons] = useState([]);
   const stepSize = 10;
-  const [optimizationParams, setOptimizationParams] = useState({});
+  const [optimizationParams, setOptimizationParams] = useState({
+    lineSearchSteps: 30,
+    useAnalytic: false,
+    stepSize: Math.min(0.01),
+    nonDeterministic: false,
+    useGreedy: true,
+    orderPenalty: 1,
+    borderPenalty: 1,
+    overlapPenalty: 4,
+  } as OptimizationParams);
   const [layout, setLayout] = useState('pickBest' as LayoutType);
   const [data, setData] = useState([
     [1, 10, 1],
@@ -85,12 +117,11 @@ export default function Playground(): JSX.Element {
     errorLog: [],
     errorStep: null,
   });
-
+  const triggerReRun = (...args: any): any => setRunningMode(`running-${Math.random()}` as RunningMode);
   useEffect(() => {
     if (!runningMode.includes('running')) {
       return;
     }
-    console.log(data);
     const cartogram = tableCartogramWithUpdate({
       accessor,
       data,
@@ -139,39 +170,86 @@ export default function Playground(): JSX.Element {
       <div className="flex">
         <div className="flex-down">
           <h5>DATA SET SELECTION</h5>
-          <div className="flex-down">
-            <span>Predefined Datasets</span>
-            <select
-              onChange={({target: {value}}): any => {
-                setData(EXAMPLES[value]);
-                setRunningMode(`running-${Math.random()}` as RunningMode);
-              }}
-            >
-              {Object.keys(EXAMPLES).map(d => (
-                <option value={d} key={d}>
-                  {d}
-                </option>
-              ))}
-            </select>
-          </div>
+          <DropDownWithLabel
+            label={'Predefined Datasets'}
+            keys={Object.keys(EXAMPLES)}
+            onChange={(value): any => triggerReRun(setData(EXAMPLES[value]))}
+          />
           <div>CUSTOM SELECT TODO</div>
 
           <h5>PARAM SELECTION</h5>
-          <div>
-            <div className="flex-down">
-              <span>Color Scheme</span>
-              <select onChange={({target: {value}}): any => setFillMode(value)} value={fillMode}>
-                {Object.keys(COLOR_MODES).map(d => (
-                  <option value={d} key={d}>
-                    {d}
-                  </option>
-                ))}
-              </select>
-            </div>
+          <div className="flex-down">
+            <DropDownWithLabel
+              label={'Color Scheme'}
+              keys={Object.keys(COLOR_MODES)}
+              onChange={setFillMode}
+            />
+            <DropDownWithLabel
+              label={'Initial Layout'}
+              keys={['pickBest', 'pickWorst', ...Object.keys(layouts)]}
+              onChange={val => triggerReRun(setLayout(val as any))}
+              current={layout}
+            />
+            {[
+              {paramName: 'lineSearchSteps', type: 'number', description: 'todo'},
+              {paramName: 'useAnalytic', type: 'switch', description: 'todo'},
+              {paramName: 'stepSize', type: 'number', description: 'todo'},
+              {paramName: 'nonDeterministic', type: 'switch', description: 'todo'},
+              {paramName: 'useGreedy', type: 'switch', description: 'todo'},
+              {paramName: 'orderPenalty', type: 'number', description: 'todo'},
+              {paramName: 'borderPenalty', type: 'number', description: 'todo'},
+              {paramName: 'overlapPenalty', type: 'number', description: 'todo'},
+            ].map(({paramName, type, description}) => {
+              return (
+                <div key={paramName} className="flex space-between">
+                  <div>
+                    <span>{paramName}</span>
+                    <Tooltip
+                      key={type}
+                      placement="bottom"
+                      trigger="click"
+                      overlay={<span className="tooltip-internal">{<span>{description}</span>}</span>}
+                    >
+                      <span className="cursor-pointer">(?)</span>
+                    </Tooltip>
+                  </div>
+                  {type === 'switch' && (
+                    <Switch
+                      {...{
+                        offColor: '#800000',
+                        onColor: '#36425C',
+                        height: 15,
+                        checkedIcon: false,
+                        width: 50,
+                      }}
+                      checked={(optimizationParams as any)[paramName]}
+                      onChange={() =>
+                        setOptimizationParams({
+                          ...optimizationParams,
+                          [paramName]: !(optimizationParams as any)[paramName],
+                        })
+                      }
+                    />
+                  )}
+                  {type === 'number' && (
+                    <input
+                      key={paramName}
+                      type="number"
+                      value={(optimizationParams as any)[paramName]}
+                      onChange={(event: any): any =>
+                        setOptimizationParams({
+                          ...optimizationParams,
+                          [paramName]: event.target.value,
+                        })
+                      }
+                    />
+                  )}
+                </div>
+              );
+            })}
+
             <button onClick={(): any => setRunningMode('stopped')}>STOP</button>
-            <button onClick={(): any => setRunningMode(`running-${Math.random()}` as RunningMode)}>
-              RESET
-            </button>
+            <button onClick={(): any => triggerReRun()}>RESET</button>
           </div>
           <DisplayReadout
             errorLog={errorLog}
@@ -182,13 +260,13 @@ export default function Playground(): JSX.Element {
             stepsTaken={stepsTaken}
           />
         </div>
-        <div>
+        <div className="plot-container">
           <CartogramPlot
             data={gons}
             fillMode={fillMode}
             getLabel={(x): any => x.data}
-            height={1000}
-            width={1000}
+            height={800}
+            width={800}
           />
         </div>
       </div>
