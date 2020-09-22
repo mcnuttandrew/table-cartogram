@@ -1,9 +1,11 @@
 import React, {useState, useEffect} from 'react';
-import CartogramPlot from '../../showcase/components/table-cartogram';
+// import CartogramPlot from '../../showcase/components/table-cartogram';
+import CartogramPlot from './cartogram-plot';
 import {tableCartogramWithUpdate} from '../..';
-import {area, computeErrors, fusePolygons} from '../../src/utils';
-import {Gon, ComputeMode, Getter, LayoutType, Dimensions, OptimizationParams, DataTable} from '../../types';
+import {area, computeErrors} from '../../src/utils';
+import {Gon, Getter, LayoutType, Dimensions, OptimizationParams, DataTable} from '../../types';
 import {XYPlot, LineSeries, XAxis, YAxis, DiscreteColorLegend} from 'react-vis';
+import EXAMPLES from './examples';
 
 type RunningMode = 'running' | 'finished' | 'converged' | 'stopped' | 'errored';
 import {COLOR_MODES} from '../../showcase/colors';
@@ -38,12 +40,13 @@ interface DisplayReadoutProps {
 function DisplayReadout(props: DisplayReadoutProps): JSX.Element {
   const {errorLog, error, maxError, endTime, startTime, stepsTaken} = props;
   return (
-    <div style={{display: 'flex', flexDirection: 'column'}}>
+    <div className="flex-down">
+      <h5>COMPUTATION STATUS</h5>
       <p>
         {`Steps taken ${stepsTaken}`} <br />
-        {`AVERAGE ERROR ${Math.floor(error * Math.pow(10, 7)) / Math.pow(10, 5)} %`} <br />
-        {`MAX ERROR ${Math.floor(maxError * Math.pow(10, 7)) / Math.pow(10, 5)} %`} <br />
-        {`COMPUTATION TIME ${(endTime - startTime) / 1000} seconds`} <br />
+        {`Avg Error ${Math.floor(error * Math.pow(10, 7)) / Math.pow(10, 5)} %`} <br />
+        {`Max Error ${Math.floor(maxError * Math.pow(10, 7)) / Math.pow(10, 5)} %`} <br />
+        {`Computation Time ${(endTime - startTime) / 1000} seconds`} <br />
       </p>
 
       {errorLog.length > 0 && (
@@ -59,8 +62,6 @@ function DisplayReadout(props: DisplayReadoutProps): JSX.Element {
   );
 }
 
-function doProcessing() {}
-
 export default function Playground(): JSX.Element {
   const accessor = (x: number): number => x;
   const dims = {height: 1, width: 1};
@@ -69,8 +70,9 @@ export default function Playground(): JSX.Element {
   const [optimizationParams, setOptimizationParams] = useState({});
   const [layout, setLayout] = useState('pickBest' as LayoutType);
   const [data, setData] = useState([
-    [1, 10],
-    [1, 1],
+    [1, 10, 1],
+    [1, 1, 1],
+    [1, 10, 1],
   ]);
   const [fillMode, setFillMode] = useState('errorHeat');
   const [runningMode, setRunningMode] = useState('running' as RunningMode);
@@ -81,13 +83,14 @@ export default function Playground(): JSX.Element {
     maxError: 0,
     stepsTaken: 0,
     errorLog: [],
+    errorStep: null,
   });
 
   useEffect(() => {
-    if (runningMode !== 'running') {
+    if (!runningMode.includes('running')) {
       return;
     }
-    // setStartTime(new Date().getTime());
+    console.log(data);
     const cartogram = tableCartogramWithUpdate({
       accessor,
       data,
@@ -98,7 +101,6 @@ export default function Playground(): JSX.Element {
     const localErrorLog = [] as any[];
     let steps = 0;
     const previousValueAndCount = {value: Infinity, count: 0};
-    // const localState = {steps: 0};
     const ticker = setInterval(() => {
       const gons = (cartogram as (x: number) => Gon[])(stepSize);
       const errorCompute = computeErrors(data, gons, accessor, dims);
@@ -114,7 +116,6 @@ export default function Playground(): JSX.Element {
 
       const converged = previousValueAndCount.value < CONVERGENCE_BARRIER;
       const halted = previousValueAndCount.count > CONVERGENCE_THRESHOLD;
-      console.log(converged, 'converged', previousValueAndCount.value, CONVERGENCE_BARRIER);
       const inError = isNaN(errorCompute.error);
       if (halted || converged || inError) {
         clearInterval(ticker);
@@ -127,27 +128,50 @@ export default function Playground(): JSX.Element {
         maxError: errorCompute.maxError,
         stepsTaken: steps,
         errorLog: localErrorLog,
+        errorStep: null,
       });
     }, 100);
     return (): any => clearInterval(ticker);
-  }, [runningMode]);
+  }, [runningMode, JSON.stringify(data), JSON.stringify(optimizationParams)]);
+
   return (
-    <div>
-      <div>PLAYGROUND</div>
-      <div>
-        <div className="flex">
-          <div>DATA SET SELECTION</div>
-          <div>PARAM SELECTION</div>
-          <div style={{display: 'flex'}}>
-            <select onChange={({target: {value}}) => setFillMode(value)} value={fillMode}>
-              {Object.keys(COLOR_MODES).map(d => (
+    <div className="flex">
+      <div className="flex">
+        <div className="flex-down">
+          <h5>DATA SET SELECTION</h5>
+          <div className="flex-down">
+            <span>Predefined Datasets</span>
+            <select
+              onChange={({target: {value}}): any => {
+                setData(EXAMPLES[value]);
+                setRunningMode(`running-${Math.random()}` as RunningMode);
+              }}
+            >
+              {Object.keys(EXAMPLES).map(d => (
                 <option value={d} key={d}>
                   {d}
                 </option>
               ))}
             </select>
-            {/* <button onClick={(): any => setState({showLabels: !this.state.showLabels})}>TOGGLE LABELS</button> */}
+          </div>
+          <div>CUSTOM SELECT TODO</div>
+
+          <h5>PARAM SELECTION</h5>
+          <div>
+            <div className="flex-down">
+              <span>Color Scheme</span>
+              <select onChange={({target: {value}}): any => setFillMode(value)} value={fillMode}>
+                {Object.keys(COLOR_MODES).map(d => (
+                  <option value={d} key={d}>
+                    {d}
+                  </option>
+                ))}
+              </select>
+            </div>
             <button onClick={(): any => setRunningMode('stopped')}>STOP</button>
+            <button onClick={(): any => setRunningMode(`running-${Math.random()}` as RunningMode)}>
+              RESET
+            </button>
           </div>
           <DisplayReadout
             errorLog={errorLog}
@@ -160,15 +184,11 @@ export default function Playground(): JSX.Element {
         </div>
         <div>
           <CartogramPlot
-            annotationBoxes={[]}
             data={gons}
             fillMode={fillMode}
             getLabel={(x): any => x.data}
-            getSubLabel={null}
-            showAxisLabels={false}
-            showLabels={true}
-            xLabels={[]}
-            yLabels={[]}
+            height={1000}
+            width={1000}
           />
         </div>
       </div>

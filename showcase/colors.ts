@@ -53,6 +53,7 @@ const clampWithDefault = (v: number): number => (isFinite(v) ? clamp(v, 0, 1) : 
 
 type Domain = {min: number; max: number};
 type ColorMode = (cell: any, index: number, {min, max}: Domain) => string;
+
 export const COLOR_MODES: {[x: string]: ColorMode} = {
   valueHeat: (cell, index, {min, max}) => interpolateInferno(1 - (cell.value - min) / (max - min)),
   valueHeatReds: (cell, index, {min, max}) =>
@@ -62,13 +63,6 @@ export const COLOR_MODES: {[x: string]: ColorMode} = {
   },
   valueHeatBlueGreens: (cell, index, {min, max}) => {
     return interpolateYlGnBu(1 - Math.sqrt(1 - (cell.value - min) / (max - min)));
-  },
-  confusiongramHardCode: (cell) => {
-    const [min, max] = [0, 13];
-
-    // const val = 1 - (1 - (cell.value - min) / (max - min));
-    const val = (cell.data.show - min) / (max - min);
-    return interpolateReds(clampWithDefault(val));
   },
   valueHeatRedWhiteBlue: (cell, index, {min, max}) => {
     return interpolateRdBu(1 - (cell.value - min) / (max - min));
