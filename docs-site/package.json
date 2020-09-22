@@ -1,12 +1,12 @@
 {
-  "name": "ivy",
+  "name": "table-cartogram-docs-site",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "author": "",
   "license": "ISC",
   "engines": {
-    "node": ">=9.0.0"
+    "node": ">=12.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.7.5",
@@ -47,8 +47,7 @@
     "webpack": "4",
     "webpack-cli": "^3.0.8",
     "webpack-command": "^0.2.1",
-    "webpack-dev-server": "^3.2.1",
-    "worker-plugin": "^5.0.0"
+    "webpack-dev-server": "^3.2.1"
   },
   "dependencies": {
     "d3-color": "^2.0.0",

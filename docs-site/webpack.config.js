@@ -1,4 +1,3 @@
-const WorkerPlugin = require('worker-plugin');
 const isProd = process.env.NODE_ENV === 'production'; // eslint-disable-line
 module.exports = {
   resolve: {
@@ -6,12 +5,11 @@ module.exports = {
     extensions: ['.ts', '.tsx', '.js'],
     modules: ['node_modules'],
   },
-  plugins: [new WorkerPlugin()],
   entry: {
     app: './src/app.tsx',
   },
   output: {
-    filename: 'dist/app.js',
+    filename: process.env.NODE_ENV === 'production' ? 'app.js' : 'dist/app.js',
   },
   module: {
     rules: [

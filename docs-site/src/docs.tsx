@@ -19,14 +19,20 @@ export default function Docs(): JSX.Element {
         {nester(<h1>table-cartogram.ts</h1>, 5)}
         <div className="flex-down">
           {nester(<h3>Display Tabular Data With Area</h3>, 3)}
-          {nester(
-            <h3>
-              <span>More about: </span>
-              <a href="https://www.mcnutt.in/#/research/table-cartogram">the project</a>/
-              <a href="https://www.mcnutt.in/">the author</a>
-            </h3>,
-            2,
-          )}
+          <span className="flex">
+            {nester(
+              <h3>
+                <a href="https://www.mcnutt.in/#/research/table-cartogram">More info</a>
+              </h3>,
+              2,
+            )}
+            {nester(
+              <h3>
+                <a href="https://github.com/mcnuttandrew/table-cartogram">GH Repo</a>
+              </h3>,
+              2,
+            )}
+          </span>
         </div>
       </div>
       <div className="center-widthed docs intro">

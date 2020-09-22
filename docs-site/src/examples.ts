@@ -79,8 +79,6 @@ ONE_BYS[2][2] = 50;
 const BIG_TOP = checkerBoardGenerator(3, 2, 1, 1);
 BIG_TOP[0][0] = 20;
 BIG_TOP[0][2] = 20;
-const BIG_BOTTOM = checkerBoardGenerator(3, 2, 1, 1);
-BIG_BOTTOM[1][0] = 20;
 
 const PATHOLOGICAL_2_BY = [
   [100, 1],
@@ -126,7 +124,6 @@ const examples: {[x: string]: number[][]} = {
   oneByOnesLower2,
   BLACK_AND_WHITE_TABLE,
   BIG_TOP,
-  BIG_BOTTOM,
   CHECKER_BOARD: checkerBoardGenerator(5, 5, 5, 1),
   CHECKER_BOARD_SMALL: checkerBoardGenerator(4, 4, 5, 1),
   PATHOLOGICAL_2_BY,
