@@ -110,12 +110,92 @@ We expose three top level functions, which related to three processing modes for
 
 ### tableCartogram
 
+Construct a table cartogram using a fixed number of steps. 
+
+Example: 
+
+```js
+const directResults = tableCartogram({
+  data: TEST_TABLE,
+  layout: 'gridLayout',
+  iterations: 300,
+  accessor: (d) => d.x,
+  height: 0.5,
+});
+```
+
 ### tableCartogramWithUpdate
+
+Construct a function for iteratively creating updates, useful for watching the descent process or debugging.
+
+
+```js
+const resultsBuilder = tableCartogramWithUpdate({
+  data: TEST_TABLE,
+  layout: 'gridLayout',
+  accessor: (d) => d.x,
+  height: 0.5,
+});
+const withUpdateResults = resultsBuilder(300);
+```
+
 
 ### tableCartogramAdaptive
 
+Construct a table cartogram using a fixed accuracy target.
+
+```js
+const adaptive = tableCartogramAdaptive({
+  data: TEST_TABLE,
+  layout: 'gridLayout',
+  maxNumberOfSteps: 300,
+  accessor: (d) => d.x,
+  height: 0.5,
+});
+```
+
 ### Optimization Params
 
+Param: lineSearchSteps  
+Default: 30
+Description: The number of steps to take while computing the gradient line search.
+
+Param: useAnalytic  
+Default: false
+Description: Whether to use the analytic gradient or an automatically computed one.
+
+Param: stepSize  
+Default: 0.01
+Description: How big a step to use in computing the gradient.
+
+Param: nonDeterministic  
+Default: false
+Description: Whether to use stochastic gradient descent or just regular gradient descent.
+
+Param: useGreedy  
+Default: true
+Description: Whether to use a greedy strategy (bigger shapes should be corrected first) for computing the object or a normalized one (all shapes should be corrected at the same rate).
+
+Param: orderPenalty  
+Default: 1
+Description: How much penalty to assign to nodes that have gone out of order.
+
+Param: borderPenalty  
+Default: 1
+Description: How much penalty to assign to nodes that have gone out of the border.
+
+Param: overlapPenalty  
+Default: 4
+Description: How much penalty to assign to overlap between quads.
+
+
+### Layouts
+
+We offer a suite of 12 layouts, 10 single algorithm layouts and 2 meta layouts. Much of the control that our library offers is due to the flexibility of these layouts.
+
+The single layouts consist of: gridLayout, zigZagOnX, zigZagOnY, zigZagOnXY, psuedoCartogramLayout, psuedoCartogramLayoutZigZag, partialPsuedoCartogram, rampX, rampY, rampXY.
+
+The meta layouts are: pickBest and pickWorst. As the names suggest they iterate through each of the single layout options and try to select either the best or the worst one, based purely on the objective score at that point.
 
 ## Contributing and Local Development
 
