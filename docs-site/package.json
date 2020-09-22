@@ -52,6 +52,7 @@
   "dependencies": {
     "d3-color": "^2.0.0",
     "d3-scale": "^3.2.2",
+    "d3-scale-chromatic": "^2.0.0",
     "d3-shape": "^2.0.0",
     "rc-tooltip": "^4.2.3",
     "react": "^16.10.2",
