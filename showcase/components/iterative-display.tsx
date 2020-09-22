@@ -35,20 +35,21 @@ interface Props {
   data: any[][];
   defaultColor?: string;
   dims: Dimensions;
-  layout: LayoutType;
-  iterations?: number;
-  optimizationParams: OptimizationParams;
-  showLabelsByDefault?: boolean;
-  stepSize?: number;
-  hideControls?: number;
-  showAxisLabels?: boolean;
-  xLabels?: (string | number)[];
-  yLabels?: (string | number)[];
   getLabel?: (x: any) => string;
   getSubLabel?: (x: any) => string;
+  hideControls?: number;
+  iterations?: number;
+  layout: LayoutType;
+  optimizationParams: OptimizationParams;
+  showAxisLabels?: boolean;
+  showLabelsByDefault?: boolean;
+  stepSize?: number;
+  xLabels?: (string | number)[];
+  yLabels?: (string | number)[];
 }
 interface State {
   annotationBoxes?: any[];
+  endTime?: number;
   error?: any;
   errorLog: any[];
   fillMode: string;
@@ -59,7 +60,6 @@ interface State {
   runningMode: RunningMode;
   showLabels: boolean;
   startTime?: number;
-  endTime?: number;
   stepsTaken: number;
 }
 

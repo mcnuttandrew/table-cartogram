@@ -12,7 +12,8 @@
     "stats": "babel-node scripts/stat-builder.js",
     "lint": "eslint ./",
     "gen-toys": "babel-node generate-evans-toy-sets",
-    "build": "NODE_ENV=production webpack"
+    "build": "NODE_ENV=production webpack",
+    "docs": "(cd docs-site && yarn && yarn start)"
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.9.0",
@@ -67,7 +68,7 @@
     "polybooljs": "^1.2.0"
   },
   "repository": {
-    "type": "git",
+    "type": "git"
   },
   "author": "",
   "description": "",

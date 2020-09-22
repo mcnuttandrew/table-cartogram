@@ -5,7 +5,6 @@ import {prepareRects, computeErrors, error, log} from './src/utils';
 const defaultOptimzationParams: OptimizationParams = {
   lineSearchSteps: 30,
   useAnalytic: false,
-  // TODO MAGIC NUMBER
   stepSize: Math.min(0.01),
   nonDeterministic: false,
   useGreedy: true,
