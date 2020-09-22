@@ -64,6 +64,7 @@
     ]
   },
   "dependencies": {
+    "d3-scale-chromatic": "^2.0.0",
     "point-in-polygon": "^1.0.1",
     "polybooljs": "^1.2.0"
   },
