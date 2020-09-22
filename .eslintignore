@@ -1,6 +1,8 @@
 node_modules/*
 showcase/node_modules/*
 dist/*
+docs/**/*
+docs/node_modules/*
 docs/*
 scripts/*
 examples/*
