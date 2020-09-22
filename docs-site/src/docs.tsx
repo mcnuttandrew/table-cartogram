@@ -8,7 +8,7 @@ export default function Docs(): JSX.Element {
         <h1>table-cartogram.ts</h1>
       </div>
       <div className="center-widthed">
-        <h3>This page describes and examplifies the table cartogram and it's whiley ways</h3>
+        <h3>This page describes and examplifies the table cartogram and its whiley ways</h3>
         <p>
           Table cartograms are a type of data visualization that represents tables of data as grid of
           quadrilaterals. They look a lot like if you were a heatmap were area-ed rather than colored. They
