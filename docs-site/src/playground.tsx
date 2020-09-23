@@ -51,6 +51,10 @@ function DropDownWithLabel(props: DropDownProps): JSX.Element {
   );
 }
 
+function DataUploader(setData: any): JSX.Element {
+  return <div className="custom-data-tip">Specify Custom Data</div>;
+}
+
 interface DisplayReadoutProps {
   errorLog: any[];
   error?: any;
@@ -132,6 +136,7 @@ export default function Playground(): JSX.Element {
     const localErrorLog = [] as any[];
     let steps = 0;
     const previousValueAndCount = {value: Infinity, count: 0};
+    const localStartTime = +new Date();
     const ticker = setInterval(() => {
       const gons = (cartogram as (x: number) => Gon[])(stepSize);
       const errorCompute = computeErrors(data, gons, accessor, dims);
@@ -153,7 +158,7 @@ export default function Playground(): JSX.Element {
         setRunningMode(converged ? 'converged' : halted ? 'stopped' : inError ? 'errored' : runningMode);
       }
       setScalars({
-        startTime,
+        startTime: localStartTime,
         endTime: new Date().getTime(),
         error: errorCompute.error,
         maxError: errorCompute.maxError,
@@ -175,7 +180,9 @@ export default function Playground(): JSX.Element {
             keys={Object.keys(EXAMPLES)}
             onChange={(value): any => triggerReRun(setData(EXAMPLES[value]))}
           />
-          <div>CUSTOM SELECT TODO</div>
+          <Tooltip trigger="click" overlay={DataUploader(setData)}>
+            <button>Specify Custom Data</button>
+          </Tooltip>
 
           <h5>PARAM SELECTION</h5>
           <div className="flex-down">

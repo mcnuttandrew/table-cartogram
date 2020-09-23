@@ -133,7 +133,7 @@ const examples: {[x: string]: number[][]} = {
     [2, 1],
   ],
 
-  TRI_BOARD: nStopCheckerBoardGenerator(12, 12, [5, 1, 20]),
+  TRI_BOARD: nStopCheckerBoardGenerator(8, 8, [5, 1, 15]),
 
   HAND_SYMMETRIC,
   HAND_SYMMETRIC_OLD,
