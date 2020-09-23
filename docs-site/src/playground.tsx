@@ -50,9 +50,57 @@ function DropDownWithLabel(props: DropDownProps): JSX.Element {
     </div>
   );
 }
-
-function DataUploader(setData: any): JSX.Element {
-  return <div className="custom-data-tip">Specify Custom Data</div>;
+const copy = (x: number[][]): number[][] => JSON.parse(JSON.stringify(x));
+function DataUploader(setData: any, data: number[][], triggerReRun: any): JSX.Element {
+  // const [localData, setLocalData] = useState(copy(data));
+  // useEffect(() => {
+  //   setLocalData(copy(data));
+  // }, [JSON.stringify(data)]);
+  return (
+    <div className="custom-data-tip">
+      <h1>Specify Custom Data</h1>
+      <table>
+        {data.map((row, idx) => (
+          <tr key={idx}>
+            {row.map((val, jdx) => (
+              <td key={`${idx}-${jdx}`}>
+                <input
+                  value={val}
+                  onChange={event => {
+                    const veryLocalData = copy(data);
+                    veryLocalData[idx][jdx] = Number(event.target.value);
+                    setData(veryLocalData);
+                  }}
+                />
+              </td>
+            ))}
+            <td>
+              <button key={`remove-row-${idx}`} onClick={() => setData(data.filter((_, jdx) => jdx !== idx))}>
+                X
+              </button>
+            </td>
+          </tr>
+        ))}
+        <tr>
+          {data[0].map((row, idx) => (
+            <td>
+              <button
+                key={`remove-${idx}`}
+                onClick={() => setData(data.map(row => row.filter((_, jdx) => jdx !== idx)))}
+              >
+                X
+              </button>
+            </td>
+          ))}
+        </tr>
+      </table>
+      <div className="flex">
+        <button onClick={() => setData(data.concat([data[0].map(() => 1)]))}>ADD ROW</button>
+        <button onClick={() => setData(data.map(row => [...row, 1]))}>ADD COLUMN</button>
+        <button onClick={() => triggerReRun()}>RUN</button>
+      </div>
+    </div>
+  );
 }
 
 interface DisplayReadoutProps {
@@ -111,7 +159,7 @@ export default function Playground(): JSX.Element {
     [1, 10, 1],
   ]);
   const [fillMode, setFillMode] = useState('errorHeat');
-  const [runningMode, setRunningMode] = useState('running' as RunningMode);
+  const [runningMode, setRunningMode] = useState('stopped' as RunningMode);
   const [{startTime, endTime, error, maxError, stepsTaken, errorLog}, setScalars] = useState({
     startTime: new Date().getTime(),
     endTime: new Date().getTime(),
@@ -180,7 +228,7 @@ export default function Playground(): JSX.Element {
             keys={Object.keys(EXAMPLES)}
             onChange={(value): any => triggerReRun(setData(EXAMPLES[value]))}
           />
-          <Tooltip trigger="click" overlay={DataUploader(setData)}>
+          <Tooltip trigger="click" overlay={DataUploader(setData, data, triggerReRun)}>
             <button>Specify Custom Data</button>
           </Tooltip>
 
@@ -289,7 +337,7 @@ export default function Playground(): JSX.Element {
             })}
 
             <button onClick={(): any => setRunningMode('stopped')}>STOP</button>
-            <button onClick={(): any => triggerReRun()}>RESET</button>
+            <button onClick={(): any => triggerReRun()}>{!gons.length ? 'START' : 'RESET'}</button>
           </div>
           <DisplayReadout
             errorLog={errorLog}
@@ -301,6 +349,7 @@ export default function Playground(): JSX.Element {
           />
         </div>
         <div className="plot-container flex-down">
+          {!gons.length && <h1>Press start to run</h1>}
           <CartogramPlot
             data={gons}
             fillMode={fillMode}
