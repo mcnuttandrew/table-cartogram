@@ -52,10 +52,6 @@ function DropDownWithLabel(props: DropDownProps): JSX.Element {
 }
 const copy = (x: number[][]): number[][] => JSON.parse(JSON.stringify(x));
 function DataUploader(setData: any, data: number[][], triggerReRun: any): JSX.Element {
-  // const [localData, setLocalData] = useState(copy(data));
-  // useEffect(() => {
-  //   setLocalData(copy(data));
-  // }, [JSON.stringify(data)]);
   return (
     <div className="custom-data-tip">
       <h1>Specify Custom Data</h1>

@@ -49,8 +49,7 @@ export default function Docs(): JSX.Element {
           cartograms. We follow a very simple optimization approach in which we select from a library of
           initializations, also allowing for custom ones, and then iteratively adjust the vertices via
           gradient descent until a satisfactory condition is reached. Details about the math and algorithm
-          behind process can be found in the paper found{' '}
-          <a href="https://www.mcnutt.in/#/research/table-cartogram">here</a>.
+          behind process can be found in the paper found <a href="https://osf.io/kem6j/">here</a>.
         </p>
         <p>
           Below you will find an interactive playground component that allows you to explore a dynamic version
