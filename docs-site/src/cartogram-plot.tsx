@@ -40,7 +40,7 @@ export default function plot(props: Props): JSX.Element {
     .x((d: any) => xScale(d.x))
     .y((d: any) => yScale(d.y));
   return (
-    <svg height={height} width={width}>
+    <svg height={height} width={width} xmlns="http://www.w3.org/2000/svg">
       {data.map((cell, index) => {
         const center = geoCenter(cell.vertices);
         const color = colorCell(cell, index, fillMode, valueDomain);

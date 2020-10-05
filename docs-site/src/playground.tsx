@@ -355,8 +355,7 @@ export default function Playground(): JSX.Element {
           />
           <button
             onClick={() => {
-              // console.log('hi');
-              const svg = document.querySelector('.plot-container svg').innerHTML;
+              const svg = document.querySelector('.plot-container svg').outerHTML;
               const blob = new Blob([svg.toString()]);
               const element = document.createElement('a');
               element.download = `table-cartogram-${new Date()}.svg`;
