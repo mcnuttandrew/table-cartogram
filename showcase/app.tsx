@@ -31,36 +31,38 @@ import {
   // dndAlignments,
   // buildSenateExample,
   // usaWithLabels,
-  multiplicationTable,
+  // multiplicationTable,
+  correlationAndWithout,
 } from './figure-setups';
 
 function App(): JSX.Element {
   const tables = [
+    ...correlationAndWithout(),
     // multiplicationTable()
-    {
-      data: EXAMPLES.CHECKER_BOARD,
-      // data: [
-      //   [1, 1, 1, 1],
-      //   [1, 1, 1, 1],
-      //   [1, 1, 1, 1],
-      //   [1, 1, 1, 1],
-      // ],
-      defaultColor: 'byValue',
-      accessor: (d: any) => d,
-      height: 1,
-      width: 1,
-      layout: 'rampY',
-      // computeMode: 'iterative',
-      // stepSize: 10,
-      computeMode: 'direct',
-      steps: 0,
+    // {
+    //   data: EXAMPLES.CHECKER_BOARD,
+    //   // data: [
+    //   //   [1, 1, 1, 1],
+    //   //   [1, 1, 1, 1],
+    //   //   [1, 1, 1, 1],
+    //   //   [1, 1, 1, 1],
+    //   // ],
+    //   defaultColor: 'byValue',
+    //   accessor: (d: any) => d,
+    //   height: 1,
+    //   width: 1,
+    //   layout: 'rampY',
+    //   // computeMode: 'iterative',
+    //   // stepSize: 10,
+    //   computeMode: 'direct',
+    //   steps: 0,
 
-      // data: TEST_TABLE,
-      // layout: 'gridLayout',
-      // iterations: 300,
-      // accessor: (d) => d.x,
-      // height: 0.5,
-    },
+    //   // data: TEST_TABLE,
+    //   // layout: 'gridLayout',
+    //   // iterations: 300,
+    //   // accessor: (d) => d.x,
+    //   // height: 0.5,
+    // },
     // {
     //   data: EXAMPLES.CHECKER_BOARD,
     //   stepSize: 10,

@@ -386,6 +386,44 @@ export function regionToRegion(): FigureConfig {
 }
 
 /**
+ * Generate a pair of table that either have correlations on the x and y or just y
+ */
+export function correlationAndWithout(): FigureConfig[] {
+  const dataBuilder = (useY: boolean): {value: number; color: string}[][] =>
+    [...new Array(10)].map((_, idx) =>
+      [...new Array(10)].map((_, jdx) => {
+        const value =
+          1 +
+          (useY ? 1 : 0) * 10 * Math.pow(5 - Math.abs(jdx - 5), 3) +
+          10 * Math.pow(5 - Math.abs(idx - 5), 3);
+        return {
+          color: interpolateGreens(1 - Math.sqrt(1 - (value - 1) / (2501 - 1))),
+          value,
+        };
+      }),
+    );
+  return [true].map((val) => ({
+    data: dataBuilder(val),
+    stepSize: 5,
+    computeMode: 'iterative',
+    showAxisLabels: false,
+    layout: 'zigZagOnX',
+    defaultColor: 'byDataColor',
+    accessor: (d): number => d.value,
+    optimizationParams: {
+      // stepSize: 0.01,
+      // stepSize: 0.005,
+      // orderPenalty: 10,
+      // borderPenalty: 10,
+      // overlapPenalty: 10,
+      // useGreedy: false,
+      // nonDeterministic: true,
+      useAnalytic: false,
+    },
+  }));
+}
+
+/**
  * Generate a 10x10 multiplication table, with squares boxed
  */
 export function multiplicationTable(): FigureConfig {

@@ -56,12 +56,12 @@ export default function Docs(): JSX.Element {
           of algorithm. Below that you'll find the more traditional documentation for the library.
         </p>
       </div>
-      <div className="gallery">
+      {/* <div className="gallery">
         <img src="assets/zion.png" />
         <a href="https://www.mcnutt.in/cycles-rain-seasons-in-size/">
           <img src="assets/fremont.png" />
         </a>
-      </div>
+      </div> */}
       <div className="center-widthed docs intro"></div>
       <div className="center-widthed docs">
         <h1>Playground</h1>
