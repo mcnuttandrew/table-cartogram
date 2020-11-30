@@ -13,7 +13,7 @@ import EXAMPLES from '../examples/examples';
 // import ZionExperiment from './components/zion-experiment';
 // import ZionSpiral from './components/zion-spiral';
 // import PivotogramAlts from './components/pivotogram-alts';
-// import PolygramAlts from './components/polygram-alts';
+import PolygramAlts from './components/polygram-alts';
 // import Map from './components/map';
 // import SankeyRegionRegion from './components/sankey-region-region';
 
@@ -90,6 +90,7 @@ function App(): JSX.Element {
         {/* {<Legend />}
         <JanCalendar /> */}
         {/* {<AlphaTableBuilder />} */}
+        {/* {<PolygramAlts />} */}
       </div>
     </div>
   );
