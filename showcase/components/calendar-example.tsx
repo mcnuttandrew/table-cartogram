@@ -41,11 +41,12 @@ const getDayOfWeekName = (idx: number): string => DAYS[(idx + DAYS_OF_WEEK_OFFSE
 const weekStarts = MONTH_NAMES.map((month, idx) => moment(`2017-${idx + 1}-01`, 'YYYY-MM-DD').week() - 1);
 
 const monthsToWeeks = weekStarts.reduce((acc, row, idx) => {
-  const nextBarrier = weekStarts[idx + 1] || 53;
-  const validWeeks = [];
-  for (let jdx = row; jdx <= nextBarrier; jdx++) {
-    validWeeks.push(jdx);
-  }
+  const validWeeks = [...new Array(53)].map((_, jdx) => jdx);
+  // const nextBarrier = weekStarts[idx + 1] || 53;
+  // const validWeeks = [];
+  // for (let jdx = row - 1; jdx <= nextBarrier; jdx++) {
+  //   validWeeks.push(jdx);
+  // }
   acc[idx] = validWeeks;
   return acc;
 }, {} as any);
@@ -71,15 +72,16 @@ const CAL = Object.entries(
     if (!(row.year === 2017 || (row.year === 2018 && row.week === 53))) {
       return acc;
     }
-    if (!acc[row.week]) {
-      acc[row.week] = [];
-    }
-    acc[row.week].push(row);
+    acc[row.week] = (acc[row.week] || []).concat(row);
     return acc;
   }, {}),
 )
-  .sort((a: any, b: any) => a[0] - b[0])
-  .map((d) => d[1]);
+  // .sort((a: any, b: any) => a[0] - b[0])
+  .map((d) => d[1])
+  .map((d) => {
+    console.log(d);
+    return d;
+  });
 
 const DATA_DOMAIN = (CAL.reduce((acc: any[], row) => acc.concat(row), []) as any[]).reduce(
   (acc, row) => {
@@ -111,18 +113,10 @@ const findMinObject = (data: any, comparator: any): any => {
 
 const MONTHS = Object.entries(monthsToWeeks).reduce((acc: any, row) => {
   const month = Number(row[0]);
-  acc[month] = (row[1] as number[]).map((idx) => CAL[idx]).filter((d) => d);
-  const firstDay = findMinObject(acc[month][0], (d: any) => d.dayOfMonth);
-  if (firstDay.dayOfWeek === 6) {
-    acc[month] = acc[month].slice(1);
-  }
-  const monthString = `2017-${month > 9 ? month + 1 : `0${month + 1}`}`;
-  // console.log(MONTH_NAMES[month], moment(monthString, 'YYYY-MM').daysInMonth(), firstDay)
-  // console.log(firstDay.dayOfWeek === 5, moment(monthString, 'YYYY-MM').daysInMonth() === 30, monthString)
-  if (firstDay.dayOfWeek === 5 && moment(monthString, 'YYYY-MM').daysInMonth() === 30) {
-    // console.log('!!')
-    acc[month] = acc[month].slice(0, acc[month].length - 1);
-  }
+  acc[month] = (row[1] as number[])
+    .map((idx) => CAL[idx])
+    .filter((d) => d && (d as any[]).some((x) => x.month === month && x.year === 2017));
+
   return acc;
 }, {});
 
@@ -132,7 +126,6 @@ function renderMonth(gons: any, month: any): JSX.Element {
     <div key={month}>
       <XYPlot className={MONTH_NAMES[month]} yDomain={[1, 0]} margin={60} width={500} height={500}>
         {clipToMonth.map((cell: any, index: number) => {
-          // console.log(cell.data.count);
           return (
             <PolygonSeries
               key={`triangle-${index}`}
@@ -141,7 +134,7 @@ function renderMonth(gons: any, month: any): JSX.Element {
                 strokeWidth: 1,
                 stroke: 'black',
                 strokeOpacity: 1,
-                opacity: 0.5,
+                opacity: 1,
                 fill: interpolateReds(
                   1 -
                     Math.sqrt(1 - (cell.data.count - DATA_DOMAIN.min) / (DATA_DOMAIN.max - DATA_DOMAIN.min)),
@@ -173,6 +166,7 @@ function renderMonth(gons: any, month: any): JSX.Element {
                 textAnchor: 'middle',
                 alignmentBaseline: 'middle',
                 fontFamily: 'GillSans',
+                fontSize: 25,
               },
             };
           })}
@@ -233,6 +227,7 @@ class CalendarDisplay extends React.Component<{}, {[x: string]: any}> {
             maxNumberOfSteps: Infinity,
             accessor: (d) => d.count,
             logging: false,
+            layout: 'psuedoCartogramLayoutZigZag',
           });
           this.setState({
             // @ts-ignore
