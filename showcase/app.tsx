@@ -32,12 +32,14 @@ import {
   // buildSenateExample,
   // usaWithLabels,
   // multiplicationTable,
-  correlationAndWithout,
+  // correlationAndWithout,
+  usaWithLabels,
 } from './figure-setups';
 
 function App(): JSX.Element {
   const tables = [
-    ...correlationAndWithout(),
+    usaWithLabels(),
+    // ...correlationAndWithout(),
     // multiplicationTable()
     // {
     //   data: EXAMPLES.CHECKER_BOARD,
