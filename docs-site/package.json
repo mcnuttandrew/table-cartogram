@@ -50,7 +50,7 @@
     "webpack-dev-server": "^3.2.1"
   },
   "dependencies": {
-    "d3-color": "^2.0.0",
+    "d3-color": "^3.1.0",
     "d3-scale": "^3.2.2",
     "d3-scale-chromatic": "^2.0.0",
     "d3-shape": "^2.0.0",
