@@ -98,7 +98,7 @@ function DataUploader(setData: any, data: number[][], triggerReRun: any): JSX.El
         <button onClick={() => triggerReRun()}>RUN</button>
       </div>
       <div className="flex-down">
-        <h3>Add data as text (use js syntax, e.g. `[[1, 1], [10, 1]]`)</h3>
+        <h3>Add data as text (use JSON syntax, e.g. `[[1, 1], [10, 1]]`)</h3>
         <span>{error}</span>
         <textarea
           value={stringData}

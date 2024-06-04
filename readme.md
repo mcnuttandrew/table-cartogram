@@ -4,10 +4,16 @@ Table cartograms are a type of data visualization that represents tables of data
 
 <img src="./docs-site/assets/zion.png" alt="Table cartogram describing visitor statistics to zion national park"/>
 
-In this library we provide an iteration based approach to creating table cartograms. We follow a very simple optimization approach in which we select from a library of initializations, also allowing for custom ones, and then iteratively adjust the vertices via gradient descent until a satisfactory condition is reached. Details about the math and algorithm behind process are forthcoming.
+In this library we provide an iteration based approach to creating table cartograms. We follow a very simple optimization approach in which we select from a library of initializations, also allowing for custom ones, and then iteratively adjust the vertices via gradient descent until a satisfactory condition is reached. Details about the math and algorithm can be found [here](https://osf.io/kem6j) while a discussion of their usage properties can be found [here](https://arxiv.org/abs/2104.04042).
 
 
-What mattters here is how to use this tool.
+### Usage for the REALLY impatient
+
+A version of this library is deployed [here](https://www.mcnutt.in/table-cartogram/). You can upload a dataset to make into a table cartogram there by click "Customize data" and then pasting in a well formatted JSON table. Click "Set string data as custom data" to save your data. Finally click start to start computing it. 
+
+
+<img src="./docs-site/assets/usage-screenshot.png" alt="Screenshot of the ui for creating table cartograms"/>
+
 
 ## Installation
 
@@ -17,10 +23,9 @@ To install table-cartogram.js pick your favorite command line installation tool 
 npm install --save table-cartogram
 ```
 
-
 ### Usage for the impatient
 
-This is a layout library similar to d3-force or d3-hierarchy, which means that we don't necessarilly provide a way for you to render our shapes on the page. Instead we just process the data you give us and give back the layout as specified. For instance, running
+This is a layout library similar to d3-force or d3-hierarchy, which means that we don't necessarily provide a way for you to render our shapes on the page. Instead we just process the data you give us and give back the layout as specified. For instance, running
 
 ```js
 import {tableCartogram} from 'table-cartogram';
@@ -232,7 +237,7 @@ Object See Below
 
 **targetAccuracy?**: number   
 Default: 0.01   
-The target accuracy for the adapative descent.
+The target accuracy for the adaptive descent.
 
 ### Example
 
