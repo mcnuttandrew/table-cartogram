@@ -52,6 +52,8 @@ function DropDownWithLabel(props: DropDownProps): JSX.Element {
 }
 const copy = (x: number[][]): number[][] => JSON.parse(JSON.stringify(x));
 function DataUploader(setData: any, data: number[][], triggerReRun: any): JSX.Element {
+  const [stringData, setStringData] = React.useState<string>('');
+  const [error, setError] = React.useState<string>('');
   return (
     <div className="custom-data-tip">
       <h1>Specify Custom Data</h1>
@@ -94,6 +96,33 @@ function DataUploader(setData: any, data: number[][], triggerReRun: any): JSX.El
         <button onClick={() => setData(data.concat([data[0].map(() => 1)]))}>ADD ROW</button>
         <button onClick={() => setData(data.map(row => [...row, 1]))}>ADD COLUMN</button>
         <button onClick={() => triggerReRun()}>RUN</button>
+      </div>
+      <div className="flex-down">
+        <h3>Add data as text (use js syntax, e.g. `[[1, 1], [10, 1]]`)</h3>
+        <span>{error}</span>
+        <textarea
+          value={stringData}
+          onChange={e => {
+            const str = e.currentTarget.value;
+            setStringData(str);
+            try {
+              JSON.parse(str);
+              setError('');
+            } catch (e) {
+              setError(e.message);
+            }
+          }}
+        />
+        {!error && (
+          <button
+            onClick={() => {
+              setData(JSON.parse(stringData));
+            }}
+          >
+            Set string data as custom data
+          </button>
+        )}
+        {!error && <div>Once you are happy with the data, click start to run the simulation</div>}
       </div>
     </div>
   );
@@ -225,7 +254,7 @@ export default function Playground(): JSX.Element {
             onChange={(value): any => triggerReRun(setData(EXAMPLES[value]))}
           />
           <Tooltip trigger="click" overlay={DataUploader(setData, data, triggerReRun)}>
-            <button>Specify Custom Data</button>
+            <button>Customize Data</button>
           </Tooltip>
 
           <h5>PARAM SELECTION</h5>
